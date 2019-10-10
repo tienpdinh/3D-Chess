@@ -1,0 +1,8 @@
+
+modelDir = ./models/
+
+#teapot knot sphere teapotLowPoly teapot cube
+
+[Castle]
+scale .1
+objModel = Castle.obj

@@ -1,6 +1,0 @@
-build/
-*.log
-*.o
-*properties.json
-engine
-.DS_Store

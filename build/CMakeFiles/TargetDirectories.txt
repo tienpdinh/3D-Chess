@@ -1,0 +1,6 @@
+/home/tdinh/Documents/CSCI8980/GEFS-HW3/GEFS-CSCI8980-Fall2019/build/CMakeFiles/rebuild_cache.dir
+/home/tdinh/Documents/CSCI8980/GEFS-HW3/GEFS-CSCI8980-Fall2019/build/CMakeFiles/Lua.dir
+/home/tdinh/Documents/CSCI8980/GEFS-HW3/GEFS-CSCI8980-Fall2019/build/CMakeFiles/edit_cache.dir
+/home/tdinh/Documents/CSCI8980/GEFS-HW3/GEFS-CSCI8980-Fall2019/build/CMakeFiles/engine.dir
+/home/tdinh/Documents/CSCI8980/GEFS-HW3/GEFS-CSCI8980-Fall2019/build/CMakeFiles/glad.dir
+/home/tdinh/Documents/CSCI8980/GEFS-HW3/GEFS-CSCI8980-Fall2019/build/CMakeFiles/imgui.dir
