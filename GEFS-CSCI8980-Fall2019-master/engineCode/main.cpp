@@ -79,7 +79,7 @@ int main(int argc, char *argv[]){
 	loguru::init(argc, argv);  // Detect verbosity level on command line as -v.
 
 	// Log messages to file:
-	// loguru::add_file("fullLog.log", loguru::Append, loguru::Verbosity_MAX);  // Will append to log from last run.
+	// loguru::add_file("fullLog.log", loguru::Append, loguru::Verbosity_MAX);
 	loguru::add_file("latest_fullLog.log", loguru::Truncate, loguru::Verbosity_MAX);
 	loguru::add_file("latest_readable.log", loguru::Truncate, loguru::Verbosity_INFO);
 
@@ -88,7 +88,7 @@ int main(int argc, char *argv[]){
 
 	if (argc == 1)
 	{
-		LOG_F(ERROR,"No Gamefolder specified");
+		LOG_F(ERROR, "No Gamefolder specified");
 		printf("\nUSAGE: ./engine Gamefolder/ [EngineConfig]\n");
 		exit(1);
 	}
@@ -375,7 +375,11 @@ int main(int argc, char *argv[]){
 		// ------ PASS 2 - main (PBR) shading pass ------ //
 
 		view = glm::lookAt(camPos, lookatPoint, camUp);
-		proj = glm::perspective(FOV * 3.14f/180, screenWidth / (float) screenHeight, cameraNear, cameraFar);  // FOV, aspect, near, far.
+		proj = glm::perspective(
+			FOV * 3.14f/180,  // Field of view in radians.
+			screenWidth / (float) screenHeight,  // Aspect ratio.
+			cameraNear, cameraFar  // Camera clipping planes.
+		);
 		// view = lightViewMatrix; proj = lightProjectionMatrix;  // This was useful to visualize the shadow map.
 
 		setPBRShaderUniforms(view, proj, lightViewMatrix, lightProjectionMatrix, useShadowMap);
@@ -388,7 +392,8 @@ int main(int argc, char *argv[]){
 		// Pass 2A: draw scene geometry
 		if (viewFrustumCull)
 		{
-			drawSceneGeometry(curScene.toDraw, view, FOV * 3.14f/180, screenWidth / (float) screenHeight, cameraNear, cameraFar);
+			drawSceneGeometry(curScene.toDraw, view, FOV * 3.14f/180,
+				screenWidth / (float) screenHeight, cameraNear, cameraFar);
 		}
 		else
 		{
@@ -398,7 +403,10 @@ int main(int argc, char *argv[]){
 		// TODO: add a pass which draws some items without depth culling (e.g. keys, items).
 
 		//Pass 2B: draw colliders.
-		if (drawColliders) drawColliderGeometry();
+		if (drawColliders)
+		{
+			drawColliderGeometry();
+		}
 
 		// Pass 2C: draw skybox / sky color.
 		drawSkybox(view, proj);
@@ -445,7 +453,8 @@ int main(int argc, char *argv[]){
 		IMGuiNewFrame();
 		ImGui::Begin("Frame Info");
 		ImGui::Text("Time for Rendering %.0f ms", drawTime);
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
+			1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		ImGui::Text("%d Objects in Scene Graph, %d being drawn", numModels, (int)curScene.toDraw.size());
 		ImGui::Text("Total Triangles: %d", totalTriangles);
 		ImGui::Text("Total Shadow Triangles: %d", totalShadowTriangles);
@@ -500,7 +509,8 @@ void configEngine(string configFile, string configName)
     	}
 
     	char command[100];  // Assumes no command is longer than 100 chars.
-    	int fieldsRead = sscanf(rawline,"%s ",command);  // Read first word in the line (i.e., the command type).
+		// Read first word in the line (i.e., the command type).
+    	int fieldsRead = sscanf(rawline,"%s ",command);
     	string commandStr = command;
 
     	if (fieldsRead < 1)
