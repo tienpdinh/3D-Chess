@@ -1,0 +1,36 @@
+modelDir = ./models/
+
+[Tabletop]
+translate 0 0.8 0
+scalexyz 2.1 0.08 2.1
+flatModel = cube.txt
+
+[Table Leg]
+translate 0 0.25 0
+scalexyz 0.1 1.1 0.1
+textureWrap 2 1
+flatModel = cube.txt 
+
+[Leg 1]
+translate -1 0 -1
+child [Table Leg]
+
+[Leg 2]
+translate 1 0 -1
+child [Table Leg]
+
+[Leg 3]
+translate -1 0 1
+child [Table Leg]
+
+[Leg 4]
+translate 1 0 1
+child [Table Leg]
+
+[Table]
+material [Dark Polished Wood]
+child [Tabletop]
+child [Leg 1]
+child [Leg 2]
+child [Leg 3]
+child [Leg 4]
