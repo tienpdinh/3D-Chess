@@ -4,7 +4,7 @@
 
 struct KeyState{
 	bool up, down, right, left;
-	bool shift, tab;
+	bool shift, tab, space;
   bool q,w,e,r,a,s,d,f,z,x,c,v;
 };
 
@@ -21,6 +21,7 @@ void updateKeyboardState(){
   keys.left = keyboardState[SDL_SCANCODE_LEFT];
   keys.right = keyboardState[SDL_SCANCODE_RIGHT];
   keys.shift = keyboardState[SDL_SCANCODE_LSHIFT] || keyboardState[SDL_SCANCODE_RSHIFT];
+  keys.space = keyboardState[SDL_SCANCODE_SPACE];
   keys.q = keyboardState[SDL_SCANCODE_Q];
   keys.w = keyboardState[SDL_SCANCODE_W];
   keys.e = keyboardState[SDL_SCANCODE_E];
@@ -50,6 +51,7 @@ void keyboardUpdateLua(lua_State* L){
 		lua_pushboolean(L, keys.left); lua_setfield(L, -2, "left");
 		lua_pushboolean(L, keys.shift); lua_setfield(L, -2, "shift");
 		lua_pushboolean(L, keys.tab); lua_setfield(L, -2, "tab");
+    lua_pushboolean(L, keys.space); lua_setfield(L, -2, "space");
     lua_pushboolean(L, keys.q); lua_setfield(L, -2, "q");
     lua_pushboolean(L, keys.w); lua_setfield(L, -2, "w");
     lua_pushboolean(L, keys.e); lua_setfield(L, -2, "e");
