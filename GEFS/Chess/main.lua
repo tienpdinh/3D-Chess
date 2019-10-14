@@ -69,6 +69,7 @@ end
 --rotYVelModel[id] = 1
 
 id = addModel("Castle",0,0,0)
+id2 = addModel("ChessBoard", 0, 0, 0)
 -- placeModel(id,0,-.04,0)
 -- scaleModel(id,60,1,60)
-setModelMaterial(id,"Gold")
+-- setModelMaterial(id,"Gold")

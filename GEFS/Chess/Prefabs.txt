@@ -6,3 +6,7 @@ modelDir = ./models/
 [Castle]
 scale 10
 objModel = Castle.obj
+
+[ChessBoard]
+scale 10
+objModel = ChessBoard.obj
