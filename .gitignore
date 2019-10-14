@@ -1,1 +1,5 @@
-GEFS-CSCI8980-Fall2019-master/build/*
+build/
+GEFS/engine
+.DS_Store
+*.o
+*.log
