@@ -25,7 +25,7 @@ void resetModels(){
   numModels = 0;
 }
 
-void loadAllModelsTo1VBO(GLuint vbo){ 
+void loadAllModelsTo1VBO(GLuint vbo){
 	glBindBuffer(GL_ARRAY_BUFFER, vbo); //Set vbo i as the active array buffer (Only one buffer can be active at a time)
 	int vextexCount = 0;
 	for (int i = 0; i < numModels; i++){
@@ -40,7 +40,7 @@ void loadAllModelsTo1VBO(GLuint vbo){
 	for (int i = 0; i < numModels; i++){
 		copy(models[i].modelData, models[i].modelData + models[i].numVerts*8, allModelData + models[i].startVertex*8);
 	}
-	glBufferData(GL_ARRAY_BUFFER, totalVertexCount*8*sizeof(float), 
+	glBufferData(GL_ARRAY_BUFFER, totalVertexCount*8*sizeof(float),
 		             allModelData, GL_STATIC_DRAW); //upload model data to the VBO
 }
 
@@ -59,7 +59,7 @@ void addChild(string childName, int curModelID){
 		if (models[i].name == childName){
 			childModel = i;
 			continue;
-		} 
+		}
 	}
 	CHECK_F(childModel >= 0,"No model of name '%s' found to be added as a child model!",childName.c_str());
 
@@ -68,7 +68,7 @@ void addChild(string childName, int curModelID){
 	models[curModelID].numChildren++;
 
 	glm::vec3 scaleFactor = glm::vec3(models[childModel].transform*glm::vec4(1,1,1,0));
-	float radiusScale = fmaxf(scaleFactor.x,fmaxf(scaleFactor.y,scaleFactor.z)); //TODO: This won't work with relections (ie negative scales) 
+	float radiusScale = fmaxf(scaleFactor.x,fmaxf(scaleFactor.y,scaleFactor.z)); //TODO: This won't work with relections (ie negative scales)
 	float childRadius = radiusScale*models[childModel].boundingRadius;
 	models[curModelID].boundingRadius = fmaxf(childRadius,models[curModelID].boundingRadius);
 }
@@ -79,7 +79,7 @@ void addLODChild(string childName, int curModelID){
 		if (models[i].name == childName){
 			childModel = i;
 			continue;
-		} 
+		}
 	}
 	CHECK_F(childModel >= 0,"No model of name '%s' found to be added as a child model!",childName.c_str());
 
@@ -103,7 +103,7 @@ void computeBoundingRadius(int modelID){
 	float childRadius;
 	for (int c = 0; c < models[modelID].numChildren; c++){
 		glm::vec3 scaleFactor = glm::vec3(models[c].transform*glm::vec4(1,1,1,0));
-		float radiusScale = fmaxf(scaleFactor.x,fmaxf(scaleFactor.y,scaleFactor.z)); //TODO: This won't work with relections (ie negative scales) 
+		float radiusScale = fmaxf(scaleFactor.x,fmaxf(scaleFactor.y,scaleFactor.z)); //TODO: This won't work with relections (ie negative scales)
 		childRadius = radiusScale*models[modelID].childModel[c]->boundingRadius;
 		LOG_F(2, "Child model %s bounding radius is %f (scale factor = %f)",models[modelID].childModel[c]->name.c_str(), childRadius, radiusScale);
 		if (childRadius > r) r = childRadius;
@@ -125,12 +125,12 @@ void loadModel(string fileName){
 	LOG_F(INFO,"Loading Model File: %s", fileName.c_str());
   // check for errors in opening the file
 	CHECK_NOTNULL_F(fp,"Can't open model file '%s'", fileName.c_str());
-	
+
   fseek(fp, 0, SEEK_END); // move position indicator to the end of the file;
   length = ftell(fp);  // return the value of the current position
   LOG_F(INFO,"File '%s' is %ld bytes long.",fileName.c_str(),length);
   fseek(fp, 0, SEEK_SET);  // move position indicator to the start of the file
-  
+
 	string modelName = "";
 	string modelDir = "./";
 	int curModelID = 0;
@@ -141,15 +141,15 @@ void loadModel(string fileName){
       LOG_F(2,"Skipping comment: %s", rawline);
       continue;
     }
-    
+
     char command[100];
     int fieldsRead = sscanf(rawline,"%s ",command); //Read first word in the line (i.e., the command type)
     string commandStr = command;
-    
+
     if (fieldsRead < 1){ //No command read = Blank line
      continue;
     }
-    
+
     if (commandStr.substr(0,1) == "["){ // "[" indicates new model
 		  int closeBrackets = line.find("]");
 			CHECK_F(closeBrackets >= 0,"ERROR: Model name opened with [ but not closed with ]");
@@ -157,68 +157,68 @@ void loadModel(string fileName){
 			curModelID = addModel(modelName);
 			LOG_F(INFO,"Creating PreFab Model with name: %s",modelName.c_str());
     }
-		else if (commandStr == "identity"){ 
+		else if (commandStr == "identity"){
 			models[curModelID].transform = glm::mat4();
       LOG_F(1,"Reseting to Indentity Transform");
     }
-    else if (commandStr == "scale"){ 
+    else if (commandStr == "scale"){
 			float scaleFactor;
 			sscanf(rawline,"scale %f", &scaleFactor);
 			models[curModelID].transform = glm::scale(models[curModelID].transform, scaleFactor*glm::vec3(1,1,1));
       LOG_F(1,"Scaling by %f",scaleFactor);
     }
-		else if (commandStr == "scalexyz"){ 
+		else if (commandStr == "scalexyz"){
 			//compute new glm matrix
 			float sx, sy, sz;
 			sscanf(rawline,"scalexyz %f %f %f", &sx, &sy, &sz);
 			models[curModelID].transform = glm::scale(models[curModelID].transform, glm::vec3(sx,sy,sz));
       LOG_F(1,"Scaling by %f %f %f",sx,sy,sz);
     }
-		else if (commandStr == "rotate"){ 
+		else if (commandStr == "rotate"){
 			//compute new glm matrix
 			float angle, rx, ry, rz;
 			sscanf(rawline,"rotate %f %f %f %f", &angle, &rx, &ry, &rz);
 			models[curModelID].transform = glm::rotate(models[curModelID].transform, (float)(angle*(M_PI/180.f)), glm::vec3(rx,ry,rz));
       LOG_F(1,"Rotating by %f around axis %f %f %f",angle,rx,ry,rz);
     }
-		else if (commandStr == "translate"){ 
+		else if (commandStr == "translate"){
 			//compute new glm matrix
 			float tx, ty, tz;
 			sscanf(rawline,"translate %f %f %f", &tx, &ty, &tz);
 			models[curModelID].transform = glm::translate(models[curModelID].transform, glm::vec3(tx,ty,tz));
       LOG_F(1,"Transling by (%f, %f, %f)", tx, ty, tz);
     }
-		else if (commandStr == "textureWrap"){ 
+		else if (commandStr == "textureWrap"){
 			float uScale, vScale;
 			sscanf(rawline,"textureWrap %f %f", &uScale, &vScale);
 			models[curModelID].textureWrap = glm::vec2(uScale,vScale);
       LOG_F(1,"Wrapping texture by %fX in u and %fX in v", uScale, vScale);
     }
-		else if (commandStr == "radius"){ 
+		else if (commandStr == "radius"){
 			float radius;
 			sscanf(rawline,"radius = %f", &radius);
 			models[curModelID].boundingRadius = radius;
       LOG_F(1,"Setting model bounding radius to %f",radius);
     }
-		else if (commandStr == "lodDist"){ 
+		else if (commandStr == "lodDist"){
 			float lodDist;
 			sscanf(rawline,"lodDist = %f", &lodDist);
 			models[curModelID].lodDist = lodDist;
       LOG_F(1,"Setting LOD cutoff distance to %f",lodDist);
     }
-		else if (commandStr == "modelDir"){ 
+		else if (commandStr == "modelDir"){
        char dirName[1024];
        sscanf(rawline,"modelDir = %s", dirName);
 			 modelDir = dirName;
 			 LOG_F(1,"Setting model directory to: %s",modelDir.c_str());
 		}
-		else if (commandStr == "flatModel"){ 
+		else if (commandStr == "flatModel"){
       char flatDataFile[1024];
       sscanf(rawline,"flatModel = %s", flatDataFile);
 
 			ifstream modelFile;
 			LOG_F(1,"Loading flat model file %s as ID: %d",(modelDir + flatDataFile).c_str(),curModelID);
-			modelFile.open(modelDir + flatDataFile); 
+			modelFile.open(modelDir + flatDataFile);
                         CHECK_F(!modelFile.fail(),"Failed to open flatmodel: %s",(modelDir + flatDataFile).c_str());
 			int numLines = 0;
 			modelFile >> numLines;
@@ -232,7 +232,7 @@ void loadModel(string fileName){
 			modelFile.close();
 			computeBoundingRadius(curModelID);
     }
-		else if (commandStr == "objModel"){ 
+		else if (commandStr == "objModel"){
       char objFile[1024];
       sscanf(rawline,"objModel = %s", objFile);
 
@@ -257,7 +257,8 @@ void loadModel(string fileName){
 				if (avgSpec > 0.8) m.reflectiveness = (avgSpec-0.8)/0.2;
 				memcpy((void*)& m.emissive, (void*)& objMaterials[i].emission[0], sizeof(float)*3); //copy all 3 emissive colors (RGB)
 
-				if (objMaterials[i].diffuse_texname != ""){
+				if (objMaterials[i].diffuse_texname != "")
+                {
 					string textureName = modelDir + objMaterials[i].diffuse_texname;
 					int foundTexture = -1;
 					for (int i = 0; i < numTextures; i++){
@@ -277,6 +278,28 @@ void loadModel(string fileName){
 						LOG_F(1,"New texture named: %s", textureName.c_str());
 					}
 				}
+
+                if (objMaterials[i].bump_texname != "")
+                {
+                    string textureName = modelDir + objMaterials[i].bump_texname;
+					int foundTexture = -1;
+					for (int i = 0; i < numTextures; i++){
+						if (textures[i] == textureName){
+							foundTexture = i;
+							break;
+						}
+					}
+					if (foundTexture >= 0){
+						LOG_F(1,"Reusing existing texture: %s", textures[foundTexture].c_str());
+						m.normalMapId = foundTexture;
+					}
+					else{
+						textures[numTextures] = textureName;
+						m.normalMapId = numTextures;
+						numTextures++;
+						LOG_F(1,"New normal map texture named: %s", textureName.c_str());
+					}
+                }
 
 				materials[numMaterials] = m;
 				LOG_F(1,"Creating Material ID %d with name '%s'",numMaterials,materials[numMaterials].name.c_str());
@@ -304,7 +327,7 @@ void loadModel(string fileName){
 					if (models[curModelID].materialID == -1) //Only use obj materials if the parent doesn't have it's own material
 						materialID = findMaterial(materialName.c_str());
 					LOG_F(1,"Binding material: '%s' (Material ID %d) to Model %d",materialName.c_str(),materialID,childModelID);
-					models[childModelID].materialID = materialID; 
+					models[childModelID].materialID = materialID;
 				}
 				// Loop over faces(polygon)
 				size_t index_offset = 0;
@@ -341,7 +364,7 @@ void loadModel(string fileName){
 								materialID = findMaterial(materialName.c_str());
 							LOG_F(1,"Binding material: '%s' (Material ID %d) to Model %d",materialName.c_str(),materialID,curModelID);
 						}
-						models[childModelID].materialID = materialID; 
+						models[childModelID].materialID = materialID;
 					}
 
 					// Loop over vertices in the face.
@@ -357,7 +380,7 @@ void loadModel(string fileName){
 						tinyobj::real_t nx = objAttrib.normals[3*idx.normal_index+0];
 						tinyobj::real_t ny = objAttrib.normals[3*idx.normal_index+1];
 						tinyobj::real_t nz = objAttrib.normals[3*idx.normal_index+2];
-						
+
 						tinyobj::real_t tx=-1,ty=-1; //TODO: Ohh, what do if there is no texture coordinates?
 						if (objAttrib.texcoords.size() > 0 && idx.texcoord_index > 0){
 							tx = objAttrib.texcoords[2*idx.texcoord_index+0];
@@ -385,29 +408,29 @@ void loadModel(string fileName){
 			computeBoundingRadius(childModelID);
 			addChild(childName, curModelID);
     }
-		else if (commandStr == "child"){ 
+		else if (commandStr == "child"){
 			int openBracket = line.find("[")+1;
 		  int modelNameLength = line.find("]")-openBracket;
 			string childName = line.substr(openBracket,modelNameLength);
 			LOG_F(1,"Adding Child with name %s to model %d",childName.c_str(), curModelID);
 			addChild(childName, curModelID);
     }
-		else if (commandStr == "lodChild"){ 
+		else if (commandStr == "lodChild"){
 			int openBracket = line.find("[")+1;
 		  int modelNameLength = line.find("]")-openBracket;
 			string childName = line.substr(openBracket,modelNameLength);
 			LOG_F(1,"Adding LOD Child with name %s to model %d",childName.c_str(), curModelID);
 			addLODChild(childName, curModelID);
     }
-		else if (commandStr == "material"){ 
+		else if (commandStr == "material"){
 			int openBracket = line.find("[")+1;
 		  int modelNameLength = line.find("]")-openBracket;
 			string materialName = line.substr(openBracket,modelNameLength);
 			int materialID = findMaterial(materialName);
 			LOG_F(1,"Binding material: '%s' (Material ID %d) to Model %d",materialName.c_str(),materialID,curModelID);
-			models[curModelID].materialID = materialID; 
+			models[curModelID].materialID = materialID;
     }
-		else if (commandStr == "modelColor"){ 
+		else if (commandStr == "modelColor"){
 			float r, g, b;
 			sscanf(rawline,"modelColor = %f %f %f", &r, &g, &b);
 			models[curModelID].modelColor = glm::vec3(r,g,b);

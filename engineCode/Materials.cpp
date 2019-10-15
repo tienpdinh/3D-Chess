@@ -156,6 +156,34 @@ void loadMaterials(string fileName)
 				LOG_F(1,"New texture named: %s", textureName.c_str());
 			}
         }
+        else if (commandStr == "normalMap")
+        {
+            char rawTextureName[1024];
+            sscanf(rawline,"normalMap = %s", rawTextureName);
+            string textureName = textureDir + string(rawTextureName);
+			int foundTexture = -1;
+			for (int i = 0; i < numTextures; i++)
+            {
+				if (textures[i] == textureName)
+                {
+					foundTexture = i;
+					break;
+				}
+			}
+
+            if (foundTexture >= 0)
+            {
+				LOG_F(1,"Reusing existing normal map: %s", textures[foundTexture].c_str());
+				materials[curMaterialID].normalMapId = foundTexture;
+			}
+			else
+            {
+			    textures[numTextures] = textureName;
+		        materials[curMaterialID].normalMapId = numTextures;
+			    numTextures++;
+				LOG_F(1,"New normal map texture named: %s", textureName.c_str());
+			}
+        }
         else
         {
             LOG_F(WARNING,"WARNING. Unknow command: %s in file %s",command,fileName.c_str());

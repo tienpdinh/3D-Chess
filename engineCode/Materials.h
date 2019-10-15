@@ -7,9 +7,11 @@
 
 using std::string;
 
-struct Material{
-  std::string name = "**UNNAMED MATERIAL**";
-	int textureID = -1; //no texture
+struct Material
+{
+    std::string name = "**UNNAMED MATERIAL**";
+	int textureID = -1;  // No diffuse texture by default.
+    int normalMapId = -1;  // No normal map by default.
 	float ior = 1;
 	float metallic = 0;
 	float roughness = 0.5;
@@ -25,13 +27,13 @@ void resetMaterials();
 void loadTexturesToGPU();
 
 int findMaterial(string materialName);
-                   
 
-//Global list of materials
+
+// Global list of materials.
 extern Material materials[1000];
 extern int numMaterials;
 
-//Global list of textures
+// Global list of textures.
 extern string textures[1000];
 extern int numTextures;
 
