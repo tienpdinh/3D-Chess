@@ -20,9 +20,9 @@ std::string warn;
 
 void resetModels()
 {
-  // TODO: It is probably best practices to unload the old models from where they are on the GPU
-  // TODO: It is best practices to delete the old models explicitly
-  numModels = 0;
+    // TODO: It is probably best practices to unload the old models from where they are on the GPU
+    // TODO: It is best practices to delete the old models explicitly
+    numModels = 0;
 }
 
 void loadAllModelsTo1VBO(GLuint vbo)
@@ -37,15 +37,15 @@ void loadAllModelsTo1VBO(GLuint vbo)
 	}
 	int totalVertexCount = vextexCount;
 
-	float* allModelData = new float[vextexCount*8];
-	copy(models[0].modelData, models[0].modelData + models[0].numVerts*8, allModelData);
+	float* allModelData = new float[vextexCount*VERTEX_STRIDE];
+	copy(models[0].modelData, models[0].modelData + models[0].numVerts*VERTEX_STRIDE, allModelData);
 	for (int i = 0; i < numModels; i++)
     {
-		copy(models[i].modelData, models[i].modelData + models[i].numVerts*8, allModelData + models[i].startVertex*8);
+		copy(models[i].modelData, models[i].modelData + models[i].numVerts*VERTEX_STRIDE, allModelData + models[i].startVertex*VERTEX_STRIDE);
 	}
 
     // Upload model data to the VBO.
-	glBufferData(GL_ARRAY_BUFFER, totalVertexCount*8*sizeof(float), allModelData, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, totalVertexCount*VERTEX_STRIDE*sizeof(float), allModelData, GL_STATIC_DRAW);
 }
 
 int addModel(string modelName)
@@ -106,9 +106,9 @@ void computeBoundingRadius(int modelID)
 	float x,y,z;
 	for (int v = 0; v < models[modelID].numVerts; v++)
     {
-		x = fabsf(models[modelID].modelData[8*v + 0]);
-		y = fabsf(models[modelID].modelData[8*v + 1]);
-		z = fabsf(models[modelID].modelData[8*v + 2]);
+		x = fabsf(models[modelID].modelData[VERTEX_STRIDE*v + 0]);
+		y = fabsf(models[modelID].modelData[VERTEX_STRIDE*v + 1]);
+		z = fabsf(models[modelID].modelData[VERTEX_STRIDE*v + 2]);
 		if (x > rx) rx = x;
 		if (y > ry) ry = y;
 		if (z > rz) rz = z;
@@ -248,6 +248,10 @@ void loadModel(string fileName)
 		}
 		else if (commandStr == "flatModel")
         {
+            /*
+            NOTE:
+            flat models files must declare the attributes related to the VERTEX_STRIDE.
+            */
             char flatDataFile[1024];
             sscanf(rawline,"flatModel = %s", flatDataFile);
 
@@ -261,10 +265,10 @@ void loadModel(string fileName)
 			for (int i = 0; i < numLines; i++)
             {
 				modelFile >> models[curModelID].modelData[i];
-				// if (i%8 == 3 || i%8 == 4) models[curModelID].modelData[i] *= 2; //texture wrap factor
+				// if (i%8 == 3 || i%8 == 4) models[curModelID].modelData[i] *= 2;  // Texture wrap factor.
 			}
 			LOG_F(1,"Loaded %d lines",numLines);
-			models[curModelID].numVerts = numLines/8;
+			models[curModelID].numVerts = numLines/VERTEX_STRIDE;
 			modelFile.close();
 			computeBoundingRadius(curModelID);
         }
@@ -390,7 +394,7 @@ void loadModel(string fileName)
 						int numAttribs = vertexData.size();
 						models[childModelID].modelData = new float[numAttribs];
 						std::copy(vertexData.begin(),vertexData.end(),models[childModelID].modelData);
-						models[childModelID].numVerts = numAttribs/8;
+						models[childModelID].numVerts = numAttribs/VERTEX_STRIDE;
 						LOG_F(1,"Loaded %d vertices",models[childModelID].numVerts);
 						addChild(childName, curModelID);
 
@@ -413,7 +417,89 @@ void loadModel(string fileName)
 						models[childModelID].materialID = materialID;
 					}
 
+                    glm::vec3 trianglePos[3];
+                    glm::vec2 triangleTexcoords[3];
+                    glm::vec3 triangleNormals[3];
+                    glm::vec3 triangleTangents[3];
+
+                    bool triangleHasNormals = true;
+
+                    // Fill the triangle positions, texture coordinates, and normals (if present).
+                    for (size_t v = 0; v < fv; v++)
+                    {
+                        tinyobj::index_t idx = objShapes[s].mesh.indices[index_offset+v];
+
+                        // Positions.
+                        tinyobj::real_t vx = objAttrib.vertices[3*idx.vertex_index+0];
+						tinyobj::real_t vy = objAttrib.vertices[3*idx.vertex_index+1];
+						tinyobj::real_t vz = objAttrib.vertices[3*idx.vertex_index+2];
+                        trianglePos[v] = glm::vec3(vx, vy, vz);
+
+                        // Texture Coordinates.
+                        tinyobj::real_t tx = -1;
+                        tinyobj::real_t ty = -1;
+                        if (objAttrib.texcoords.size() > 0 && idx.texcoord_index > 0)
+                        {
+                            tx = objAttrib.texcoords[2*idx.texcoord_index+0];
+                            ty = objAttrib.texcoords[2*idx.texcoord_index+1];
+                        }
+                        triangleTexcoords[v] = glm::vec2(tx, ty);
+                        // TODO: What to do if there is no texture coordinates?
+
+                        // Normals.
+                        bool vertexHasNormal = (objAttrib.normals.size() > 0 && idx.normal_index >= 0);
+                        triangleHasNormals &= vertexHasNormal;
+                        if (vertexHasNormal)
+                        {
+                            tinyobj::real_t nx = objAttrib.normals[3*idx.normal_index+0];
+                            tinyobj::real_t ny = objAttrib.normals[3*idx.normal_index+1];
+                            tinyobj::real_t nz = objAttrib.normals[3*idx.normal_index+2];
+                            triangleNormals[v] = glm::normalize(glm::vec3(nx, ny, nz));
+                        }
+                    }
+
+                    // If normals are not present, recalculate them.
+                    if (!triangleHasNormals)
+                    {
+                        glm::vec3 u = trianglePos[1] - trianglePos[0];
+                        glm::vec3 v = trianglePos[2] - trianglePos[0];
+                        glm::vec3 n = glm::normalize(glm::cross(u, v));
+
+                        triangleNormals[0] = n;
+                        triangleNormals[1] = n;
+                        triangleNormals[2] = n;
+                    }
+
+                    // Calculate tangent vectors.
+                    triangleTangents[0] = glm::vec3(0,0,0);
+                    triangleTangents[1] = glm::vec3(0,0,0);
+                    triangleTangents[2] = glm::vec3(0,0,0);
+
+                    // Upload triangle to modelData.
+                    for (size_t v = 0; v < fv; v++)
+                    {
+                        float vertex[VERTEX_STRIDE];
+
+                        vertex[0] = trianglePos[v].x;
+                        vertex[1] = trianglePos[v].y;
+                        vertex[2] = trianglePos[v].z;
+
+                        vertex[3] = triangleTexcoords[v].x;
+                        vertex[4] = triangleTexcoords[v].y;
+
+                        vertex[5] = triangleNormals[v].x;
+                        vertex[6] = triangleNormals[v].y;
+                        vertex[7] = triangleNormals[v].z;
+
+                        vertex[8] = triangleTangents[v].x;
+                        vertex[9] = triangleTangents[v].y;
+                        vertex[10] = triangleTangents[v].z;
+
+                        vertexData.insert(vertexData.end(),vertex,vertex+VERTEX_STRIDE);  // Maybe should be vertexData.insert(vertex.end(),std::begin(vertex),std::end(vertex+)) ie make vertex a vector.
+                    }
+
 					// Loop over vertices in the face.
+                    /*
 					for (size_t v = 0; v < fv; v++)
                     {
 						// Access to vertex.
@@ -422,26 +508,78 @@ void loadModel(string fileName)
 						tinyobj::real_t vy = objAttrib.vertices[3*idx.vertex_index+1];
 						tinyobj::real_t vz = objAttrib.vertices[3*idx.vertex_index+2];
 
-						CHECK_F(objAttrib.normals.size() > 0 && idx.normal_index >=0, "All objects need normals to load");
-
-						//TODO: We should really compute normals if none are give to us (@HW)
-						tinyobj::real_t nx = objAttrib.normals[3*idx.normal_index+0];
-						tinyobj::real_t ny = objAttrib.normals[3*idx.normal_index+1];
-						tinyobj::real_t nz = objAttrib.normals[3*idx.normal_index+2];
-
-						tinyobj::real_t tx=-1,ty=-1;  // TODO: Ohh, what do if there is no texture coordinates?
-						if (objAttrib.texcoords.size() > 0 && idx.texcoord_index > 0)
+                        tinyobj::real_t tx=-1,ty=-1;  // TODO: Ohh, what do if there is no texture coordinates?
+                        if (objAttrib.texcoords.size() > 0 && idx.texcoord_index > 0)
                         {
-							tx = objAttrib.texcoords[2*idx.texcoord_index+0];
-							ty = objAttrib.texcoords[2*idx.texcoord_index+1];
-						}
-						float vertex[8] = {vx,vy,vz,tx,ty,nx,ny,nz};
-						vertexData.insert(vertexData.end(),vertex,vertex+8);  // Maybe should be vertexData.insert(vertex.end(),std::begin(vertex),std::end(vertex+)) ie make vertex a vector.
-						// Optional: vertex colors.
+                            tx = objAttrib.texcoords[2*idx.texcoord_index+0];
+                            ty = objAttrib.texcoords[2*idx.texcoord_index+1];
+                        }
+
+						// CHECK_F(objAttrib.normals.size() > 0 && idx.normal_index >=0, "All objects need normals to load");
+                        tinyobj::real_t nx;
+                        tinyobj::real_t ny;
+                        tinyobj::real_t nz;
+
+                        // If obj model has normals, then use them.
+                        if (objAttrib.normals.size() > 0 && idx.normal_index >= 0)
+                        {
+                            nx = objAttrib.normals[3*idx.normal_index+0];
+    						ny = objAttrib.normals[3*idx.normal_index+1];
+    						nz = objAttrib.normals[3*idx.normal_index+2];
+                        }
+                        // Otherwise calculate the normals.
+                        else
+                        {
+                            // U = p2-p1
+                            // V = p3-p1
+                            // N = UxV
+
+                            // LOG_F(1,"Calculating normals for model %s [%d]", models[curModelID].name.c_str(), curModelID);
+
+                            tinyobj::index_t idx2 = objShapes[s].mesh.indices[index_offset + 0];
+                            tinyobj::real_t p0x = objAttrib.vertices[3*idx2.vertex_index+0];
+                            tinyobj::real_t p0y = objAttrib.vertices[3*idx2.vertex_index+1];
+                            tinyobj::real_t p0z = objAttrib.vertices[3*idx2.vertex_index+2];
+
+                            idx2 = objShapes[s].mesh.indices[index_offset + 1];
+                            tinyobj::real_t p1x = objAttrib.vertices[3*idx2.vertex_index+0];
+                            tinyobj::real_t p1y = objAttrib.vertices[3*idx2.vertex_index+1];
+                            tinyobj::real_t p1z = objAttrib.vertices[3*idx2.vertex_index+2];
+
+                            idx2 = objShapes[s].mesh.indices[index_offset + 2];
+                            tinyobj::real_t p2x = objAttrib.vertices[3*idx2.vertex_index+0];
+                            tinyobj::real_t p2y = objAttrib.vertices[3*idx2.vertex_index+1];
+                            tinyobj::real_t p2z = objAttrib.vertices[3*idx2.vertex_index+2];
+
+                            float ux = p1x-p0x;
+                            float uy = p1y-p0y;
+                            float uz = p1z-p0z;
+
+                            float vx = p2x-p0x;
+                            float vy = p2y-p0y;
+                            float vz = p2z-p0z;
+
+                            glm::vec3 normalVec = glm::normalize(glm::cross(glm::vec3(ux, uy, uz), glm::vec3(vx, vy, vz)));
+
+                            nx = normalVec.x;
+                            ny = normalVec.y;
+                            nz = normalVec.z;
+                        }
+
+                        float tnx = 0.0;
+                        float tny = 0.0;
+                        float tnz = 1.0;
+
+						float vertex[VERTEX_STRIDE] = {vx,vy,vz,tx,ty,nx,ny,nz, tnx, tny, tnz};
+						vertexData.insert(vertexData.end(),vertex,vertex+VERTEX_STRIDE);  // Maybe should be vertexData.insert(vertex.end(),std::begin(vertex),std::end(vertex+)) ie make vertex a vector.
+
+                        // Optional: vertex colors.
 						// tinyobj::real_t red = objAttrib.colors[3*idx.vertex_index+0];
 						// tinyobj::real_t green = objAttrib.colors[3*idx.vertex_index+1];
 						// tinyobj::real_t blue = objAttrib.colors[3*idx.vertex_index+2];
 					}
+                    */
+
 					index_offset += fv;
 
 					// Per-face material.
@@ -453,7 +591,7 @@ void loadModel(string fileName)
 			int numAttribs = vertexData.size();
 			models[childModelID].modelData = new float[numAttribs];
 			std::copy(vertexData.begin(),vertexData.end(),models[childModelID].modelData);
-			models[childModelID].numVerts = numAttribs/8;
+			models[childModelID].numVerts = numAttribs/VERTEX_STRIDE;
 			LOG_F(1,"Loaded %d vertices",models[childModelID].numVerts);
 			computeBoundingRadius(childModelID);
 			addChild(childName, curModelID);

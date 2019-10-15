@@ -3,6 +3,7 @@
 #include "RenderingCore.h"
 #include "WindowManager.h"
 #include "Bloom.h"
+#include "Models.h"
 #include "Skybox.h"
 #include "Shadows.h"
 #include "CollisionSystem.h"
@@ -229,7 +230,7 @@ void initHDRBuffers(){
 //------------ PBR Shader ---------
 Shader PBRShader;
 
-GLint posAttrib, texAttrib, normAttrib;
+GLint posAttrib, texAttrib, normAttrib, tangAttrib;
 GLint uniView,uniInvView, uniProj;
 GLuint modelsVAO, modelsVBO;
 
@@ -237,38 +238,41 @@ void initPBRShading(){
 	PBRShader = Shader("shaders/vertexTex.glsl", "shaders/fragmentTex.glsl");
 	PBRShader.init();
 
-	//Build a Vertex Array Object. This stores the VBO to shader attribute mappings
-	glGenVertexArrays(1, &modelsVAO); //Create a VAO
-	glBindVertexArray(modelsVAO); //Bind the above created VAO to the current context
+	// Build a Vertex Array Object. This stores the VBO to shader attribute mappings.
+	glGenVertexArrays(1, &modelsVAO);  // Create a VAO.
+	glBindVertexArray(modelsVAO);  // Bind the above created VAO to the current context.
 
-	//We'll store all our models in one VBO //TODO: We should compare to 1 VBO/model?
+	// We'll store all our models in one VBO //TODO: We should compare to 1 VBO/model?
 	glGenBuffers(1, &modelsVBO);
 	loadAllModelsTo1VBO(modelsVBO);
 
-	//Tell OpenGL how to set fragment shader input
+	// Tell OpenGL how to set fragment shader input.
 	posAttrib = glGetAttribLocation(PBRShader.ID, "position");
-	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), 0);
-	  //Attribute, vals/attrib., type, normalized?, stride, offset
-	  //Binds to VBO current GL_ARRAY_BUFFER
+	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, VERTEX_STRIDE*sizeof(float), 0);
 	glEnableVertexAttribArray(posAttrib);
+	// Attribute, vals/attrib., type, normalized?, stride, offset.
+	// Binds to VBO current GL_ARRAY_BUFFER.
 
-	//GLint colAttrib = glGetAttribLocation(phongShader, "inColor");
-	//glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(3*sizeof(float)));
-	//glEnableVertexAttribArray(colAttrib);
+	// GLint colAttrib = glGetAttribLocation(phongShader, "inColor");
+	// glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, VERTEX_STRIDE*sizeof(float), (void*)(3*sizeof(float)));
+	// glEnableVertexAttribArray(colAttrib);
 
 	texAttrib = glGetAttribLocation(PBRShader.ID, "inTexcoord");
+	glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, VERTEX_STRIDE*sizeof(float), (void*)(3*sizeof(float)));
 	glEnableVertexAttribArray(texAttrib);
-	glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(3*sizeof(float)));
 
 	normAttrib = glGetAttribLocation(PBRShader.ID, "inNormal");
-	glVertexAttribPointer(normAttrib, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(5*sizeof(float)));
+	glVertexAttribPointer(normAttrib, 3, GL_FLOAT, GL_FALSE, VERTEX_STRIDE*sizeof(float), (void*)(5*sizeof(float)));
 	glEnableVertexAttribArray(normAttrib);
 
+	// TODO: put tangent vector here. offset = (void*)(8*sizeof(float))
+	tangAttrib = glGetAttribLocation(PBRShader.ID, "inTangent");
+	glVertexAttribPointer(tangAttrib, 3, GL_FLOAT, GL_FALSE, VERTEX_STRIDE*sizeof(float), (void*)(8*sizeof(float)));
+	glEnableVertexAttribArray(tangAttrib);
 
 	uniView = glGetUniformLocation(PBRShader.ID, "view");
-	uniInvView  = glGetUniformLocation(PBRShader.ID, "invView"); //inverse of view matrix
+	uniInvView  = glGetUniformLocation(PBRShader.ID, "invView");  // Inverse of view matrix.
 	uniProj = glGetUniformLocation(PBRShader.ID, "proj");
-
 
 	uniColorID = glGetUniformLocation(PBRShader.ID, "materialColor");
   	uniEmissiveID = glGetUniformLocation(PBRShader.ID, "emissive");
@@ -290,8 +294,7 @@ void initPBRShading(){
 	PBRShader.bind();
 	glUniformMatrix4fv(glGetUniformLocation(PBRShader.ID, "rotSkybox"), 1, GL_FALSE, &curScene.rotSkybox[0][0]);
 
-
-	glBindVertexArray(0); //Unbind the VAO in case we want to create a new one
+	glBindVertexArray(0);  // Unbind the VAO in case we want to create a new one.
 }
 
 void setPBRShaderUniforms(glm::mat4 view, glm::mat4 proj, glm::mat4 lightViewMatrix, glm::mat4 lightProjectionMatrix, bool useShadowMap){

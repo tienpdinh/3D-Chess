@@ -8,6 +8,7 @@ const int maxNumLights = 5;
 uniform int numLights;
 
 in vec3 interpolatedNormal; //TODO: Just call this normal?
+in vec3 interpolatedTangent;
 in vec3 pos;
 in vec3 lightDir[maxNumLights];
 in vec3 lightCol[maxNumLights];

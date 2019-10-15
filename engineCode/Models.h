@@ -1,6 +1,10 @@
 #ifndef MODELS_H
 #define MODELS_H
 
+#ifndef VERTEX_STRIDE
+#define VERTEX_STRIDE 11  // pos.xyz + uv.xy + normal.xyz + tangent.xyz
+#endif  // VERTEX_STRIDE
+
 #include "Materials.h"
 #include "CollisionSystem.h"
 
@@ -8,7 +12,7 @@
 #include <string>
 
 struct Model{
-  std::string name = "**UNNAMED Model**";
+    std::string name = "**UNNAMED Model**";
 	int ID = -1;
 	glm::mat4 transform;
 	glm::mat4 modelOffset; //Just for placing geometry, not passed down the scene graph
@@ -20,9 +24,9 @@ struct Model{
 	float boundingRadius = 0;
 	Collider* collider = nullptr;
 	glm::vec2 textureWrap = glm::vec2(1,1);
-	glm::vec3 modelColor = glm::vec3(1,1,1); //TODO: Perhaps we can replace this simple approach with a more general material blending system?
+	glm::vec3 modelColor = glm::vec3(1,1,1);  // TODO: Perhaps we can replace this simple approach with a more general material blending system?
 	std::vector<Model*> childModel;
-	Model* lodChild = nullptr; //TODO: We assume only one LOD child, do we need to suport more?
+	Model* lodChild = nullptr;  // TODO: We assume only one LOD child, do we need to suport more?
 	float lodDist = 5;
 };
 
@@ -33,7 +37,7 @@ void loadAllModelsTo1VBO(unsigned int vbo);
 int addModel(string modelName);
 void addChild(string childName, int curModelID);
 
-//Global Model List
+// Global Model List
 extern Model models[10000];
 extern int numModels;
 
