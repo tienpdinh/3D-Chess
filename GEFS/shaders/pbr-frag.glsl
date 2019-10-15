@@ -7,7 +7,7 @@ const int maxNumLights = 5;
 
 uniform int numLights;
 
-in vec3 interpolatedNormal; //TODO: Just call this normal?
+in vec3 interpolatedNormal;  // TODO: Just call this normal?
 in vec3 interpolatedTangent;
 in vec3 pos;
 in vec3 lightDir[maxNumLights];
@@ -118,18 +118,24 @@ void main()
         color = materialColor*texture(colorTexture, texcoord*textureScaleing).rgb;
     }
 
-    /*
-    // Debug.
+    vec3 normal = normalize(interpolatedNormal);
     if (useNormalMap == 1)
     {
-        color = texture(normalMapTexture, texcoord*textureScaleing).rgb;
+        vec3 t = normalize(interpolatedTangent);
+        vec3 n = normalize(interpolatedNormal);
+        vec3 b = normalize(cross(t, n));
+        vec3 vn = texture(normalMapTexture, texcoord*textureScaleing).rgb * 2 - 1;
+        // TBN is world->tangent.
+        // TBN^-1 is tangent->world.
+        // mat3 tbnInv = transpose(mat3(t, b, n));
+        mat3 tbn = mat3(t,b,n);
+        normal = normalize(tbn*vn);
     }
-    */
 
-    // TODO: this is not correct. We need to offset by the tangent and bitangent vectors.
-    // vec3 normal = normalize(interpolatedNormal + (texture(normalMapTexture, texcoord*textureScaleing).rgb*2-1));
+    // convert tangent space normals to WS
 
-    vec3 normal = normalize(interpolatedNormal);
+
+
     vec3 ambC = color*ambientLight;
     vec3 oColor = ambC+emissive;
 
@@ -222,6 +228,6 @@ void main()
         brightColor = vec4(0.0, 0.0, 0.0, 1.0);
     }
 
-    // outColor = vec4(interpolatedNormal, 1);
-    outColor = vec4(interpolatedTangent, 1);
+    // outColor = vec4(texcoord, 0, 1);
+    // outColor = vec4(interpolatedTangent, 1);
 }

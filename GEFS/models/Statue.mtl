@@ -1,0 +1,14 @@
+# Blender MTL File: 'None'
+# Material Count: 1
+
+newmtl Material_0
+Ns 1.000000
+Ka 1.000000 1.000000 1.000000
+Kd 1.00000 1.00000 1.00000
+Ks 1.000000 1.000000 1.000000
+Ke 0.0 0.0 0.0
+Ni 1.450000
+d 1.000000
+illum 2
+map_Bump Statue_Normal.jpg
+map_Kd Statue_Albedo.jpg

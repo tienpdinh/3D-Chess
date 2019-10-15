@@ -64,5 +64,11 @@ material [Clay]
 objModel = Floor_Modular.obj
 
 [Dino]
+scale 0.25
+objModel = Statue.obj
+material [Clay]
+material [StatueMat] 
+
+[Dino2]
 scale .1
 objModel = Trex2.obj #Triceratops

@@ -71,3 +71,10 @@ emissive = 10 10 10
 [Red Light]
 color = 1 1 1
 emissive = 50 3 2
+
+[StatueMat]
+texture = Statue_Albedo.jpg
+color = 1 1 1
+normalMap = Statue_Normal.jpg
+metallic = 0
+smoothness = 0.0
