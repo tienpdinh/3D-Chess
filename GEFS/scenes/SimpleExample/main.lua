@@ -46,6 +46,13 @@ function keyHandler(keys)
   if keys.down then
     translateModel(dinoID,-0.1,0,0)
   end
+  if keys.space then
+      rotYVelModel[dinoID] = 1
+      rotYVelModel[dinoID2] = 1
+  else
+      rotYVelModel[dinoID] = 0
+      rotYVelModel[dinoID2] = 0
+  end
 end
 
 floorID = addModel("FloorPart",0,0,0)
@@ -55,9 +62,9 @@ setModelMaterial(floorID,"Gold")
 
 dinoID = addModel("Dino",0, 0, -0.5)
 animatedModels[dinoID] = true
-rotYVelModel[dinoID] = 1
+rotYVelModel[dinoID] = 0
 
 dinoID2 = addModel("Dino", 0, 0, 0.5)
 setModelMaterial(dinoID2, "Clay")
 animatedModels[dinoID2] = true
-rotYVelModel[dinoID2] = 1
+rotYVelModel[dinoID2] = 0

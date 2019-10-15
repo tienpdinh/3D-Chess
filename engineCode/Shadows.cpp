@@ -1,7 +1,8 @@
 #include "Shadows.h"
 #include "RenderingCore.h"
 #include "GPU-Includes.h"
-#include "Shader.h" 
+#include "Shader.h"
+#include "Models.h"
 
 GLuint shadowVAO, shadowVBO, depthPosAttrib;
 Shader depthShader;
@@ -23,14 +24,14 @@ void initShadowBuffers(){
 	glBindVertexArray(shadowVAO); //Bind the above created VAO to the current context
 
 	GLuint shadowVBO; //We'll store all our models in one VBO //TODO: Compare to 1 VBO/Model
-	glGenBuffers(1, &shadowVBO); 
+	glGenBuffers(1, &shadowVBO);
 	loadAllModelsTo1VBO(shadowVBO);
 
 	depthPosAttrib = glGetAttribLocation(depthShader.ID, "position");
-	glVertexAttribPointer(depthPosAttrib, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), 0);
+	glVertexAttribPointer(depthPosAttrib, 3, GL_FLOAT, GL_FALSE, VERTEX_STRIDE*sizeof(float), 0);
 	glEnableVertexAttribArray(depthPosAttrib);
 
-  glBindVertexArray(0); //Unbind the VAO once we have set all the attributes	
+  glBindVertexArray(0); //Unbind the VAO once we have set all the attributes
 
 	//Create a depthmap FBO
 	glGenFramebuffers(1, &depthMapFBO);
@@ -38,12 +39,12 @@ void initShadowBuffers(){
 	//Generate texture to store depth values
 	glGenTextures(1, &depthMapTex);
 	glBindTexture(GL_TEXTURE_2D, depthMapTex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
 							shadowMapWidth, shadowMapHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER); 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER); 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 	float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);  //Assume anything outside of shadowmap is light (depth = max)
 
@@ -61,14 +62,14 @@ void initShadowBuffers(){
 void drawGeometryShadow(int shaderProgram, Model model, Material material, glm::mat4 transform){
 	//printf("Model: %s, num Children %d\n",model.name.c_str(), model.numChildren);
 	//printf("Material ID: %d\n", model.materialID);
-	if (model.materialID >= 0) material = materials[model.materialID]; 
+	if (model.materialID >= 0) material = materials[model.materialID];
 
 	transform *= model.transform;
-	
+
 	for (int i = 0; i < model.numChildren; i++){
 		drawGeometryShadow(shaderProgram, *model.childModel[i], material, transform);
 	}
-	
+
 	if (!model.modelData) return;
 
 	transform *= model.modelOffset;
@@ -89,7 +90,7 @@ void computeShadowDepthMap(glm::mat4 lightView, glm::mat4 lightProjection, vecto
 	glViewport(0, 0, shadowMapWidth, shadowMapHeight);
 	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
-	
+
 	//TODO: Let the user enable front-face culling for shadows if all models are closed
 	//glEnable(GL_CULL_FACE); glCullFace(GL_FRONT);
 	glm::mat4 I;
@@ -97,7 +98,7 @@ void computeShadowDepthMap(glm::mat4 lightView, glm::mat4 lightProjection, vecto
 	for (size_t i = 0; i < toDrawShadows.size(); i++){
 		//TODO: Allow some objects to not cast shadows @HW
 		glm::vec3 scaleFactor = glm::vec3(models[toDrawShadows[i]->ID].transform*glm::vec4(1,1,1,0));
-		float radiusScale = fmaxf(scaleFactor.x,fmaxf(scaleFactor.y,scaleFactor.z)); //TODO: This won't work with relections (ie negative scales) 
+		float radiusScale = fmaxf(scaleFactor.x,fmaxf(scaleFactor.y,scaleFactor.z)); //TODO: This won't work with relections (ie negative scales)
 		float radius = radiusScale*toDrawShadows[i]->boundingRadius;
 		glm::vec4 pos4 = models[toDrawShadows[i]->ID].transform*glm::vec4(0,0,0,1);
 		glm::vec4 camPos = lightView*pos4;
@@ -127,7 +128,7 @@ void computeShadowDepthMap(glm::mat4 lightView, glm::mat4 lightProjection, vecto
 	glViewport(0, 0, shadowMapWidth, shadowMapHeight);
 	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
-	
+
 	//TODO: Let the user enable front-face culling for shadows if all models are closed
 	//glEnable(GL_CULL_FACE); glCullFace(GL_FRONT);
 	glm::mat4 I;

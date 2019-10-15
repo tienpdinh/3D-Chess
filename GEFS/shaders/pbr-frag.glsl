@@ -119,23 +119,26 @@ void main()
     }
 
     vec3 normal = normalize(interpolatedNormal);
+
+    // If the normal map is defined, get the normals from it.
     if (useNormalMap == 1)
     {
-        vec3 t = normalize(interpolatedTangent);
-        vec3 n = normalize(interpolatedNormal);
-        vec3 b = normalize(cross(t, n));
-        vec3 vn = texture(normalMapTexture, texcoord*textureScaleing).rgb * 2 - 1;
+        // Supposedly it's cheaper to only normalize the end result, and
+        // the effect is very similar...
+        vec3 t = interpolatedTangent;  // normalize(interpolatedTangent);
+        vec3 n = interpolatedNormal;  // normalize(interpolatedNormal);
+        vec3 b = cross(t, n);  // normalize(cross(t, n));
+
+        // Sample normal map and rescale from 0:1 to -1:1.
+        vec3 vn = texture(normalMapTexture, texcoord*textureScaleing).rgb*2.0 - 1.0;
+
+        // Invert the y direction ????????
         vn.y *= -1;
-        // TBN is world->tangent. ???
-        // TBN^-1 is tangent->world. ???
-        mat3 tbnInv = transpose(mat3(t, b, n));
+
+        // TODO: should this be inverted/tranposed ???
         mat3 tbn = mat3(t,b,n);
         normal = normalize(tbn*vn);
     }
-
-    // convert tangent space normals to WS
-
-
 
     vec3 ambC = color*ambientLight;
     vec3 oColor = ambC+emissive;
@@ -230,5 +233,5 @@ void main()
     }
 
     // outColor = vec4(texcoord, 0, 1);
-    // outColor = vec4(interpolatedTangent, 1);
+    // outColor = vec4(normal, 1);
 }
