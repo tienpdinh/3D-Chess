@@ -125,9 +125,10 @@ void main()
         vec3 n = normalize(interpolatedNormal);
         vec3 b = normalize(cross(t, n));
         vec3 vn = texture(normalMapTexture, texcoord*textureScaleing).rgb * 2 - 1;
-        // TBN is world->tangent.
-        // TBN^-1 is tangent->world.
-        // mat3 tbnInv = transpose(mat3(t, b, n));
+        vn.y *= -1;
+        // TBN is world->tangent. ???
+        // TBN^-1 is tangent->world. ???
+        mat3 tbnInv = transpose(mat3(t, b, n));
         mat3 tbn = mat3(t,b,n);
         normal = normalize(tbn*vn);
     }

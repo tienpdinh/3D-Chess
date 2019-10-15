@@ -53,6 +53,11 @@ placeModel(floorID,0,-.02,0)
 scaleModel(floorID,3,1,3)
 setModelMaterial(floorID,"Gold")
 
-dinoID = addModel("Dino",0,0,-.15)
+dinoID = addModel("Dino",0, 0, -0.5)
 animatedModels[dinoID] = true
 rotYVelModel[dinoID] = 1
+
+dinoID2 = addModel("Dino", 0, 0, 0.5)
+setModelMaterial(dinoID2, "Clay")
+animatedModels[dinoID2] = true
+rotYVelModel[dinoID2] = 1
