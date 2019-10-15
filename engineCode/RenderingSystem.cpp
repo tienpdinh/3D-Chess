@@ -21,9 +21,9 @@ int sphereVerts; //Number of verts in the colliders spheres
 
 int totalTriangles = 0;
 
-GLint uniColorID, uniEmissiveID, uniUseTextureID, modelColorID;
+GLint uniColorID, uniEmissiveID, uniUseTextureID, uniUseNormalMapId, modelColorID;
 GLint metallicID, roughnessID, iorID, reflectivenessID;
-GLint uniModelMatrix, colorTextureID, texScaleID, biasID, pcfID;
+GLint uniModelMatrix, colorTextureID, normalMapTextureId, texScaleID, biasID, pcfID;
 GLint xxxID;
 
 GLuint colliderVAO; //Build a Vertex Array Object for the collider
@@ -38,8 +38,8 @@ void drawGeometry(Model model, int materialID, glm::mat4 transform, float camera
 
 	Material material;
 	if (materialID < 0){
-		materialID = model.materialID; 
-	} 
+		materialID = model.materialID;
+	}
 	if (materialID >= 0){
 		material = materials[materialID]; // Maybe should be a pointer
 	}
@@ -48,7 +48,7 @@ void drawGeometry(Model model, int materialID, glm::mat4 transform, float camera
 	transform *= model.transform;
 	modelColor *= model.modelColor;
 	//textureWrap *= model.textureWrap; //TODO: Where best to apply textureWrap transform?
-	
+
 	if (cameraDist > model.lodDist && model.lodChild){
 		drawGeometry(*model.lodChild, materialID, transform, cameraDist,textureWrap, modelColor);
 		return;
@@ -58,13 +58,13 @@ void drawGeometry(Model model, int materialID, glm::mat4 transform, float camera
 		drawGeometry(*model.childModel[i], materialID, transform, cameraDist, textureWrap, modelColor);
 	}
 	if (!model.modelData) return;
-	
+
 	transform *= model.modelOffset;
 	textureWrap *= model.textureWrap; //TODO: Should textureWrap stack like this?
 
 	glUniformMatrix4fv(uniModelMatrix, 1, GL_FALSE, glm::value_ptr(transform));
 
-	glUniform1i(uniUseTextureID, material.textureID >= 0); //textureID of -1 --> no texture
+	glUniform1i(uniUseTextureID, material.textureID >= 0);  // textureID of -1 --> no texture
 
 	if (material.textureID >= 0){
 		glActiveTexture(GL_TEXTURE0);  //Set texture 0 as active texture
@@ -73,13 +73,22 @@ void drawGeometry(Model model, int materialID, glm::mat4 transform, float camera
 		glUniform2fv(texScaleID, 1, glm::value_ptr(textureWrap));
 	}
 
+	glUniform1i(uniUseNormalMapId, material.normalMapId >= 0);  // normalMapId of -1 --> no normal map.
+
+	if (material.normalMapId >= 0){
+		glActiveTexture(GL_TEXTURE1);  // Set texture 1 as active texture.
+		glBindTexture(GL_TEXTURE_2D, tex[material.normalMapId]);  // Load bound texture.
+		glUniform1i(normalMapTextureId, 1);  // Use the texture we just loaded (texture 1) as normal map.
+		glUniform2fv(texScaleID, 1, glm::value_ptr(textureWrap));
+	}
+
 	glUniform1i(xxxID, xxx);
 
 	//printf("%f\n",model.modelColor[0]);
 	glUniform3fv(modelColorID, 1, glm::value_ptr(modelColor*model.modelColor)); //multiply parent's color by your own
 
-	glUniform1f(metallicID, material.metallic); 
-	glUniform1f(roughnessID, material.roughness); 
+	glUniform1f(metallicID, material.metallic);
+	glUniform1f(roughnessID, material.roughness);
 	glUniform1f(iorID, material.ior);
 	glUniform1f(reflectivenessID, material.reflectiveness);
 	glUniform3fv(uniColorID, 1, glm::value_ptr(material.col));
@@ -106,12 +115,12 @@ void drawColliderGeometry(){ //, Material material //TODO: Take in a material fo
 
 	glUniform3fv(modelColorID, 1, glm::value_ptr(baseColor)); //multiply parent's color by your own
 
-	glUniform1f(metallicID, 0); 
-	glUniform1f(roughnessID, 0); 
+	glUniform1f(metallicID, 0);
+	glUniform1f(roughnessID, 0);
 	glUniform1f(iorID, 1);
 	glUniform3fv(uniColorID, 1, glm::value_ptr(modelColor));
 	glUniform3fv(uniEmissiveID, 1, glm::value_ptr(modelColor));
-	
+
 	//TODO: Maybe loop through each layer and color by layer instead?
 	for (size_t i = 0; i < collisionModels.size(); i++){
 		Collider* c = models[collisionModels[i]].collider;
@@ -120,7 +129,7 @@ void drawColliderGeometry(){ //, Material material //TODO: Take in a material fo
 
 		glm::mat4 colliderTans = glm::translate(glm::mat4(), c->globalPos);
 		colliderTans = glm::scale(colliderTans, glm::vec3(c->r,c->r,c->r));
-		
+
 		glUniformMatrix4fv(uniModelMatrix, 1, GL_FALSE, glm::value_ptr(colliderTans));
 		glDrawArrays(GL_TRIANGLES, 0, sphereVerts/3); //(Primitive Type, Start Vertex, End Vertex) //Draw only 1st object
 	}
@@ -137,14 +146,14 @@ void loadTexturesToGPU(){
     LOG_F(1,"Loading Texture %s",textures[i].c_str());
     unsigned char *pixelData = stbi_load(textures[i].c_str(), &width, &height, &nrChannels, STBI_rgb);
 		CHECK_NOTNULL_F(pixelData,"Fail to load model texture: %s",textures[i].c_str()); //TODO: Is there some way to get the error from STB image?
-    
+
 		//Load the texture into memory
     glGenTextures(1, &tex[i]);
 		glBindTexture(GL_TEXTURE_2D, tex[i]);
 		glTexStorage2D(GL_TEXTURE_2D, 2, GL_RGBA8, width, height); //Mipmap levels
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
 		glGenerateMipmap(GL_TEXTURE_2D);
-    
+
     //What to do outside 0-1 range
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -152,7 +161,7 @@ void loadTexturesToGPU(){
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); //TODO: Does this look better? I'm not sure
     //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    
+
     stbi_image_free(pixelData);
 	}
 }
@@ -176,7 +185,7 @@ void initHDRBuffers(){
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, screenWidth, screenHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, baseTex, 0);
-	
+
 	glGenTextures(1, &brightText);
 	glBindTexture(GL_TEXTURE_2D, brightText);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -192,13 +201,13 @@ void initHDRBuffers(){
 	glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, screenWidth, screenHeight);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
-	//Specify which color attachments we'll use (of this framebuffer) for rendering (both regular and bright pixels) 
+	//Specify which color attachments we'll use (of this framebuffer) for rendering (both regular and bright pixels)
 	unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 	glDrawBuffers(2, attachments);
 	// finally check if framebuffer is complete
 	CHECK_F(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer not complete!");
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	
+
 	// A pair of ping-pong framebuffers for extended blurring
 	glGenFramebuffers(2, pingpongFBO);
 	glGenTextures(2, pingpongColorbuffers);
@@ -233,20 +242,20 @@ void initPBRShading(){
 	glBindVertexArray(modelsVAO); //Bind the above created VAO to the current context
 
 	//We'll store all our models in one VBO //TODO: We should compare to 1 VBO/model?
-	glGenBuffers(1, &modelsVBO); 
+	glGenBuffers(1, &modelsVBO);
 	loadAllModelsTo1VBO(modelsVBO);
 
-	//Tell OpenGL how to set fragment shader input 
+	//Tell OpenGL how to set fragment shader input
 	posAttrib = glGetAttribLocation(PBRShader.ID, "position");
 	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), 0);
 	  //Attribute, vals/attrib., type, normalized?, stride, offset
-	  //Binds to VBO current GL_ARRAY_BUFFER 
+	  //Binds to VBO current GL_ARRAY_BUFFER
 	glEnableVertexAttribArray(posAttrib);
-	
+
 	//GLint colAttrib = glGetAttribLocation(phongShader, "inColor");
 	//glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(3*sizeof(float)));
 	//glEnableVertexAttribArray(colAttrib);
-	
+
 	texAttrib = glGetAttribLocation(PBRShader.ID, "inTexcoord");
 	glEnableVertexAttribArray(texAttrib);
 	glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(3*sizeof(float)));
@@ -254,7 +263,7 @@ void initPBRShading(){
 	normAttrib = glGetAttribLocation(PBRShader.ID, "inNormal");
 	glVertexAttribPointer(normAttrib, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(5*sizeof(float)));
 	glEnableVertexAttribArray(normAttrib);
-	
+
 
 	uniView = glGetUniformLocation(PBRShader.ID, "view");
 	uniInvView  = glGetUniformLocation(PBRShader.ID, "invView"); //inverse of view matrix
@@ -262,8 +271,9 @@ void initPBRShading(){
 
 
 	uniColorID = glGetUniformLocation(PBRShader.ID, "materialColor");
-  uniEmissiveID = glGetUniformLocation(PBRShader.ID, "emissive");
-  uniUseTextureID = glGetUniformLocation(PBRShader.ID, "useTexture");
+  	uniEmissiveID = glGetUniformLocation(PBRShader.ID, "emissive");
+  	uniUseTextureID = glGetUniformLocation(PBRShader.ID, "useTexture");
+	uniUseNormalMapId = glGetUniformLocation(PBRShader.ID, "useNormalMap");
 	modelColorID = glGetUniformLocation(PBRShader.ID, "modelColor");
 	metallicID = glGetUniformLocation(PBRShader.ID, "metallic");
 	roughnessID = glGetUniformLocation(PBRShader.ID, "roughness");
@@ -273,6 +283,7 @@ void initPBRShading(){
 	reflectivenessID = glGetUniformLocation(PBRShader.ID, "reflectiveness");
 	uniModelMatrix = glGetUniformLocation(PBRShader.ID, "model");
 	colorTextureID = glGetUniformLocation(PBRShader.ID, "colorTexture");
+	normalMapTextureId = glGetUniformLocation(PBRShader.ID, "normalMapTexture");
 	texScaleID = glGetUniformLocation(PBRShader.ID, "textureScaleing");
 	xxxID = glGetUniformLocation(PBRShader.ID, "xxx");
 
@@ -300,12 +311,12 @@ void setPBRShaderUniforms(glm::mat4 view, glm::mat4 proj, glm::mat4 lightViewMat
 	glUniform1i(pcfID, curScene.shadowLight.pcfWidth);
 
 	glUniform3fv(glGetUniformLocation(PBRShader.ID, "ambientLight"), 1, glm::value_ptr(curScene.ambientLight));
-	
+
 	glUniformMatrix4fv(glGetUniformLocation(PBRShader.ID, "shadowView"), 1, GL_FALSE, &lightViewMatrix[0][0]);
 	glUniformMatrix4fv(glGetUniformLocation(PBRShader.ID, "shadowProj"), 1, GL_FALSE, &lightProjectionMatrix[0][0]);
 
 	glActiveTexture(GL_TEXTURE1); //Texture 1 in the PBR Shader is the shadow map
-	glBindTexture(GL_TEXTURE_2D, depthMapTex); 
+	glBindTexture(GL_TEXTURE_2D, depthMapTex);
 	glUniform1i(glGetUniformLocation(PBRShader.ID, "shadowMap"), 1);
 
 	glUniform1i(glGetUniformLocation(PBRShader.ID, "useShadow"), useShadowMap && curScene.shadowLight.castShadow);
@@ -322,7 +333,7 @@ int createColliderSphere(int sphereVbo) {
 	std::vector<float> verts;
 
 	for (int i = 0; i <= stacks; ++i){
-			float V = (float)i / (float)stacks; 
+			float V = (float)i / (float)stacks;
 			float phi = V * PI;
 
 			for (int j = 0; j <= slices; ++j){
@@ -373,9 +384,9 @@ void initColliderGeometry(){
 
 	GLuint colliderVBO;
   glGenBuffers(1, &colliderVBO);  //Create 1 buffer called vbo
-  glBindBuffer(GL_ARRAY_BUFFER, colliderVBO); //(Only one buffer can be bound at a time) 
+  glBindBuffer(GL_ARRAY_BUFFER, colliderVBO); //(Only one buffer can be bound at a time)
 
-	//Tell OpenGL how to set fragment shader input 
+	//Tell OpenGL how to set fragment shader input
 	//posAttrib = glGetAttribLocation(PBRShader.ID, "position");
 	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), 0);
 	glEnableVertexAttribArray(posAttrib);
@@ -392,7 +403,7 @@ void initColliderGeometry(){
 void updatePRBShaderSkybox(){
 	glActiveTexture(GL_TEXTURE5); //TODO: List what the first 5 textures are used for
 	glUniform1i(glGetUniformLocation(PBRShader.ID, "skybox"),5);
-	
+
 	glUniform1i(glGetUniformLocation(PBRShader.ID, "useSkyColor"), curScene.singleSkyColor);
 	if (curScene.singleSkyColor){
 		glUniform3fv(glGetUniformLocation(PBRShader.ID, "skyColor"), 1, glm::value_ptr(curScene.skyColor));
@@ -457,7 +468,7 @@ void drawSceneGeometry(std::vector<Model*> toDraw, glm::mat4 viewMat, float FOVy
 	for (size_t i = 0; i < toDraw.size(); i++){
 		//printf("%s - %d\n",toDraw[i]->name.c_str(),i);
 		vec3 scaleFactor = vec3(models[toDraw[i]->ID].transform*glm::vec4(1,1,1,0));
-		float radiusScale = fmaxf(scaleFactor.x,fmaxf(scaleFactor.y,scaleFactor.z)); //TODO: This won't work with relections (ie negative scales) 
+		float radiusScale = fmaxf(scaleFactor.x,fmaxf(scaleFactor.y,scaleFactor.z)); //TODO: This won't work with relections (ie negative scales)
 		float radius = radiusScale*toDraw[i]->boundingRadius;
 		vec4 objPos = models[toDraw[i]->ID].transform*glm::vec4(0,0,0,1);
 		vec4 viewPos = viewMat*objPos;
@@ -497,14 +508,14 @@ void drawCompositeImage(bool useBloom){
 	compositeShader.bind();
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, brightText); 
+	glBindTexture(GL_TEXTURE_2D, brightText);
 	glUniform1i(glGetUniformLocation(compositeShader.ID, "texBright"), 0);
 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, baseTex);  //baseTex  depthMapTex
 	glUniform1i(glGetUniformLocation(compositeShader.ID, "texDim"), 1);
 
-	if (useBloom){  
+	if (useBloom){
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[!horizontal]); //pass in blured texture
 		bloomLevel = 1;
@@ -525,10 +536,10 @@ void createFullscreenQuad(){
 
 	GLuint quadVBO;
   glGenBuffers(1, &quadVBO);  //Create 1 buffer called vbo
-  glBindBuffer(GL_ARRAY_BUFFER, quadVBO); //(Only one buffer can be bound at a time) 
+  glBindBuffer(GL_ARRAY_BUFFER, quadVBO); //(Only one buffer can be bound at a time)
 
 	glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad, GL_STATIC_DRAW);
-  
+
   GLint quadPosAttrib = glGetAttribLocation(compositeShader.ID, "position");
   glVertexAttribPointer(quadPosAttrib, 2, GL_FLOAT, GL_FALSE, 4*sizeof(float), 0);
   //(above params: Attribute, vals/attrib., type, normalized?, stride, offset)
@@ -536,7 +547,7 @@ void createFullscreenQuad(){
 
 	GLint quadTexAttrib = glGetAttribLocation(compositeShader.ID, "texcoord");
 	glVertexAttribPointer(quadTexAttrib, 2, GL_FLOAT, GL_FALSE, 4*sizeof(float), (void*)(2*sizeof(float)));
-	glEnableVertexAttribArray(quadTexAttrib); 
+	glEnableVertexAttribArray(quadTexAttrib);
 
   glBindVertexArray(0); //Unbind the VAO once we have set all the attributes
 }

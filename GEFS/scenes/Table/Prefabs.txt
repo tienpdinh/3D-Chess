@@ -9,7 +9,7 @@ flatModel = cube.txt
 translate 0 0.25 0
 scalexyz 0.1 1.1 0.1
 textureWrap 2 1
-flatModel = cube.txt 
+flatModel = cube.txt
 
 [Leg 1]
 translate -1 0 -1
@@ -28,7 +28,7 @@ translate 1 0 1
 child [Table Leg]
 
 [Table]
-material [Dark Polished Wood]
+material [Brick]
 child [Tabletop]
 child [Leg 1]
 child [Leg 2]
