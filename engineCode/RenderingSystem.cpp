@@ -235,7 +235,7 @@ GLint uniView,uniInvView, uniProj;
 GLuint modelsVAO, modelsVBO;
 
 void initPBRShading(){
-	PBRShader = Shader("shaders/vertexTex.glsl", "shaders/fragmentTex.glsl");
+	PBRShader = Shader("shaders/pbr-vert.glsl", "shaders/pbr-frag.glsl");
 	PBRShader.init();
 
 	// Build a Vertex Array Object. This stores the VBO to shader attribute mappings.

@@ -21,12 +21,12 @@ function frameUpdate(dt)
   for modelID,v in pairs(animatedModels) do
     --print("ID",modelID)
     local vel = velModel[modelID]
-    if vel then 
+    if vel then
       translateModel(modelID,dt*vel[1],dt*vel[2],dt*vel[3])
     end
 
     local rotYvel = rotYVelModel[modelID]
-    if rotYvel then 
+    if rotYvel then
       rotateModel(modelID,rotYvel*dt, 0, 1, 0)
     end
 
@@ -48,15 +48,11 @@ function keyHandler(keys)
   end
 end
 
-teapotID = addModel("Teapot",0,0,0)
-setModelMaterial(teapotID,"Shiny Red Plastic")
---setModelMaterial(teapotID,"Steel")
-animatedModels[teapotID] = true
-rotYVelModel[teapotID] = 1
-
 floorID = addModel("FloorPart",0,0,0)
 placeModel(floorID,0,-.02,0)
 scaleModel(floorID,3,1,3)
 setModelMaterial(floorID,"Gold")
 
 dinoID = addModel("Dino",0,0,-.15)
+animatedModels[dinoID] = true
+rotYVelModel[dinoID] = 1
