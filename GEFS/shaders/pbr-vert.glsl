@@ -53,7 +53,10 @@ void main() {
   }
   vec4 norm4 = transpose(inverse(view*model)) * vec4(inNormal,0.0);
   interpolatedNormal = normalize(norm4.xyz);
-  interpolatedTangent = inTangent;
+
+  vec4 tang4 = transpose(inverse(view*model)) * vec4(inTangent, 0.0);
+  interpolatedTangent = normalize(tang4.xyz);  // Correct?
+
   texcoord = inTexcoord;
 
   shadowCoord = shadowProj * shadowView * model * vec4(position,1);

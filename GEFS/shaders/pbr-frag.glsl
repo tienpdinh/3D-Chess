@@ -222,5 +222,6 @@ void main()
         brightColor = vec4(0.0, 0.0, 0.0, 1.0);
     }
 
+    // outColor = vec4(interpolatedNormal, 1);
     outColor = vec4(interpolatedTangent, 1);
 }
