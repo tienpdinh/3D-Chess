@@ -422,6 +422,7 @@ void loadModel(string fileName)
                     glm::vec3 triangleNormals[3];
                     glm::vec3 triangleTangents[3];
 
+                    bool triangleHasTexcoords = true;
                     bool triangleHasNormals = true;
 
                     // Fill the triangle positions, texture coordinates, and normals (if present).
@@ -436,15 +437,14 @@ void loadModel(string fileName)
                         trianglePos[v] = glm::vec3(vx, vy, vz);
 
                         // Texture Coordinates.
-                        tinyobj::real_t tx = -1;
-                        tinyobj::real_t ty = -1;
-                        if (objAttrib.texcoords.size() > 0 && idx.texcoord_index > 0)
+                        bool vertexHasTexCoords = (objAttrib.texcoords.size() > 0 && idx.texcoord_index > 0);
+                        triangleHasTexcoords &= vertexHasTexCoords;
+                        if (vertexHasTexCoords)
                         {
-                            tx = objAttrib.texcoords[2*idx.texcoord_index+0];
-                            ty = objAttrib.texcoords[2*idx.texcoord_index+1];
+                            tinyobj::real_t tx = objAttrib.texcoords[2*idx.texcoord_index+0];
+                            tinyobj::real_t ty = objAttrib.texcoords[2*idx.texcoord_index+1];
+                            triangleTexcoords[v] = glm::vec2(tx, ty);
                         }
-                        triangleTexcoords[v] = glm::vec2(tx, ty);
-                        // TODO: What to do if there is no texture coordinates?
 
                         // Normals.
                         bool vertexHasNormal = (objAttrib.normals.size() > 0 && idx.normal_index >= 0);
@@ -458,12 +458,20 @@ void loadModel(string fileName)
                         }
                     }
 
+                    // If tex coord are not present, generate dummy ones.
+                    if (!triangleHasTexcoords)
+                    {
+                        triangleTexcoords[0] = glm::vec2(-1,-1);
+                        triangleTexcoords[1] = glm::vec2(-1,-1);
+                        triangleTexcoords[2] = glm::vec2(-1,-1);
+                    }
+
                     // If normals are not present, recalculate them.
+                    glm::vec3 e1 = trianglePos[1] - trianglePos[0];
+                    glm::vec3 e2 = trianglePos[2] - trianglePos[0];
                     if (!triangleHasNormals)
                     {
-                        glm::vec3 u = trianglePos[1] - trianglePos[0];
-                        glm::vec3 v = trianglePos[2] - trianglePos[0];
-                        glm::vec3 n = glm::normalize(glm::cross(u, v));
+                        glm::vec3 n = glm::normalize(glm::cross(e1, e2));
 
                         triangleNormals[0] = n;
                         triangleNormals[1] = n;
@@ -471,9 +479,20 @@ void loadModel(string fileName)
                     }
 
                     // Calculate tangent vectors.
-                    triangleTangents[0] = glm::vec3(0,0,0);
-                    triangleTangents[1] = glm::vec3(0,0,0);
-                    triangleTangents[2] = glm::vec3(0,0,0);
+                    // source: https://www.marti.works/calculating-tangents-for-your-mesh/
+                    glm::vec2 uv1 = triangleTexcoords[1] - triangleTexcoords[0];
+                    glm::vec2 uv2 = triangleTexcoords[2] - triangleTexcoords[0];
+                    float r = 1.0f / (uv1.x * uv2.y - uv1.y * uv2.x);
+                    glm::vec3 t = glm::vec3(
+                        ((e1.x * uv2.y) - (e2.x * uv1.y)) * r,
+                        ((e1.y * uv2.y) - (e2.y * uv1.y)) * r,
+                        ((e1.z * uv2.y) - (e2.z * uv1.y)) * r
+                    );
+                    t = glm::normalize(t);
+                    // TODO: implement part (2) from source
+                    triangleTangents[0] = t;
+                    triangleTangents[1] = t;
+                    triangleTangents[2] = t;
 
                     // Upload triangle to modelData.
                     for (size_t v = 0; v < fv; v++)
