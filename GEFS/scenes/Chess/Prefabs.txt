@@ -4,21 +4,27 @@ modelDir = ./models/
 
 [Pawn]
 objModel = ChessPieces_Pawn.obj
+scale 1.5
 
 [Rook]
 objModel = ChessPieces_Rook.obj
+scale 1.5
 
 [Knight]
 objModel = ChessPieces_Knight.obj
+scale 1.5
 
 [Bishop]
 objModel = ChessPieces_Bishop.obj
+scale 1.5
 
 [Queen]
 objModel = ChessPieces_Queen.obj
+scale 1.5
 
 [King]
 objModel = ChessPieces_King.obj
+scale 1.5
 
 # The dark colored versions.
 

@@ -81,11 +81,11 @@ void drawGeometry(Model model, int materialID, glm::mat4 transform, float camera
 		glUniform2fv(texScaleID, 1, glm::value_ptr(textureWrap));
 	}
 
-	glUniform1i(uniUseRoughnessMapID, material.roughnessMapID >= 0);  // roughnessMapID of -1 --> no normal map.
+	glUniform1i(uniUseRoughnessMapID, material.roughnessMapID >= 0);  // roughnessMapID of -1 --> no roughness map.
 	if (material.roughnessMapID >= 0){
-		glActiveTexture(GL_TEXTURE1);  // Set texture 1 as active texture.
+		glActiveTexture(GL_TEXTURE2);  // Set texture 2 as active texture.
 		glBindTexture(GL_TEXTURE_2D, tex[material.roughnessMapID]);  // Load bound texture.
-		glUniform1i(roughnessMapTextureID, 1);  // Use the texture we just loaded (texture 1) as normal map.
+		glUniform1i(roughnessMapTextureID, 2);  // Use the texture we just loaded (texture 1) as roughness map.
 		glUniform2fv(texScaleID, 1, glm::value_ptr(textureWrap));
 	}
 
