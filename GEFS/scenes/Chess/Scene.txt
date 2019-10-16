@@ -2,17 +2,17 @@
 
 # skybox = ./SkyBoxes/Teide/
 # skyboxUp = 0 1 0   // Default is y up
-skyColor = 0.8 0.8 0.8
+skyColor = 1 1 1
 
 CameraFOV = 50
 
-ambientLight = 0.3 0.3 0.3
+ambientLight = 1 1 1
 
 [Sun]
 lightDir = -0.3 -1.0 0.4
 lightDist = 20
-lightCol = 0.9 0.9 1
-lightIntensity = 4
+lightCol = 1 1 1
+lightIntensity = 1
 lightCastShadow  // Only the one light can cast a shadow.
 shadowBias = 0.004
 shadowFrustum = -15 15 -15 15 10 40  // left, right, bottom, top, near, far planes.

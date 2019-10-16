@@ -231,6 +231,10 @@ void main()
 
     outColor = vec4(modelColor*oColor, 1.0);
 
+    // outColor = vec4(texcoord, 0, 1);
+    // outColor = vec4(normal, 1);
+
+    // outColor = vec4(color, 1);
 
     float brightness = dot(oColor, vec3(0.3, 0.6, 0.1));
     brightColor = outColor;
@@ -238,7 +242,4 @@ void main()
     {
         brightColor = vec4(0.0, 0.0, 0.0, 1.0);
     }
-
-    // outColor = vec4(texcoord, 0, 1);
-    // outColor = vec4(normal, 1);
 }

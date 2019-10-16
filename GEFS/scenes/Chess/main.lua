@@ -61,10 +61,9 @@ end
 -- ////// --
 
 -- Setup each chess piece.
--- TODO: export each chess piece centered at the origin.
--- Right now it appears tinyObj loader does not take blender origin definitions into account.
-pos = 0
-stride = 0
+-- TODO: apply edge split modifier in blender before exporting to get rid of the smoothed look.
+pos = -1.25
+stride = 0.5
 id1 = addModel("PawnDark", pos, 0, 0)
 pos = pos + stride
 id2 = addModel("RookDark", pos, 0, 0)

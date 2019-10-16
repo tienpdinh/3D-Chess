@@ -4,7 +4,7 @@ textureDir  = ./textures/
 texture = ChessPieces_Dark_Albedo.jpg
 normalMap = ChessPieces_Normal.jpg
 color = 1 1 1
-ior = 1.4
+ior = 2.5
 smoothness = 0.8
 metallic = 0
 
@@ -12,6 +12,6 @@ metallic = 0
 texture = ChessPieces_Light_Albedo.jpg
 normalMap = ChessPieces_Normal.jpg
 color = 1 1 1
-ior = 1.4
+ior = 2.5
 smoothness = 0.8
 metallic = 0
