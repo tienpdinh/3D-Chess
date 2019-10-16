@@ -46,14 +46,14 @@ uniform bool useSkyColor;
 uniform mat4 invView; //inverse of view matrix
 uniform samplerCube skybox;
 uniform mat4 rotSkybox;
-//uniform vec3 cameraPos;
+// uniform vec3 cameraPos;
 uniform float reflectiveness;
 
-//Cook-torrance basics with code
-//http://filmicworlds.com/blog/optimizing-ggx-shaders-with-dotlh/
-//http://www.codinglabs.net/article_physically_based_rendering_cook_torrance.aspx
+// Cook-torrance basics with code
+// http://filmicworlds.com/blog/optimizing-ggx-shaders-with-dotlh/
+// http://www.codinglabs.net/article_physically_based_rendering_cook_torrance.aspx
 
-//float G1V(float dotNV, float k){return 1.f/ (dotNV*(1-k)+k);}
+// float G1V(float dotNV, float k){return 1.f/ (dotNV*(1-k)+k);}
 
 float G1V(float dotNV, float k)
 {
@@ -130,21 +130,25 @@ void main()
     // If the normal map is defined, get the normals from it.
     if (useNormalMap == 1)
     {
+        /*
         // Supposedly it's cheaper to only normalize the end result, and
         // the effect is very similar...
-        vec3 t = interpolatedTangent;  // normalize(interpolatedTangent);
-        vec3 n = interpolatedNormal;  // normalize(interpolatedNormal);
-        vec3 b = cross(t, n);  // normalize(cross(t, n));
+        vec3 t = interpolatedTangent;
+        vec3 n = interpolatedNormal;
+        vec3 b = cross(t, n);
+        */
+
+        vec3 t = normalize(interpolatedTangent);
+        vec3 n = normalize(interpolatedNormal);
+        vec3 b = normalize(cross(t, n));
 
         // Sample normal map and rescale from 0:1 to -1:1.
         vec3 vn = texture(normalMapTexture, texcoord*textureScaleing).rgb*2.0 - 1.0;
 
-        // Invert the y direction ????????
-        vn.y *= -1;
-
-        // TODO: should this be inverted/tranposed ???
-        mat3 tbn = mat3(t,b,n);
-        normal = normalize(tbn*vn);
+        // Convert the normal from tangent space to world space.
+        // Note: because we built our TBN matrix from t,b,n vectors in WS, the
+        // resulting normal vector is in WS.
+        normal = normalize(mat3(t,b,n)*vn);
     }
 
     vec3 ambC = color*ambientLight;
@@ -233,7 +237,6 @@ void main()
 
     // outColor = vec4(texcoord, 0, 1);
     // outColor = vec4(normal, 1);
-
     // outColor = vec4(color, 1);
 
     float brightness = dot(oColor, vec3(0.3, 0.6, 0.1));
