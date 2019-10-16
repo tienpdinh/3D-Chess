@@ -12,7 +12,7 @@ in vec3 interpolatedTangent;
 in vec3 pos;
 in vec3 lightDir[maxNumLights];
 in vec3 lightCol[maxNumLights];
-//TODO: Support point lights
+// TODO: Support point lights
 
 uniform vec3 modelColor;
 uniform vec3 materialColor;
@@ -53,57 +53,64 @@ uniform float reflectiveness;
 //http://filmicworlds.com/blog/optimizing-ggx-shaders-with-dotlh/
 //http://www.codinglabs.net/article_physically_based_rendering_cook_torrance.aspx
 
-
 //float G1V(float dotNV, float k){return 1.f/ (dotNV*(1-k)+k);}
 
-float G1V(float dotNV, float k){return dotNV/ (dotNV*(1-k)+k);}  //Maybe better?
+float G1V(float dotNV, float k)
+{
+    return dotNV/ (dotNV*(1-k)+k);
+}  // Maybe better?
 
-vec3 GGXSpec(vec3 N, vec3 V, vec3 L, float rough, vec3 F0){
-  float alpha = rough*rough;
+vec3 GGXSpec(vec3 N, vec3 V, vec3 L, float rough, vec3 F0)
+{
+    float alpha = rough*rough;
 
-  vec3 H = normalize(V+L);
+    vec3 H = normalize(V+L);
 
-  float dotNL = clamp(dot(N,L),0.0,1.0);
-  float dotNV = clamp(dot(N,V),0.0,1.0);
-  float dotNH = clamp(dot(N,H),0.0,1.0);
-  float dotLH = clamp(dot(L,H),0.0,1.0);
-  float dotVH = clamp(dot(V,H),0.0,1.0);
+    float dotNL = clamp(dot(N,L),0.0,1.0);
+    float dotNV = clamp(dot(N,V),0.0,1.0);
+    float dotNH = clamp(dot(N,H),0.0,1.0);
+    float dotLH = clamp(dot(L,H),0.0,1.0);
+    float dotVH = clamp(dot(V,H),0.0,1.0);
 
-  //D - Geometry distribution term (Microfaset distribution)
-  //How focused the specular reflection is:
-  // More roughness, less focused specular (in limit uniform)
-  // Less roughness, more focused highlight
-  // Approximate idea: same amount of light gets reflected back, on smooth surfaces only a few
-  // parts of the object will be pointing the right direction to reflect, but all nearby points reflect
-  // strongly. On rough surfaces, a larger portion of the object will reflect back, but the reflection
-  // is weaker (http://www.codinglabs.net/public/contents/article_physically_based_rendering_cook_torrance/images/ggx_distribution.jpg)
-  float alphaSqr = alpha*alpha;
-  float pi = 3.141592f;
-  float denom = dotNH * dotNH * (alphaSqr - 1.0) + 1.0;
-  float D = alphaSqr / (pi * denom * denom);
+    // D - Geometry distribution term (Microfaset distribution)
+    // How focused the specular reflection is:
+    // More roughness, less focused specular (in limit uniform)
+    // Less roughness, more focused highlight
+    // Approximate idea: same amount of light gets reflected back, on smooth surfaces only a few
+    // parts of the object will be pointing the right direction to reflect, but all nearby points reflect
+    // strongly. On rough surfaces, a larger portion of the object will reflect back, but the reflection
+    // is weaker (http://www.codinglabs.net/public/contents/article_physically_based_rendering_cook_torrance/images/ggx_distribution.jpg)
 
-  //F - Fresnel
-  //Response from light depends on angle (Schlick approximation)
-  float dotLH5 = pow(1.0f - dotLH,5);
-  vec3 F = F0 + (1.0 - F0)*(dotLH5);
+    float alphaSqr = alpha*alpha;
+    float pi = 3.141592f;
+    float denom = dotNH * dotNH * (alphaSqr - 1.0) + 1.0;
+    float D = alphaSqr / (pi * denom * denom);
 
-  //G - Visibility term ... supposed to capture how microfacets shadow each other
-  //Lights from smooth surfaces get brighter at grazing angles, but not rough surfaces (maybe ???)
-  // This is due to micofacets shadowing each other
-  float k = alpha*.5;
-  float vis = G1V(dotNL,k)*G1V(dotNV,k); //Shlick-style approximation
-  //vis = dotNL*dotNV; //Implicit ... fast to compute, but doesn't depend on roughness =/
-  //vis = min(1.f,min(2*dotNH*dotNV/dotVH,2*dotNH*dotNL/dotVH)); //Original cook-torance formulation
-  //Some hack I found somewhere online...
-    //float k2 = k*k;
-    //float invk2 = 1.0f-k2;
-    //vis = 1/(dotLH*dotLH*invk2+k2);
+    // F - Fresnel.
+    // Response from light depends on angle (Schlick approximation).
+    float dotLH5 = pow(1.0f - dotLH,5);
+    vec3 F = F0 + (1.0 - F0)*(dotLH5);
 
-  if (dotNL <= 0) vis = 0;
+    // G - Visibility term ... supposed to capture how microfacets shadow each other.
+    // Lights from smooth surfaces get brighter at grazing angles, but not rough surfaces (maybe ???).
+    // This is due to micofacets shadowing each other.
+    float k = alpha*.5;
+    float vis = G1V(dotNL,k)*G1V(dotNV,k);  // Shlick-style approximation.
+    // vis = dotNL*dotNV;  // Implicit ... fast to compute, but doesn't depend on roughness =/
+    // vis = min(1.f,min(2*dotNH*dotNV/dotVH,2*dotNH*dotNL/dotVH));  // Original cook-torance formulation.
+    // Some hack I found somewhere online...
+    // float k2 = k*k;
+    // float invk2 = 1.0f-k2;
+    // vis = 1/(dotLH*dotLH*invk2+k2);
 
-  float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
-  vec3 specular = vec3( D * F * vis);  //also a dotNL term here? I'm not sure
-  return specular;
+    if (dotNL <= 0)
+    {
+        vis = 0;
+    }
+
+    float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
+    vec3 specular = vec3( D * F * vis);  // Also a dotNL term here? I'm not sure.
+    return specular;
 }
 
 void main()

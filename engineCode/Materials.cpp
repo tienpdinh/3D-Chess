@@ -173,7 +173,7 @@ void loadMaterials(string fileName)
 
             if (foundTexture >= 0)
             {
-				LOG_F(1,"Reusing existing normal map: %s", textures[foundTexture].c_str());
+				LOG_F(1, "Reusing existing normal map: %s", textures[foundTexture].c_str());
 				materials[curMaterialID].normalMapId = foundTexture;
 			}
 			else
@@ -181,12 +181,12 @@ void loadMaterials(string fileName)
 			    textures[numTextures] = textureName;
 		        materials[curMaterialID].normalMapId = numTextures;
 			    numTextures++;
-				LOG_F(1,"New normal map texture named: %s", textureName.c_str());
+				LOG_F(1, "New normal map texture named: %s", textureName.c_str());
 			}
         }
         else
         {
-            LOG_F(WARNING,"WARNING. Unknow command: %s in file %s",command,fileName.c_str());
+            LOG_F(WARNING,"WARNING. Unknown command: %s in file %s",command,fileName.c_str());
         }
     }
 }

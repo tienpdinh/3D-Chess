@@ -303,17 +303,21 @@ void loadModel(string fileName)
                 {
 					string textureName = modelDir + objMaterials[i].diffuse_texname;
 					int foundTexture = -1;
-					for (int i = 0; i < numTextures; i++){
-						if (textures[i] == textureName){
+					for (int i = 0; i < numTextures; i++)
+                    {
+						if (textures[i] == textureName)
+                        {
 							foundTexture = i;
 							break;
 						}
 					}
-					if (foundTexture >= 0){
+					if (foundTexture >= 0)
+                    {
 						LOG_F(1,"Reusing existing texture: %s", textures[foundTexture].c_str());
 						m.textureID = foundTexture;
 					}
-					else{
+					else
+                    {
 						textures[numTextures] = textureName;
 						m.textureID = numTextures;
 						numTextures++;
@@ -325,17 +329,21 @@ void loadModel(string fileName)
                 {
                     string textureName = modelDir + objMaterials[i].bump_texname;
 					int foundTexture = -1;
-					for (int i = 0; i < numTextures; i++){
-						if (textures[i] == textureName){
+					for (int i = 0; i < numTextures; i++)
+                    {
+						if (textures[i] == textureName)
+                        {
 							foundTexture = i;
 							break;
 						}
 					}
-					if (foundTexture >= 0){
+					if (foundTexture >= 0)
+                    {
 						LOG_F(1,"Reusing existing texture: %s", textures[foundTexture].c_str());
 						m.normalMapId = foundTexture;
 					}
-					else{
+					else
+                    {
 						textures[numTextures] = textureName;
 						m.normalMapId = numTextures;
 						numTextures++;
