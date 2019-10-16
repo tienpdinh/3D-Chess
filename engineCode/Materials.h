@@ -11,7 +11,8 @@ struct Material
 {
     std::string name = "**UNNAMED MATERIAL**";
 	int textureID = -1;  // No diffuse texture by default.
-    int normalMapId = -1;  // No normal map by default.
+    int normalMapID = -1;  // No normal map by default.
+    int roughnessMapID = -1;  // No roughness map by default.
 	float ior = 1;
 	float metallic = 0;
 	float roughness = 0.5;

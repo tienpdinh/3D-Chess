@@ -12,7 +12,7 @@ ambientLight = 1 1 1
 lightDir = -0.3 -1.0 0.4
 lightDist = 20
 lightCol = 1 1 1
-lightIntensity = 1
+lightIntensity = 5
 lightCastShadow  // Only the one light can cast a shadow.
 shadowBias = 0.004
 shadowFrustum = -15 15 -15 15 10 40  // left, right, bottom, top, near, far planes.

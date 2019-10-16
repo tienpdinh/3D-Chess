@@ -22,9 +22,9 @@ int sphereVerts; //Number of verts in the colliders spheres
 
 int totalTriangles = 0;
 
-GLint uniColorID, uniEmissiveID, uniUseTextureID, uniUseNormalMapId, modelColorID;
+GLint uniColorID, uniEmissiveID, uniUseTextureID, uniUseNormalMapId, uniUseRoughnessMapID, modelColorID;
 GLint metallicID, roughnessID, iorID, reflectivenessID;
-GLint uniModelMatrix, colorTextureID, normalMapTextureId, texScaleID, biasID, pcfID;
+GLint uniModelMatrix, colorTextureID, normalMapTextureId, roughnessMapTextureID, texScaleID, biasID, pcfID;
 GLint xxxID;
 
 GLuint colliderVAO; //Build a Vertex Array Object for the collider
@@ -66,7 +66,6 @@ void drawGeometry(Model model, int materialID, glm::mat4 transform, float camera
 	glUniformMatrix4fv(uniModelMatrix, 1, GL_FALSE, glm::value_ptr(transform));
 
 	glUniform1i(uniUseTextureID, material.textureID >= 0);  // textureID of -1 --> no texture
-
 	if (material.textureID >= 0){
 		glActiveTexture(GL_TEXTURE0);  //Set texture 0 as active texture
 		glBindTexture(GL_TEXTURE_2D, tex[material.textureID]); //Load bound texture
@@ -74,12 +73,19 @@ void drawGeometry(Model model, int materialID, glm::mat4 transform, float camera
 		glUniform2fv(texScaleID, 1, glm::value_ptr(textureWrap));
 	}
 
-	glUniform1i(uniUseNormalMapId, material.normalMapId >= 0);  // normalMapId of -1 --> no normal map.
-
-	if (material.normalMapId >= 0){
+	glUniform1i(uniUseNormalMapId, material.normalMapID >= 0);  // normalMapID of -1 --> no normal map.
+	if (material.normalMapID >= 0){
 		glActiveTexture(GL_TEXTURE1);  // Set texture 1 as active texture.
-		glBindTexture(GL_TEXTURE_2D, tex[material.normalMapId]);  // Load bound texture.
+		glBindTexture(GL_TEXTURE_2D, tex[material.normalMapID]);  // Load bound texture.
 		glUniform1i(normalMapTextureId, 1);  // Use the texture we just loaded (texture 1) as normal map.
+		glUniform2fv(texScaleID, 1, glm::value_ptr(textureWrap));
+	}
+
+	glUniform1i(uniUseRoughnessMapID, material.roughnessMapID >= 0);  // roughnessMapID of -1 --> no normal map.
+	if (material.roughnessMapID >= 0){
+		glActiveTexture(GL_TEXTURE1);  // Set texture 1 as active texture.
+		glBindTexture(GL_TEXTURE_2D, tex[material.roughnessMapID]);  // Load bound texture.
+		glUniform1i(roughnessMapTextureID, 1);  // Use the texture we just loaded (texture 1) as normal map.
 		glUniform2fv(texScaleID, 1, glm::value_ptr(textureWrap));
 	}
 
@@ -278,6 +284,7 @@ void initPBRShading(){
   	uniEmissiveID = glGetUniformLocation(PBRShader.ID, "emissive");
   	uniUseTextureID = glGetUniformLocation(PBRShader.ID, "useTexture");
 	uniUseNormalMapId = glGetUniformLocation(PBRShader.ID, "useNormalMap");
+	uniUseRoughnessMapID = glGetUniformLocation(PBRShader.ID, "useRoughnessMap");
 	modelColorID = glGetUniformLocation(PBRShader.ID, "modelColor");
 	metallicID = glGetUniformLocation(PBRShader.ID, "metallic");
 	roughnessID = glGetUniformLocation(PBRShader.ID, "roughness");
@@ -288,6 +295,7 @@ void initPBRShading(){
 	uniModelMatrix = glGetUniformLocation(PBRShader.ID, "model");
 	colorTextureID = glGetUniformLocation(PBRShader.ID, "colorTexture");
 	normalMapTextureId = glGetUniformLocation(PBRShader.ID, "normalMapTexture");
+	roughnessMapTextureID = glGetUniformLocation(PBRShader.ID, "roughnessMapTexture");
 	texScaleID = glGetUniformLocation(PBRShader.ID, "textureScaleing");
 	xxxID = glGetUniformLocation(PBRShader.ID, "xxx");
 

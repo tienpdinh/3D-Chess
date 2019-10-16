@@ -27,6 +27,7 @@ uniform bool xxx;
 
 uniform sampler2D colorTexture;
 uniform sampler2D normalMapTexture;
+uniform sampler2D roughnessMapTexture;
 uniform vec2 textureScaleing;
 uniform vec3 emissive;
 
@@ -40,6 +41,7 @@ uniform float shadowBias;
 
 uniform int useTexture;
 uniform int useNormalMap;
+uniform int useRoughnessMap;
 
 uniform vec3 skyColor;
 uniform bool useSkyColor;
@@ -154,6 +156,12 @@ void main()
     vec3 ambC = color*ambientLight;
     vec3 oColor = ambC+emissive;
 
+    float r = roughness;
+    if (useRoughnessMap == 1)
+    {
+        r = texture(roughnessMapTexture, texcoord*textureScaleing).r;
+    }
+
     for (int i = 0; i < numLights; i++)
     {
         float shadow = 0;
@@ -196,7 +204,7 @@ void main()
         {
             spec = 0;  // No specularity if light is behind object.
         }
-        float m = 2*clamp(.6-roughness,0.0,1.0);
+        float m = 2*clamp(.6-r,0.0,1.0);
         specC = m*.8*vec3(1.0,1.0,1.0)*pow(spec,80*m/(ior*ior));
         if (m < .01)
         {
@@ -219,7 +227,7 @@ void main()
             envColor = texture(skybox, RefVec).rgb;
             envColor = 5*pow(envColor,vec3(5,5,5));  // Hack to turn a non-HDR texture into an HDR one.
         }
-        specC = lightCol[i]*GGXSpec(normal,viewDir,-lDir,roughness,F0);
+        specC = lightCol[i]*GGXSpec(normal,viewDir,-lDir,r,F0);
 
         float ref = reflectiveness;  // A simple reflectivness hack, really this should be part of sampling the BRDF.
         specC += ref*envColor;
@@ -237,7 +245,7 @@ void main()
 
     // outColor = vec4(texcoord, 0, 1);
     // outColor = vec4(normal, 1);
-    // outColor = vec4(color, 1);
+    // outColor = vec4(r,r,r, 1);
 
     float brightness = dot(oColor, vec3(0.3, 0.6, 0.1));
     brightColor = outColor;

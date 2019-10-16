@@ -174,14 +174,42 @@ void loadMaterials(string fileName)
             if (foundTexture >= 0)
             {
 				LOG_F(1, "Reusing existing normal map: %s", textures[foundTexture].c_str());
-				materials[curMaterialID].normalMapId = foundTexture;
+				materials[curMaterialID].normalMapID = foundTexture;
 			}
 			else
             {
 			    textures[numTextures] = textureName;
-		        materials[curMaterialID].normalMapId = numTextures;
+		        materials[curMaterialID].normalMapID = numTextures;
 			    numTextures++;
 				LOG_F(1, "New normal map texture named: %s", textureName.c_str());
+			}
+        }
+        else if (commandStr == "roughnessMap")
+        {
+            char rawTextureName[1024];
+            sscanf(rawline,"roughnessMap = %s", rawTextureName);
+            string textureName = textureDir + string(rawTextureName);
+			int foundTexture = -1;
+			for (int i = 0; i < numTextures; i++)
+            {
+				if (textures[i] == textureName)
+                {
+					foundTexture = i;
+					break;
+				}
+			}
+
+            if (foundTexture >= 0)
+            {
+				LOG_F(1, "Reusing existing roughness map: %s", textures[foundTexture].c_str());
+				materials[curMaterialID].roughnessMapID = foundTexture;
+			}
+			else
+            {
+			    textures[numTextures] = textureName;
+		        materials[curMaterialID].roughnessMapID = numTextures;
+			    numTextures++;
+				LOG_F(1, "New roughness map texture named: %s", textureName.c_str());
 			}
         }
         else

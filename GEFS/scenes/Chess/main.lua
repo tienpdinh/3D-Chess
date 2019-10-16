@@ -26,7 +26,7 @@ end
 -- Called when a key event occurs.
 function keyHandler(keys)
     local rSpeed = 1
-    local tSpeed = 1
+    local tSpeed = 5
     if keys.left then
         CameraTheta = CameraTheta - frameDt*rSpeed
     end
@@ -60,18 +60,4 @@ end
 -- MODELS --
 -- ////// --
 
--- Setup each chess piece.
--- TODO: apply edge split modifier in blender before exporting to get rid of the smoothed look.
-pos = -1.25
-stride = 0.5
-id1 = addModel("PawnDark", pos, 0, 0)
-pos = pos + stride
-id2 = addModel("RookDark", pos, 0, 0)
-pos = pos + stride
-id3 = addModel("KnightDark", pos, 0, 0)
-pos = pos + stride
-id4 = addModel("BishopDark", pos, 0, 0)
-pos = pos + stride
-id5 = addModel("QueenDark", pos, 0, 0)
-pos = pos + stride
-id6 = addModel("KingDark", pos, 0, 0)
+require "scenes/Chess/setupPieces"

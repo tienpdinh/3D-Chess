@@ -340,12 +340,12 @@ void loadModel(string fileName)
 					if (foundTexture >= 0)
                     {
 						LOG_F(1,"Reusing existing texture: %s", textures[foundTexture].c_str());
-						m.normalMapId = foundTexture;
+						m.normalMapID = foundTexture;
 					}
 					else
                     {
 						textures[numTextures] = textureName;
-						m.normalMapId = numTextures;
+						m.normalMapID = numTextures;
 						numTextures++;
 						LOG_F(1,"New normal map texture named: %s", textureName.c_str());
 					}
