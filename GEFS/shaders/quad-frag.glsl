@@ -62,7 +62,13 @@ void main() {
     outColor = vec4(mapped,1);
 
     // TODO: fix tonemapping.
-    outColor = vec4(dim.rgb, 1);
+    outColor = vec4(dim.rgb+bright.rgb, 1);
+    // outColor = vec4(dim.rgb, 1);
+
+    // Reinhard operator
+    // https://www.gamedev.net/forums/topic/697415-hdr-tonemappingexposure-values/
+    // float a = 1.0;
+    // outColor = vec4(dim.rgb/(dim.rgb+a), 1);
 
     // float depthValue = texture(texDim, Texcoord * 0.5 + 0.5).r;
     // outColor = vec4(vec3(depthValue), 1.0);

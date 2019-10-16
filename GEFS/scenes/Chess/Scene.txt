@@ -4,7 +4,8 @@
 # skyboxUp = 0 1 0   // Default is y up
 skyColor = 1 1 1
 
-CameraFOV = 50
+
+CameraFOV = 60
 
 ambientLight = 1 1 1
 
