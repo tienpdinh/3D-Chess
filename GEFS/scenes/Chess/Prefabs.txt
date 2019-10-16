@@ -1,12 +1,73 @@
-
 modelDir = ./models/
 
-#teapot knot sphere teapotLowPoly teapot cube
+# The base pieces.
 
-[Castle]
-scale 10
-objModel = Castle.obj
+[Pawn]
+objModel = ChessPieces_Pawn.obj
 
-[ChessBoard]
-scale 10
-objModel = ChessBoard.obj
+[Rook]
+objModel = ChessPieces_Rook.obj
+
+[Knight]
+objModel = ChessPieces_Knight.obj
+
+[Bishop]
+objModel = ChessPieces_Bishop.obj
+
+[Queen]
+objModel = ChessPieces_Queen.obj
+
+[King]
+objModel = ChessPieces_King.obj
+
+# The dark colored versions.
+
+[PawnDark]
+child [Pawn]
+material [ChessPieceDark]
+
+[RookDark]
+child [Rook]
+material [ChessPieceDark]
+
+[KnightDark]
+child [Knight]
+material [ChessPieceDark]
+
+[BishopDark]
+child [Bishop]
+material [ChessPieceDark]
+
+[QueenDark]
+child [Queen]
+material [ChessPieceDark]
+
+[KingDark]
+child [King]
+material [ChessPieceDark]
+
+# The light colored versions.
+
+[PawnLight]
+child [Pawn]
+material [ChessPieceLight]
+
+[RookLight]
+child [Rook]
+material [ChessPieceLight]
+
+[KnightLight]
+child [Knight]
+material [ChessPieceLight]
+
+[BishopLight]
+child [Bishop]
+material [ChessPieceLight]
+
+[QueenLight]
+child [Queen]
+material [ChessPieceLight]
+
+[KingLight]
+child [King]
+material [ChessPieceLight]

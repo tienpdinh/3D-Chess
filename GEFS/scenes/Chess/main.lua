@@ -1,75 +1,78 @@
---Simple Example
-print("Starting Lua for Big Example")
+-- ///////// --
+-- VARIABLES --
+-- ///////// --
 
---Todo:
--- Lua modules (for better organization, and maybe reloading?)
+-- Setup the camera.
+require "scenes/Chess/cameraSetup"
+CameraTheta = math.pi/2.0
 
-CameraPosX = -3.0
-CameraPosY = 2.0
-CameraPosZ = 0.0
+-- General.
+frameDt = 0
 
-CameraDirX = 1.0
-CameraDirY = -0.1
-CameraDirZ = -0.0
 
-CameraUpX = 0.0
-CameraUpY = 1.0
-CameraUpZ = 0.0
 
-animatedModels = {}
-velModel = {}
-rotYVelModel = {}
+-- /////// --
+-- METHODS --
+-- /////// --
 
-teapotLayer = 0
-
+-- Runs every frame.
 function frameUpdate(dt)
-  hitID, dist = getMouseClickWithLayer(teapotLayer)
-  --print("Dist to object:" ,dist, hitID)
-  if hitID then
-    rotateModel(hitID,0.1,0,1,0)
-  end
+    frameDt = dt
+
+    CameraDirX = math.cos(CameraTheta);
+    CameraDirZ = math.sin(CameraTheta);
 end
 
-ang = 0
+-- Called when a key event occurs.
 function keyHandler(keys)
-  if keys.left then
-    ang = ang + .02
-  end
-  if keys.right then
-    ang = ang - .02
-  end
-  if keys.up then
-    CameraPosX = CameraPosX + .1*CameraDirX
-    CameraPosZ = CameraPosZ + .1*CameraDirZ
-  end
-  if keys.down then
-    CameraPosX = CameraPosX - .1*CameraDirX
-    CameraPosZ = CameraPosZ - .1*CameraDirZ
-  end
-  if keys.shift then
-    CameraPosY = CameraPosY - 0.1
-  end
-  if keys.space then
-    CameraPosY = CameraPosY + 0.1
-  end
-  CameraDirX = math.cos(ang);
-  CameraDirZ = -math.sin(ang);
+    local rSpeed = 1
+    local tSpeed = 1
+    if keys.left then
+        CameraTheta = CameraTheta - frameDt*rSpeed
+    end
+    if keys.right then
+        CameraTheta = CameraTheta + frameDt*rSpeed
+    end
+    if keys.up then
+        CameraPosX = CameraPosX + frameDt*tSpeed*CameraDirX
+        CameraPosZ = CameraPosZ + frameDt*tSpeed*CameraDirZ
+    end
+    if keys.down then
+        CameraPosX = CameraPosX - frameDt*tSpeed*CameraDirX
+        CameraPosZ = CameraPosZ - frameDt*tSpeed*CameraDirZ
+    end
+    if keys.shift then
+        CameraPosY = CameraPosY - frameDt*tSpeed
+    end
+    if keys.space then
+        CameraPosY = CameraPosY + frameDt*tSpeed
+    end
 end
 
+-- Called when the mouse moves.
 function mouseHandler(mouse)
-  if (mouse.left) then
-    print("Mouse XY", mouse.x, mouse.y)
-  end
+    -- Do nothing initially.
 end
 
---id = addModel("Teapot",0,0,0)
---setModelMaterial(id,"Shiny Red Plastic")
---setModelMaterial(id,"Steel")
---animatedModels[id] = true
---rotYVelModel[id] = 1
 
-id = addModel("Castle",0,0,0)
-id2 = addModel("ChessBoard", 0, 0, 0)
--- placeModel(id,0,-.04,0)
--- scaleModel(id,60,1,60)
--- setModelMaterial(id,"Gold")
+
+-- ////// --
+-- MODELS --
+-- ////// --
+
+-- Setup each chess piece.
+-- TODO: export each chess piece centered at the origin.
+-- Right now it appears tinyObj loader does not take blender origin definitions into account.
+pos = 0
+stride = 0
+id1 = addModel("PawnDark", pos, 0, 0)
+pos = pos + stride
+id2 = addModel("RookDark", pos, 0, 0)
+pos = pos + stride
+id3 = addModel("KnightDark", pos, 0, 0)
+pos = pos + stride
+id4 = addModel("BishopDark", pos, 0, 0)
+pos = pos + stride
+id5 = addModel("QueenDark", pos, 0, 0)
+pos = pos + stride
+id6 = addModel("KingDark", pos, 0, 0)

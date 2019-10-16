@@ -35,36 +35,31 @@ end
 
 function keyHandler(keys)
   if keys.left then
-    translateModel(dinoID,0,0,-0.1)
+    translateModel(statueID,0,0,-0.1)
   end
   if keys.right then
-    translateModel(dinoID,0,0,0.1)
+    translateModel(statueID,0,0,0.1)
   end
   if keys.up then
-    translateModel(dinoID,0.1,0,0)
+    translateModel(statueID,0.1,0,0)
   end
   if keys.down then
-    translateModel(dinoID,-0.1,0,0)
+    translateModel(statueID,-0.1,0,0)
   end
   if keys.space then
-      rotYVelModel[dinoID] = 1
-      rotYVelModel[dinoID2] = 1
+      rotYVelModel[statueID] = 1
+      rotYVelModel[statue2ID] = 1
   else
-      rotYVelModel[dinoID] = 0
-      rotYVelModel[dinoID2] = 0
+      rotYVelModel[statueID] = 0
+      rotYVelModel[statue2ID] = 0
   end
 end
 
-floorID = addModel("FloorPart",0,0,0)
-placeModel(floorID,0,-.02,0)
-scaleModel(floorID,3,1,3)
-setModelMaterial(floorID,"Gold")
+statueID = addModel("Statue",0, 0, -0.5)
+animatedModels[statueID] = true
+rotYVelModel[statueID] = 0
 
-dinoID = addModel("Dino",0, 0, -0.5)
-animatedModels[dinoID] = true
-rotYVelModel[dinoID] = 0
-
-dinoID2 = addModel("Dino", 0, 0, 0.5)
-setModelMaterial(dinoID2, "Clay")
-animatedModels[dinoID2] = true
-rotYVelModel[dinoID2] = 0
+statue2ID = addModel("Statue", 0, 0, 0.5)
+setModelMaterial(statue2ID, "Clay")
+animatedModels[statue2ID] = true
+rotYVelModel[statue2ID] = 0
