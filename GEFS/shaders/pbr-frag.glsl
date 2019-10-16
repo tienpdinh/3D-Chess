@@ -156,10 +156,10 @@ void main()
     vec3 ambC = color*ambientLight;
     vec3 oColor = ambC+emissive;
 
-    float r = roughness;
+    float roughnessVal = roughness;
     if (useRoughnessMap == 1)
     {
-        r = texture(roughnessMapTexture, texcoord*textureScaleing).r;
+        roughnessVal = clamp(texture(roughnessMapTexture, texcoord*textureScaleing).r, 0, 1);
     }
 
     for (int i = 0; i < numLights; i++)
@@ -227,7 +227,7 @@ void main()
             envColor = texture(skybox, RefVec).rgb;
             envColor = 5*pow(envColor,vec3(5,5,5));  // Hack to turn a non-HDR texture into an HDR one.
         }
-        specC = lightCol[i]*GGXSpec(normal,viewDir,-lDir,r,F0);
+        specC = lightCol[i]*GGXSpec(normal,viewDir,-lDir,roughnessVal,F0);
 
         float ref = reflectiveness;  // A simple reflectivness hack, really this should be part of sampling the BRDF.
         specC += ref*envColor;
@@ -245,7 +245,22 @@ void main()
 
     // outColor = vec4(texcoord, 0, 1);
     // outColor = vec4(normal, 1);
-    // outColor = vec4(r,r,r, 1);
+
+    /*
+    outColor = vec4(0,0,0, 1);
+    if (r > 0.25)
+    {
+        outColor = vec4(1,0,0,1);
+    }
+    if (r > 0.5)
+    {
+        outColor = vec4(0,1,0,1);
+    }
+    if (r > 0.75)
+    {
+        outColor = vec4(0,0,1,1);
+    }
+    */
 
     float brightness = dot(oColor, vec3(0.3, 0.6, 0.1));
     brightColor = outColor;
