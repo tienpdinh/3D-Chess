@@ -20,12 +20,12 @@ void main() {
 /*
    const float gamma = 2.2;
    const float exposure = 1.5;
-  
+
     // Exposure tone mapping
     vec3 mapped = vec3(1.0) - exp(-outColor.rgb * exposure);
-    // Gamma correction 
+    // Gamma correction
     mapped = pow(mapped, vec3(1.0 / gamma));
-  
+
     outColor = vec4(mapped, 1.0);*/
 
     const float gamma = 2.2;//2.2;
@@ -56,12 +56,15 @@ void main() {
 
     //if (xxx) mapped = oColor/(oColor+vec3(1)); //Reihard
     //if (xxx) mapped = vec3(1.0) - exp(-outColor.rgb * exposure); // Exposure tone mapping
-    
-    mapped = pow(mapped, vec3(1.0 / gamma)); // Gamma correction  
+
+    mapped = pow(mapped, vec3(1.0 / gamma)); // Gamma correction
 
     outColor = vec4(mapped,1);
 
-    //float depthValue = texture(texDim, Texcoord * 0.5 + 0.5).r;
-    //outColor = vec4(vec3(depthValue), 1.0);
-    
+    // TODO: fix tonemapping.
+    outColor = vec4(dim.rgb, 1);
+
+    // float depthValue = texture(texDim, Texcoord * 0.5 + 0.5).r;
+    // outColor = vec4(vec3(depthValue), 1.0);
+
 }
