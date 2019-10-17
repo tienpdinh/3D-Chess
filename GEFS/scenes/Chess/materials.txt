@@ -20,17 +20,17 @@ metallic = 0
 # emissive = 5 0 0
 
 [TileWoodLight]
-texture = Wood32_col.jpg
-normalMap = Wood32_nrm.jpg
-roughnessMap = Wood32_rgh.jpg
+# texture = Wood32_col.jpg
+# normalMap = Wood32_nrm.jpg
+# roughnessMap = Wood32_rgh.jpg
 color = 1 1 1
 ior = 2.5
 metallic = 0
 
 [TileWoodDark]
-texture = Wood27_col.jpg
-normalMap = Wood27_nrm.jpg
-roughnessMap = Wood27_rgh.jpg
+# texture = Wood27_col.jpg
+# normalMap = Wood27_nrm.jpg
+# roughnessMap = Wood27_rgh.jpg
 color = 1 1 1
 ior = 2.5
 metallic = 0

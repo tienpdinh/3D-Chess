@@ -1,9 +1,9 @@
 CameraPosX = 0
-CameraPosY = 1
-CameraPosZ = -5
+CameraPosY = 0
+CameraPosZ = 0
 
 CameraDirX = 0
-CameraDirY = 0
+CameraDirY = -1
 CameraDirZ = 1
 
 CameraUpX = 0
