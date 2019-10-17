@@ -9,8 +9,6 @@ CameraTheta = math.pi/2.0
 -- General.
 frameDt = 0
 
-
-
 -- /////// --
 -- METHODS --
 -- /////// --
