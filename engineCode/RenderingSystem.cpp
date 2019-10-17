@@ -11,7 +11,6 @@
 #include <external/loguru.hpp>
 #include <external/stb_image.h>
 
-
 using std::vector;
 
 GLuint tex[1000];
@@ -247,8 +246,12 @@ GLint posAttrib, texAttrib, normAttrib, tangAttrib;
 GLint uniView,uniInvView, uniProj;
 GLuint modelsVAO, modelsVBO;
 
-void initPBRShading(){
-	PBRShader = Shader("shaders/pbr-vert.glsl", "shaders/pbr-frag.glsl");
+void initPBRShading()
+{
+	PBRShader = Shader(
+		"shaders/pbr-vert.glsl",
+		"shaders/pbr-frag.glsl"
+	);
 	PBRShader.init();
 
 	// Build a Vertex Array Object. This stores the VBO to shader attribute mappings.
@@ -513,13 +516,17 @@ Shader compositeShader;
 
 unsigned int quadVAO;
 
-
-void initFinalCompositeShader(){
-	compositeShader = Shader("shaders/finalComposite-vert.glsl", "shaders/finalComposite-frag.glsl");
+void initFinalCompositeShader()
+{
+	compositeShader = Shader(
+		"shaders/finalComposite-vert.glsl",
+		"shaders/finalComposite-frag.glsl"
+	);
 	compositeShader.init();
 }
 
-void drawCompositeImage(bool useBloom){
+void drawCompositeImage(bool useBloom)
+{
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glBindVertexArray(quadVAO);
 	glClear(GL_DEPTH_BUFFER_BIT);

@@ -47,6 +47,10 @@ function keyHandler(keys)
     if keys.space then
         CameraPosY = CameraPosY + frameDt*tSpeed
     end
+    if keys.d then
+        local vp = getValidPositions(lightPawns[1], {1,2,3})
+        print(validPositionsToString(vp))
+    end
 end
 
 -- Called when the mouse moves.
@@ -61,3 +65,4 @@ end
 -- ////// --
 
 require "scenes/Chess/setupPieces"
+require "scenes/Chess/chess"
