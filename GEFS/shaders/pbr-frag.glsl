@@ -28,6 +28,7 @@ uniform bool xxx;
 uniform sampler2D colorTexture;
 uniform sampler2D normalMapTexture;
 uniform sampler2D roughnessMapTexture;
+uniform sampler2D metallicMapTexture;
 uniform vec2 textureScaleing;
 uniform vec3 emissive;
 
@@ -42,6 +43,7 @@ uniform float shadowBias;
 uniform int useTexture;
 uniform int useNormalMap;
 uniform int useRoughnessMap;
+uniform int useMetallicMap;
 
 uniform vec3 skyColor;
 uniform bool useSkyColor;
@@ -162,6 +164,12 @@ void main()
         roughnessVal = clamp(texture(roughnessMapTexture, texcoord*textureScaleing).r, 0, 1);
     }
 
+    float metallicVal = metallic;
+    if (useMetallicMap == 1)
+    {
+        metallicVal = clamp(texture(metallicMapTexture, texcoord*textureScaleing).r, 0, 1);
+    }
+
     for (int i = 0; i < numLights; i++)
     {
         float shadow = 0;
@@ -194,7 +202,7 @@ void main()
 
         vec3 specC;
         vec3 lDir = lightDir[i];
-        vec3 diffuseC = (1-metallic)*color*max(dot(-lDir,normal), 0.0);  // This is a Hack? Is it a good idea? Is it true metals have no diffuse color?
+        vec3 diffuseC = (1-metallicVal)*color*max(dot(-lDir,normal), 0.0);  // This is a Hack? Is it a good idea? Is it true metals have no diffuse color?
         vec3 viewDir = normalize(-pos);  // We know the eye is at (0,0)!
         vec3 reflectDir = reflect(viewDir,normal);
 
@@ -216,7 +224,7 @@ void main()
 
         vec3 F0 = abs ((1.0 - iorVec) / (1.0 + iorVec));
         F0 = F0 * F0;
-        F0 = mix(F0,color,metallic);
+        F0 = mix(F0,color,metallicVal);
 
         vec3 envColor = skyColor;
         if (!useSkyColor)
@@ -245,22 +253,6 @@ void main()
 
     // outColor = vec4(texcoord, 0, 1);
     // outColor = vec4(normal, 1);
-
-    /*
-    outColor = vec4(0,0,0, 1);
-    if (r > 0.25)
-    {
-        outColor = vec4(1,0,0,1);
-    }
-    if (r > 0.5)
-    {
-        outColor = vec4(0,1,0,1);
-    }
-    if (r > 0.75)
-    {
-        outColor = vec4(0,0,1,1);
-    }
-    */
 
     float brightness = dot(oColor, vec3(0.3, 0.6, 0.1));
     brightColor = outColor;

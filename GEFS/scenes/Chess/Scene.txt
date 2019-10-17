@@ -5,7 +5,7 @@
 skyColor = 1 1 1
 
 
-CameraFOV = 60
+CameraFOV = 50
 
 ambientLight = 1 1 1
 

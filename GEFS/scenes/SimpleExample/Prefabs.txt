@@ -5,3 +5,7 @@ scale 0.25
 objModel = Statue.obj
 # material [Clay]
 material [StatueMat]
+
+[Chest]
+objModel = Chest.obj
+material [ChestMat]

@@ -49,9 +49,13 @@ function keyHandler(keys)
   if keys.space then
       rotYVelModel[statueID] = 1
       rotYVelModel[statue2ID] = 1
+      rotYVelModel[chestID] = 1
+      rotYVelModel[chest2ID] = 1
   else
       rotYVelModel[statueID] = 0
-      rotYVelModel[statue2ID] = 0
+      rotYVelModel[chestID] = 0
+      rotYVelModel[chestID] = 0
+      rotYVelModel[chest2ID] = 0
   end
 end
 
@@ -63,3 +67,15 @@ statue2ID = addModel("Statue", 0, 0, 0.5)
 setModelMaterial(statue2ID, "Clay")
 animatedModels[statue2ID] = true
 rotYVelModel[statue2ID] = 0
+
+scaleModel(statueID, 0, 0, 0)
+scaleModel(statue2ID, 0, 0, 0)
+
+chestID = addModel("Chest", -1.75, 0.75, 0)
+animatedModels[chestID] = true
+rotYVelModel[chestID] = 0
+
+chest2ID = addModel("Chest", -1.75, 1.25, 0)
+setModelMaterial(chest2ID, "Clay");
+animatedModels[chest2ID] = true
+rotYVelModel[chest2ID] = 0

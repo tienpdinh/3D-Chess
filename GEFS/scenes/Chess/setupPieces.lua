@@ -69,12 +69,14 @@ for i = 1, 2 do
     lightKnights[i][POS] = {1, 0, zPos}
     lightKnights[i][TYPE] = 2
     translateModel(lightKnights[i][ID], lightKnights[i][POS][1], lightKnights[i][POS][2], lightKnights[i][POS][3])
+    rotateModel(lightKnights[i][ID], -math.pi/2.0, 0, 1, 0)
 
     darkKnights[i] = {}
     darkKnights[i][ID] = addModel("KnightDark")
     darkKnights[i][POS] = {8, 0, zPos}
     darkKnights[i][TYPE] = 2
     translateModel(darkKnights[i][ID], darkKnights[i][POS][1], darkKnights[i][POS][2], darkKnights[i][POS][3])
+    rotateModel(darkKnights[i][ID], math.pi/2.0, 0, 1, 0)
 end
 
 -- Setup Bishops.
@@ -89,12 +91,14 @@ for i = 1, 2 do
     lightBishops[i][POS] = {1, 0, zPos}
     lightBishops[i][TYPE] = 3
     translateModel(lightBishops[i][ID], lightBishops[i][POS][1], lightBishops[i][POS][2], lightBishops[i][POS][3])
+    rotateModel(lightBishops[i][ID], -math.pi/2.0, 0, 1, 0)
 
     darkBishops[i] = {}
     darkBishops[i][ID] = addModel("BishopDark")
     darkBishops[i][POS] = {8, 0, zPos}
     darkBishops[i][TYPE] = 3
     translateModel(darkBishops[i][ID], darkBishops[i][POS][1], darkBishops[i][POS][2], darkBishops[i][POS][3])
+    rotateModel(darkBishops[i][ID], math.pi/2.0, 0, 1, 0)
 end
 
 -- Setup Queens.
@@ -103,12 +107,14 @@ lightQueen[ID] = addModel("QueenLight")
 lightQueen[POS] = {1, 0, 5}
 lightQueen[TYPE] = 4
 translateModel(lightQueen[ID], lightQueen[POS][1], lightQueen[POS][2], lightQueen[POS][3])
+rotateModel(lightQueen[ID], -math.pi/2.0, 0, 1, 0)
 
 darkQueen = {}
 darkQueen[ID] = addModel("QueenDark")
 darkQueen[POS] = {8, 0, 5}
 darkQueen[TYPE] = 4
 translateModel(darkQueen[ID], darkQueen[POS][1], darkQueen[POS][2], darkQueen[POS][3])
+rotateModel(darkQueen[ID], math.pi/2.0, 0, 1, 0)
 
 
 -- Setup Kings.
@@ -117,9 +123,11 @@ lightKing[ID] = addModel("KingLight")
 lightKing[POS] = {1, 0, 4}
 lightKing[TYPE] = 5
 translateModel(lightKing[ID], lightKing[POS][1], lightKing[POS][2], lightKing[POS][3])
+rotateModel(lightKing[ID], -math.pi/2.0, 0, 1, 0)
 
 darkKing = {}
 darkKing[ID] = addModel("KingDark")
 darkKing[POS] = {8, 0, 4}
 darkKing[TYPE] = 5
 translateModel(darkKing[ID], darkKing[POS][1], darkKing[POS][2], darkKing[POS][3])
+rotateModel(darkKing[ID], math.pi/2.0, 0, 1, 0)

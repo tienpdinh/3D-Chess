@@ -13,6 +13,7 @@ struct Material
 	int textureID = -1;  // No diffuse texture by default.
     int normalMapID = -1;  // No normal map by default.
     int roughnessMapID = -1;  // No roughness map by default.
+    int metallicMapID = -1;  // No metallic map by default.
 	float ior = 1;
 	float metallic = 0;
 	float roughness = 0.5;

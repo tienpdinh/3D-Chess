@@ -16,21 +16,20 @@ using std::vector;
 
 GLuint tex[1000];
 
-bool xxx; //Just an unspecified bool that gets passed to shader for debugging
+bool xxx;  // Just an unspecified bool that gets passed to shader for debugging
 
-int sphereVerts; //Number of verts in the colliders spheres
+int sphereVerts;  // Number of verts in the colliders spheres
 
 int totalTriangles = 0;
 
-GLint uniColorID, uniEmissiveID, uniUseTextureID, uniUseNormalMapId, uniUseRoughnessMapID, modelColorID;
+GLint uniColorID, uniEmissiveID, uniUseTextureID, uniUseNormalMapId, uniUseRoughnessMapID, uniUseMetallicMapID, modelColorID;
 GLint metallicID, roughnessID, iorID, reflectivenessID;
-GLint uniModelMatrix, colorTextureID, normalMapTextureId, roughnessMapTextureID, texScaleID, biasID, pcfID;
+GLint uniModelMatrix, colorTextureID, normalMapTextureId, roughnessMapTextureID, metallicMapTextureID, texScaleID, biasID, pcfID;
 GLint xxxID;
 
-GLuint colliderVAO; //Build a Vertex Array Object for the collider
+GLuint colliderVAO;  // Build a Vertex Array Object for the collider
 
 void drawGeometry(Model model, int matID, glm::mat4 transform = glm::mat4(), float cameraDist = 0, glm::vec2 textureWrap=glm::vec2(1,1), glm::vec3 modelColor=glm::vec3(1,1,1));
-
 void drawGeometry(Model model, int materialID, glm::mat4 transform, float cameraDist, glm::vec2 textureWrap, glm::vec3 modelColor){
 	//printf("Model: %s, num Children %d\n",model.name.c_str(), model.numChildren);
 	//printf("Material ID: %d (passed in id = %d)\n", model.materialID,materialID);
@@ -85,7 +84,15 @@ void drawGeometry(Model model, int materialID, glm::mat4 transform, float camera
 	if (material.roughnessMapID >= 0){
 		glActiveTexture(GL_TEXTURE2);  // Set texture 2 as active texture.
 		glBindTexture(GL_TEXTURE_2D, tex[material.roughnessMapID]);  // Load bound texture.
-		glUniform1i(roughnessMapTextureID, 2);  // Use the texture we just loaded (texture 1) as roughness map.
+		glUniform1i(roughnessMapTextureID, 2);  // Use the texture we just loaded (texture 2) as roughness map.
+		glUniform2fv(texScaleID, 1, glm::value_ptr(textureWrap));
+	}
+
+	glUniform1i(uniUseMetallicMapID, material.metallicMapID >= 0);  // metallicMapID of -1 --> no metallic map.
+	if (material.metallicMapID >= 0){
+		glActiveTexture(GL_TEXTURE3);  // Set texture 3 as active texture.
+		glBindTexture(GL_TEXTURE_2D, tex[material.metallicMapID]);  // Load bound texture.
+		glUniform1i(metallicMapTextureID, 3);  // Use the texture we just loaded (texture 3) as metallic map.
 		glUniform2fv(texScaleID, 1, glm::value_ptr(textureWrap));
 	}
 
@@ -285,6 +292,7 @@ void initPBRShading(){
   	uniUseTextureID = glGetUniformLocation(PBRShader.ID, "useTexture");
 	uniUseNormalMapId = glGetUniformLocation(PBRShader.ID, "useNormalMap");
 	uniUseRoughnessMapID = glGetUniformLocation(PBRShader.ID, "useRoughnessMap");
+	uniUseMetallicMapID = glGetUniformLocation(PBRShader.ID, "useMetallicMap");
 	modelColorID = glGetUniformLocation(PBRShader.ID, "modelColor");
 	metallicID = glGetUniformLocation(PBRShader.ID, "metallic");
 	roughnessID = glGetUniformLocation(PBRShader.ID, "roughness");
@@ -296,6 +304,7 @@ void initPBRShading(){
 	colorTextureID = glGetUniformLocation(PBRShader.ID, "colorTexture");
 	normalMapTextureId = glGetUniformLocation(PBRShader.ID, "normalMapTexture");
 	roughnessMapTextureID = glGetUniformLocation(PBRShader.ID, "roughnessMapTexture");
+	metallicMapTextureID = glGetUniformLocation(PBRShader.ID, "metallicMapTextureID");
 	texScaleID = glGetUniformLocation(PBRShader.ID, "textureScaleing");
 	xxxID = glGetUniformLocation(PBRShader.ID, "xxx");
 
@@ -506,7 +515,7 @@ unsigned int quadVAO;
 
 
 void initFinalCompositeShader(){
-	compositeShader = Shader("shaders/quad-vert.glsl", "shaders/quad-frag.glsl");
+	compositeShader = Shader("shaders/finalComposite-vert.glsl", "shaders/finalComposite-frag.glsl");
 	compositeShader.init();
 }
 
