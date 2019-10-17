@@ -12,7 +12,7 @@ frameDt = 0
 -- Set up game board
 Board = require "scenes/Chess/GameComponents/board"
 local board = Board:new()
-board:fill(2)
+board:fill(1)
 board:drawboard()
 
 

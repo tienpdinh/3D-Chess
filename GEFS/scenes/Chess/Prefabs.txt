@@ -80,8 +80,10 @@ material [ChessPieceLight]
 
 [BlackTile]
 rotate 180 1 0 0
+scale 0.5
 objModel = BlackTile.obj
 
 [WhiteTile]
 rotate 180 1 0 0
+scale 0.5
 objModel = WhiteTile.obj
