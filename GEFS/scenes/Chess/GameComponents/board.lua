@@ -14,6 +14,7 @@ function Board:new (o)
       self.chessboard[i][j].z = nil
       self.chessboard[i][j].id = nil
       self.chessboard[i][j].col = nil
+      self.chessboard[i][j].type = nil
     end
   end
   return o

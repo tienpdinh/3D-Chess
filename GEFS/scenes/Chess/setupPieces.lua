@@ -41,6 +41,7 @@ for i = 1, 8 do
   lightPawns[i].z = board.chessboard[2][i].z
   lightPawns[i].team = "Light"
   lightPawns[i]:drawpiece()
+  board.chessboard[2][i].type = lightPawns[i]
 
   darkPawns[i] = Pawn:new()
   darkPawns[i].x = board.chessboard[7][i].x
@@ -48,6 +49,7 @@ for i = 1, 8 do
   darkPawns[i].z = board.chessboard[7][i].z
   darkPawns[i].team = "Dark"
   darkPawns[i]:drawpiece()
+  board.chessboard[2][i].type = darkPawns[i]
 end
 
 -- Setup Rooks.
@@ -62,6 +64,7 @@ for i = 1, 2 do
   lightRooks[i].z = board.chessboard[1][zPos].z
   lightRooks[i].team = "Light"
   lightRooks[i]:drawpiece ()
+  board.chessboard[1][zPos].type = lightRooks[i]
 
   darkRooks[i] = Rook:new ()
   darkRooks[i].x = board.chessboard[8][zPos].x
@@ -69,6 +72,7 @@ for i = 1, 2 do
   darkRooks[i].z = board.chessboard[8][zPos].z
   darkRooks[i].team = "Dark"
   darkRooks[i]:drawpiece ()
+  board.chessboard[8][zPos].type = darkRooks[i]
 end
 
 -- Setup Knights.
@@ -84,6 +88,7 @@ for i = 1, 2 do
   lightKnights[i].z = board.chessboard[1][zPos].z
   lightKnights[i].team = "Light"
   lightKnights[i]:drawpiece ()
+  board.chessboard[1][zPos].type = lightKnights[i]
 
   darkKnights[i] = Knight:new ()
   darkKnights[i].x = board.chessboard[8][zPos].x
@@ -91,6 +96,7 @@ for i = 1, 2 do
   darkKnights[i].z = board.chessboard[8][zPos].z
   darkKnights[i].team = "Dark"
   darkKnights[i]:drawpiece ()
+  board.chessboard[8][zPos].type = darkKnights[i]
 end
 
 -- Setup Bishops.
@@ -106,6 +112,7 @@ for i = 1, 2 do
     lightBishops[i].z = board.chessboard[1][zPos].z
     lightBishops[i].team = "Light"
     lightBishops[i]:drawpiece ()
+    board.chessboard[1][zPos].type = lightBishops[i]
 
     darkBishops[i] = Bishop:new ()
     darkBishops[i].x = board.chessboard[8][zPos].x
@@ -113,6 +120,7 @@ for i = 1, 2 do
     darkBishops[i].z = board.chessboard[8][zPos].z
     darkBishops[i].team = "Dark"
     darkBishops[i]:drawpiece ()
+    board.chessboard[8][zPos].type = darkBishops[i]
 end
 
 -- Setup Queens.
@@ -122,6 +130,7 @@ lightQueen.y = board.chessboard[1][5].y
 lightQueen.z = board.chessboard[1][5].z
 lightQueen.team = "Light"
 lightQueen:drawpiece ()
+board.chessboard[1][5].type = lightQueen
 
 darkQueen = Queen:new ()
 darkQueen.x = board.chessboard[8][5].x
@@ -129,7 +138,7 @@ darkQueen.y = board.chessboard[8][5].y
 darkQueen.z = board.chessboard[8][5].z
 darkQueen.team = "Dark"
 darkQueen:drawpiece ()
-
+board.chessboard[8][5].type = darkQueen
 
 -- Setup Kings.
 lightKing = King:new ()
@@ -138,6 +147,7 @@ lightKing.y = board.chessboard[1][4].y
 lightKing.z = board.chessboard[1][4].z
 lightKing.team = "Light"
 lightKing:drawpiece ()
+board.chessboard[1][4].type = lightKing
 
 darkKing = King:new ()
 darkKing.x = board.chessboard[8][4].x
@@ -145,3 +155,4 @@ darkKing.y = board.chessboard[8][4].y
 darkKing.z = board.chessboard[8][4].z
 darkKing.team = "Dark"
 darkKing:drawpiece ()
+board.chessboard[8][4].type = darkKing
