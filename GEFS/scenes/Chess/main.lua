@@ -9,14 +9,6 @@ CameraTheta = math.pi/2.0
 -- General.
 frameDt = 0
 
--- Set up game board
-Board = require "scenes/Chess/GameComponents/board"
-local board = Board:new()
-board:fill(1)
-board:drawboard()
-
-
-
 -- /////// --
 -- METHODS --
 -- /////// --

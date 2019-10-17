@@ -29,8 +29,8 @@ function Board:fill (dist)
       currentcolor = "White"
     end
     for j = 1, 8 do
-      self.chessboard[i][j].x = dist / 2 + dist * (i - 1)
-      self.chessboard[i][j].z = dist / 2 + dist * (j - 1)
+      self.chessboard[i][j].x = dist * (i - 1)
+      self.chessboard[i][j].z = dist * (j - 1)
       if currentcolor == "Black" then
         self.chessboard[i][j].col = "White"
         currentcolor = "White"

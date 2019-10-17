@@ -2,9 +2,22 @@
 -- Setup each chess piece.
 -- TODO: apply edge split modifier in blender before exporting to get rid of the smoothed look.
 
+-- Set up game board
+Board = require "scenes/Chess/GameComponents/board"
+local board = Board:new()
+board:fill(1)
+board:drawboard()
+
 ID = 1
 POS = 2
 TYPE = 3  -- (pawn = 0, rook = 1, knight = 2, bishop = 3, queen = 4, king = 5)
+
+Rook = require "scenes/Chess/GameComponents/rook"
+Pawn = require "scenes/Chess/GameComponents/pawn"
+Knight = require "scenes/Chess/GameComponents/knight"
+Bishop = require "scenes/Chess/GameComponents/bishop"
+Queen = require "scenes/Chess/GameComponents/queen"
+King = require "scenes/Chess/GameComponents/king"
 
 lightPawns = {}
 lightRooks = {}
@@ -22,61 +35,62 @@ darkKing = -1
 
 -- Setup Pawns.
 for i = 1, 8 do
-    lightPawns[i] = {}
-    lightPawns[i][ID] = addModel("PawnLight")
-    lightPawns[i][POS] = {2,0,i}
-    lightPawns[i][TYPE] = 0
-    translateModel(lightPawns[i][ID], lightPawns[i][POS][1], lightPawns[i][POS][2], lightPawns[i][POS][3])
-    rotateModel(lightPawns[i][ID], math.random()*math.pi*2.0, 0, 1, 0)
+  lightPawns[i] = Pawn:new()
+  lightPawns[i].x = board.chessboard[2][i].x
+  lightPawns[i].y = board.chessboard[2][i].y
+  lightPawns[i].z = board.chessboard[2][i].z
+  lightPawns[i].team = "Light"
+  lightPawns[i]:drawpiece()
 
-    darkPawns[i] = {}
-    darkPawns[i][ID] = addModel("PawnDark")
-    darkPawns[i][POS] = {7, 0, i}
-    lightPawns[i][TYPE] = 0
-    translateModel(darkPawns[i][ID], darkPawns[i][POS][1], darkPawns[i][POS][2], darkPawns[i][POS][3])
-    rotateModel(darkPawns[i][ID], math.random()*math.pi*2.0, 0, 1, 0)
+  darkPawns[i] = Pawn:new()
+  darkPawns[i].x = board.chessboard[7][i].x
+  darkPawns[i].y = board.chessboard[7][i].y
+  darkPawns[i].z = board.chessboard[7][i].z
+  darkPawns[i].team = "Dark"
+  darkPawns[i]:drawpiece()
 end
 
 -- Setup Rooks.
 for i = 1, 2 do
-    local zPos = 1
-    if i == 2 then
-        zPos = 8
-    end
+  local zPos = 1
+  if i == 2 then
+    zPos = 8
+  end
+  lightRooks[i] = Rook:new ()
+  lightRooks[i].x = board.chessboard[1][zPos].x
+  lightRooks[i].y = board.chessboard[1][zPos].y
+  lightRooks[i].z = board.chessboard[1][zPos].z
+  lightRooks[i].team = "Light"
+  lightRooks[i]:drawpiece ()
 
-    lightRooks[i] = {}
-    lightRooks[i][ID] = addModel("RookLight")
-    lightRooks[i][POS] = {1, 0, zPos}
-    lightRooks[i][TYPE] = 1
-    translateModel(lightRooks[i][ID], lightRooks[i][POS][1], lightRooks[i][POS][2], lightRooks[i][POS][3])
-
-    darkRooks[i] = {}
-    darkRooks[i][ID] = addModel("RookDark")
-    darkRooks[i][POS] = {8, 0, zPos}
-    darkRooks[i][TYPE] = 1
-    translateModel(darkRooks[i][ID], darkRooks[i][POS][1], darkRooks[i][POS][2], darkRooks[i][POS][3])
+  darkRooks[i] = Rook:new ()
+  darkRooks[i].x = board.chessboard[8][zPos].x
+  darkRooks[i].y = board.chessboard[8][zPos].y
+  darkRooks[i].z = board.chessboard[8][zPos].z
+  darkRooks[i].team = "Dark"
+  darkRooks[i]:drawpiece ()
 end
 
 -- Setup Knights.
 for i = 1, 2 do
-    local zPos = 2
-    if i == 2 then
-        zPos = 7
-    end
+  local zPos = 2
+  if i == 2 then
+    zPos = 7
+  end
 
-    lightKnights[i] = {}
-    lightKnights[i][ID] = addModel("KnightLight")
-    lightKnights[i][POS] = {1, 0, zPos}
-    lightKnights[i][TYPE] = 2
-    translateModel(lightKnights[i][ID], lightKnights[i][POS][1], lightKnights[i][POS][2], lightKnights[i][POS][3])
-    rotateModel(lightKnights[i][ID], -math.pi/2.0, 0, 1, 0)
+  lightKnights[i] = Knight:new ()
+  lightKnights[i].x = board.chessboard[1][zPos].x
+  lightKnights[i].y = board.chessboard[1][zPos].y
+  lightKnights[i].z = board.chessboard[1][zPos].z
+  lightKnights[i].team = "Light"
+  lightKnights[i]:drawpiece ()
 
-    darkKnights[i] = {}
-    darkKnights[i][ID] = addModel("KnightDark")
-    darkKnights[i][POS] = {8, 0, zPos}
-    darkKnights[i][TYPE] = 2
-    translateModel(darkKnights[i][ID], darkKnights[i][POS][1], darkKnights[i][POS][2], darkKnights[i][POS][3])
-    rotateModel(darkKnights[i][ID], math.pi/2.0, 0, 1, 0)
+  darkKnights[i] = Knight:new ()
+  darkKnights[i].x = board.chessboard[8][zPos].x
+  darkKnights[i].y = board.chessboard[8][zPos].y
+  darkKnights[i].z = board.chessboard[8][zPos].z
+  darkKnights[i].team = "Dark"
+  darkKnights[i]:drawpiece ()
 end
 
 -- Setup Bishops.
@@ -86,48 +100,48 @@ for i = 1, 2 do
         zPos = 6
     end
 
-    lightBishops[i] = {}
-    lightBishops[i][ID] = addModel("BishopLight")
-    lightBishops[i][POS] = {1, 0, zPos}
-    lightBishops[i][TYPE] = 3
-    translateModel(lightBishops[i][ID], lightBishops[i][POS][1], lightBishops[i][POS][2], lightBishops[i][POS][3])
-    rotateModel(lightBishops[i][ID], -math.pi/2.0, 0, 1, 0)
+    lightBishops[i] = Bishop:new ()
+    lightBishops[i].x = board.chessboard[1][zPos].x
+    lightBishops[i].y = board.chessboard[1][zPos].y
+    lightBishops[i].z = board.chessboard[1][zPos].z
+    lightBishops[i].team = "Light"
+    lightBishops[i]:drawpiece ()
 
-    darkBishops[i] = {}
-    darkBishops[i][ID] = addModel("BishopDark")
-    darkBishops[i][POS] = {8, 0, zPos}
-    darkBishops[i][TYPE] = 3
-    translateModel(darkBishops[i][ID], darkBishops[i][POS][1], darkBishops[i][POS][2], darkBishops[i][POS][3])
-    rotateModel(darkBishops[i][ID], math.pi/2.0, 0, 1, 0)
+    darkBishops[i] = Bishop:new ()
+    darkBishops[i].x = board.chessboard[8][zPos].x
+    darkBishops[i].y = board.chessboard[8][zPos].y
+    darkBishops[i].z = board.chessboard[8][zPos].z
+    darkBishops[i].team = "Dark"
+    darkBishops[i]:drawpiece ()
 end
 
 -- Setup Queens.
-lightQueen = {}
-lightQueen[ID] = addModel("QueenLight")
-lightQueen[POS] = {1, 0, 5}
-lightQueen[TYPE] = 4
-translateModel(lightQueen[ID], lightQueen[POS][1], lightQueen[POS][2], lightQueen[POS][3])
-rotateModel(lightQueen[ID], -math.pi/2.0, 0, 1, 0)
+lightQueen = Queen:new ()
+lightQueen.x = board.chessboard[1][5].x
+lightQueen.y = board.chessboard[1][5].y
+lightQueen.z = board.chessboard[1][5].z
+lightQueen.team = "Light"
+lightQueen:drawpiece ()
 
-darkQueen = {}
-darkQueen[ID] = addModel("QueenDark")
-darkQueen[POS] = {8, 0, 5}
-darkQueen[TYPE] = 4
-translateModel(darkQueen[ID], darkQueen[POS][1], darkQueen[POS][2], darkQueen[POS][3])
-rotateModel(darkQueen[ID], math.pi/2.0, 0, 1, 0)
+darkQueen = Queen:new ()
+darkQueen.x = board.chessboard[8][5].x
+darkQueen.y = board.chessboard[8][5].y
+darkQueen.z = board.chessboard[8][5].z
+darkQueen.team = "Dark"
+darkQueen:drawpiece ()
 
 
 -- Setup Kings.
-lightKing = {}
-lightKing[ID] = addModel("KingLight")
-lightKing[POS] = {1, 0, 4}
-lightKing[TYPE] = 5
-translateModel(lightKing[ID], lightKing[POS][1], lightKing[POS][2], lightKing[POS][3])
-rotateModel(lightKing[ID], -math.pi/2.0, 0, 1, 0)
+lightKing = King:new ()
+lightKing.x = board.chessboard[1][4].x
+lightKing.y = board.chessboard[1][4].y
+lightKing.z = board.chessboard[1][4].z
+lightKing.team = "Light"
+lightKing:drawpiece ()
 
-darkKing = {}
-darkKing[ID] = addModel("KingDark")
-darkKing[POS] = {8, 0, 4}
-darkKing[TYPE] = 5
-translateModel(darkKing[ID], darkKing[POS][1], darkKing[POS][2], darkKing[POS][3])
-rotateModel(darkKing[ID], math.pi/2.0, 0, 1, 0)
+darkKing = King:new ()
+darkKing.x = board.chessboard[8][4].x
+darkKing.y = board.chessboard[8][4].y
+darkKing.z = board.chessboard[8][4].z
+darkKing.team = "Dark"
+darkKing:drawpiece ()
