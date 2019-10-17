@@ -1,57 +1,65 @@
 local Board = { chessboard = {}}
 
+-- Initialize a new board with 8x8 size, filled with nils.
+function Board:new(o)
+    o = o or {}
+    setmetatable(o, self)
+    self.__index = self
+    for x = 1, 8 do
+        self.chessboard[x] = {}
+        for z = 1, 8 do
+            self.chessboard[x][z] = {}
+            self.chessboard[x][z].x = x
+            self.chessboard[x][z].z = z
+            self.chessboard[x][z].pieceIndex = -1
 
--- Initialized a new board with 8x8 size, filled with nils
-function Board:new (o)
-  o = o or {}
-  setmetatable(o, self)
-  self.__index = self
-  for i = 1, 8 do
-    self.chessboard[i] = {}
-    for j = 1, 8 do
-      self.chessboard[i][j] = {}
-      self.chessboard[i][j].x = nil
-      self.chessboard[i][j].z = nil
-      self.chessboard[i][j].id = nil
-      self.chessboard[i][j].col = nil
+            if (x % 2 ~= z % 2) then
+                self.chessboard[x][z].id = addModel("WhiteTile", x, 0, z)
+            else
+                self.chessboard[x][z].id = addModel("BlackTile", x, 0, z)
+            end
+        end
     end
-  end
-  return o
+    return o
 end
 
-function Board:fill (dist)
-  dist = dist or 2
-  local currentcolor = nil
-  for i = 1, 8 do
-    if i % 2 == 0 then
-      currentcolor = "Black"
+-- Returns whether the board is occupied at (x, z)
+function Board:occupied(x, z)
+    return self.chessboard[x][z].pieceIndex > 0
+end
+
+-- Returns whether the board is occupied by a friendly piece at (x, z)
+function Board:friendlyOccupied(x, z, pieces, myTeam)
+    if not self:occupied(x, z) then
+        return false;
     else
-      currentcolor = "White"
+        local i = self.chessboard[x][z].pieceIndex
+        return myTeam ==pieces[i].team
     end
-    for j = 1, 8 do
-      self.chessboard[i][j].x = dist * (i - 1)
-      self.chessboard[i][j].z = dist * (j - 1)
-      if currentcolor == "Black" then
-        self.chessboard[i][j].col = "White"
-        currentcolor = "White"
-      else
-        self.chessboard[i][j].col = "Black"
-        currentcolor = "Black"
-      end
-    end
-  end
 end
 
-function Board:drawboard ()
-  for i = 1, 8 do
-    for j = 1, 8 do
-      if self.chessboard[i][j].col == "White" then
-        self.chessboard[i][j].id = addModel("WhiteTile", self.chessboard[i][j].x, 0, self.chessboard[i][j].z)
-      else
-        self.chessboard[i][j].id = addModel("BlackTile", self.chessboard[i][j].x, 0, self.chessboard[i][j].z)
-      end
+-- Returns whether the board is occupied by an enemy piece at (x, z)
+function Board:enemyOccupied(x, z, pieces, myTeam)
+    if not self:occupied(x, z) then
+        return false;
+    else
+        local i = self.chessboard[x][z].pieceIndex
+        return myTeam ~=pieces[i].team
     end
-  end
+end
+
+-- Returns a list of indices into the pieces array of which pieces can move
+-- for the given team.
+function Board:canMove(pieces, myTeam)
+    local moveablePieces = {}
+    local j = 1
+    for i,piece in pairs(pieces) do
+        if piece.team == myTeam and #piece:getLegalMoves(pieces, self) > 0 then
+            moveablePieces[j] = i
+            j = j + 1
+        end
+    end
+    return moveablePieces
 end
 
 return Board

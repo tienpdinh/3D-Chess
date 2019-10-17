@@ -10,5 +10,10 @@ Dan Shervheim ([sherv029](mailto:sherv029@umn.edu))
 
 [Classes and Objects](http://howtomakeanrpg.com/a/classes-in-lua.html)
 
-## The Chess models
-[Download](http://www-users.cselabs.umn.edu/~dinh0080/chess.fbx)
+## Structure
+
+### chess.lua
+
+### board.lua
+
+###

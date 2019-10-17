@@ -9,6 +9,11 @@ CameraTheta = math.pi/2.0
 -- General.
 frameDt = 0
 
+-- Setup the chess game
+require "scenes/Chess/GameComponents/chess"
+
+
+
 -- /////// --
 -- METHODS --
 -- /////// --
@@ -55,12 +60,3 @@ end
 function mouseHandler(mouse)
     -- Do nothing initially.
 end
-
-
-
--- ////// --
--- MODELS --
--- ////// --
-
-require "scenes/Chess/setupPieces"
-require "scenes/Chess/chess"
