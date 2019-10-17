@@ -14,10 +14,12 @@ function Board:new(o)
             self.chessboard[x][z].pieceIndex = -1
 
             if (x % 2 ~= z % 2) then
-                self.chessboard[x][z].id = addModel("WhiteTile", x, 0, z)
+                self.chessboard[x][z].id = addModel("LightTile", x, 0, z)
             else
-                self.chessboard[x][z].id = addModel("BlackTile", x, 0, z)
+                self.chessboard[x][z].id = addModel("DarkTile", x, 0, z)
             end
+            local r = math.floor(math.random()*4.0)/4.0  -- 0, 0.25, 0.5, or 0.75
+            rotateModel(self.chessboard[x][z].id,r*math.pi*2, 0, 1, 0)
         end
     end
     return o

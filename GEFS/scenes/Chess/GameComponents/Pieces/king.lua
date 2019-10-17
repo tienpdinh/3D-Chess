@@ -19,9 +19,7 @@ end
 function King:addModel()
     self.ID = addModel("King" .. self.team, self.x, self.y, self.z)
     if self.team == "Light" then
-        rotateModel(self.ID, -math.pi/2.0, 0, 1, 0)
-    else
-        rotateModel(self.ID, math.pi/2.0, 0, 1, 0)
+        rotateModel(self.ID, math.pi, 0, 1, 0)
     end
 end
 

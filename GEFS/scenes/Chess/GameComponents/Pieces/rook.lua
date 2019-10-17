@@ -18,6 +18,8 @@ end
 -- Attach the model to this rook instance.
 function Rook:addModel()
     self.ID = addModel("Rook" .. self.team, self.x, self.y, self.z)
+    local r = math.floor(math.random()*4.0)/4.0
+    rotateModel(self.ID, r*math.pi*2, 0, 1, 0)
 end
 
 function Rook:getLegalMoves(pieces, board)
