@@ -16,11 +16,13 @@ function Bishop:new (o)
 end
 
 -- Attach a model to this bishop instance.
-function Bishop:addModel()
+function Bishop:addModel(colliderLayer)
     self.ID = addModel("Bishop" .. self.team, self.x, self.y, self.z)
+    addCollider(self.ID, colliderLayer, 0.5, 0, 0, 0)
     if self.team == "Light" then
         rotateModel(self.ID, math.pi, 0, 1, 0)
     end
+    return self.ID
 end
 
 function Bishop:getLegalMoves(pieces, board)

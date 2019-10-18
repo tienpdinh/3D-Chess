@@ -16,11 +16,13 @@ function King:new (o)
 end
 
 -- Attach a model to this king instance.
-function King:addModel()
+function King:addModel(colliderLayer)
     self.ID = addModel("King" .. self.team, self.x, self.y, self.z)
+    addCollider(self.ID, colliderLayer, 0.5, 0, 0, 0)
     if self.team == "Light" then
         rotateModel(self.ID, math.pi, 0, 1, 0)
     end
+    return self.ID
 end
 
 function King:getLegalMoves(pieces, board)

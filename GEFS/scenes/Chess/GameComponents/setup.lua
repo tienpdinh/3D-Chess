@@ -7,6 +7,7 @@ King = require "scenes/Chess/GameComponents/Pieces/king"
 
 function getPieces()
     local pieces = {}
+    local piecesID = {}
     local colliderLayer = 0
     local index = 1
 
@@ -17,8 +18,9 @@ function getPieces()
         lightPawn.y = 0
         lightPawn.z = 2
         lightPawn.team = "Light"
-        lightPawn:addModel(colliderLayer)
+        local ID = lightPawn:addModel(colliderLayer)
         pieces[index] = lightPawn
+        piecesID[ID] = index
         index = index + 1
     end
 
@@ -29,8 +31,9 @@ function getPieces()
         darkPawn.y = 0
         darkPawn.z = 7
         darkPawn.team = "Dark"
-        darkPawn:addModel()
+        local ID = darkPawn:addModel(colliderLayer)
         pieces[index] = darkPawn
+        piecesID[ID] = index
         index = index + 1
     end
 
@@ -46,8 +49,9 @@ function getPieces()
         lightRook.y = 0
         lightRook.z = 1
         lightRook.team = "Light"
-        lightRook:addModel()
+        local ID = lightRook:addModel(colliderLayer)
         pieces[index] = lightRook
+        piecesID[ID] = index
         index = index + 1
     end
 
@@ -63,7 +67,8 @@ function getPieces()
         darkRook.y = 0
         darkRook.z = 8
         darkRook.team = "Dark"
-        darkRook:addModel()
+        local ID = darkRook:addModel(colliderLayer)
+        piecesID[ID] = index
         pieces[index] = darkRook
         index = index + 1
     end
@@ -80,7 +85,8 @@ function getPieces()
         lightKnight.y = 0
         lightKnight.z = 1
         lightKnight.team = "Light"
-        lightKnight:addModel()
+        local ID = lightKnight:addModel(colliderLayer)
+        piecesID[ID] = index
         pieces[index] = lightKnight
         index = index + 1
     end
@@ -97,7 +103,8 @@ function getPieces()
         darkKnight.y = 0
         darkKnight.z = 8
         darkKnight.team = "Dark"
-        darkKnight:addModel()
+        local ID = darkKnight:addModel(colliderLayer)
+        piecesID[ID] = index
         pieces[index] = darkKnight
         index = index + 1
     end
@@ -114,7 +121,8 @@ function getPieces()
         lightBishop.y = 0
         lightBishop.z = 1
         lightBishop.team = "Light"
-        lightBishop:addModel()
+        local ID = lightBishop:addModel(colliderLayer)
+        piecesID[ID] = index
         pieces[index] = lightBishop
         index = index + 1
     end
@@ -131,7 +139,8 @@ function getPieces()
         darkBishop.y = 0
         darkBishop.z = 8
         darkBishop.team = "Dark"
-        darkBishop:addModel()
+        local ID = darkBishop:addModel(colliderLayer)
+        piecesID[ID] = index
         pieces[index] = darkBishop
         index = index + 1
     end
@@ -142,7 +151,8 @@ function getPieces()
     lightQueen.y = 0
     lightQueen.z = 1
     lightQueen.team = "Light"
-    lightQueen:addModel()
+    local ID = lightQueen:addModel(colliderLayer)
+    piecesID[ID] = index
     pieces[index] = lightQueen
     index = index + 1
 
@@ -152,7 +162,8 @@ function getPieces()
     darkQueen.y = 0
     darkQueen.z = 8
     darkQueen.team = "Dark"
-    darkQueen:addModel()
+    local ID = darkQueen:addModel(colliderLayer)
+    piecesID[ID] = index
     pieces[index] = darkQueen
     index = index + 1
 
@@ -162,7 +173,8 @@ function getPieces()
     lightKing.y = 0
     lightKing.z = 1
     lightKing.team = "Light"
-    lightKing:addModel()
+    local ID = lightKing:addModel(colliderLayer)
+    piecesID[ID] = index
     pieces[index] = lightKing
     index = index + 1
 
@@ -172,9 +184,30 @@ function getPieces()
     darkKing.y = 0
     darkKing.z = 8
     darkKing.team = "Dark"
-    darkKing:addModel()
+    local ID = darkKing:addModel(colliderLayer)
+    piecesID[ID] = index
     pieces[index] = darkKing
     index = index + 1
 
-    return pieces, colliderLayer
+    return pieces, piecesID, colliderLayer
+end
+
+function highlightPiece(piece, dt)
+    if piece.y < 0.7 then
+        translateModel(piece.ID, 0, 3*dt, 0)
+        piece.y = piece.y + 3*dt
+    end
+end
+
+function unhighlight(pieces, curID, dt)
+    for i = 1, 32 do
+        if (not curID or pieces[i].ID ~= curID) and pieces[i].y > 0 then
+            translateModel(pieces[i].ID, 0, -3*dt, 0)
+            pieces[i].y = pieces[i].y - 3*dt
+        end
+        if pieces[i].y < 0 then
+            pieces[i].y = 0
+            placeModel(pieces[i].ID, pieces[i].x, pieces[i].y, pieces[i].z)
+        end
+    end
 end

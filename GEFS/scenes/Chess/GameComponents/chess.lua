@@ -3,8 +3,8 @@ Board = require "scenes/Chess/GameComponents/board"
 board = Board:new()
 
 -- Setup the pieces.
-require "scenes/Chess/GameComponents/setupPieces"
-pieces, colliderLayer = getPieces()
+require "scenes/Chess/GameComponents/setup"
+pieces, piecesID, colliderLayer = getPieces()
 
 -- Set the board indices to the pieces index.
 for i = 1,32 do

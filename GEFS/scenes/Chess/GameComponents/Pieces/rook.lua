@@ -16,10 +16,12 @@ function Rook:new (o)
 end
 
 -- Attach the model to this rook instance.
-function Rook:addModel()
+function Rook:addModel(colliderLayer)
     self.ID = addModel("Rook" .. self.team, self.x, self.y, self.z)
+    addCollider(self.ID, colliderLayer, 0.5, 0, 0, 0)
     local r = math.floor(math.random()*4.0)/4.0
     rotateModel(self.ID, r*math.pi*2, 0, 1, 0)
+    return self.ID
 end
 
 function Rook:getLegalMoves(pieces, board)

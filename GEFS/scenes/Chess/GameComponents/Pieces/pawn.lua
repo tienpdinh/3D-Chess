@@ -74,7 +74,7 @@ function Pawn:getLegalMoves(pieces, board)
             i = i + 1
         end
     else
-        print ("ERROR in Pawn:getLegalMoves()")
+        error("ERROR in Pawn:getLegalMoves()")
         return nil
     end
 

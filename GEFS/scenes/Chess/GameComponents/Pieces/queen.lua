@@ -16,11 +16,13 @@ function Queen:new (o)
 end
 
 -- Attach a model to this queen instance.
-function Queen:addModel()
+function Queen:addModel(colliderLayer)
     self.ID = addModel("Queen" .. self.team, self.x, self.y, self.z)
+    addCollider(self.ID, colliderLayer, 0.5, 0, 0, 0)
     if self.team == "Light" then
         rotateModel(self.ID, math.pi, 0, 1, 0)
     end
+    return self.ID
 end
 
 function Queen:getLegalMoves(pieces, board)

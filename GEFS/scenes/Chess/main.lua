@@ -32,8 +32,9 @@ function frameUpdate(dt)
 
     hitID, dist = getMouseClickWithLayer(colliderLayer)
     if hitID then
-        print(hitID)
+        highlightPiece(pieces[piecesID[hitID]], dt)
     end
+    unhighlight(pieces, hitID, dt)
 
     frameDt = dt
 

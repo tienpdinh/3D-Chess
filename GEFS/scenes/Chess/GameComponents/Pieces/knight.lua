@@ -16,11 +16,13 @@ function Knight:new (o)
 end
 
 -- Attach the model to this knight instance.
-function Knight:addModel()
+function Knight:addModel(colliderLayer)
     self.ID = addModel("Knight" .. self.team, self.x, self.y, self.z)
+    addCollider(self.ID, colliderLayer, 0.5, 0, 0, 0)
     if self.team == "Light" then
         rotateModel(self.ID, math.pi, 0, 1, 0)
     end
+    return self.ID
 end
 
 function Knight:getLegalMoves(pieces, board)
