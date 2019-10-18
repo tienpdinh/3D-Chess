@@ -4,7 +4,8 @@ local Rook = {
   z = 0,
   team = "Light",
   visible = true,
-  ID = 0
+  ID = 0,
+  angle = 0
 }
 
 -- Create a new instance of pieces which will be inherited by specific pieces.
@@ -20,8 +21,14 @@ function Rook:addModel(colliderLayer)
     self.ID = addModel("Rook" .. self.team, self.x, self.y, self.z)
     addCollider(self.ID, colliderLayer, 0.5, 0, 0, 0)
     local r = math.floor(math.random()*4.0)/4.0
-    rotateModel(self.ID, r*math.pi*2, 0, 1, 0)
+    self.angle = r*math.pi*2
+    rotateModel(self.ID, self.angle, 0, 1, 0)
     return self.ID
+end
+
+function Rook:placeModel()
+    placeModel(self.ID, self.x, self.y, self.z)
+    rotateModel(self.ID, self.angle, 0, 1, 0)
 end
 
 function Rook:getLegalMoves(pieces, board)

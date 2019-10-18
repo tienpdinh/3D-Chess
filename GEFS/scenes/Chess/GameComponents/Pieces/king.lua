@@ -25,6 +25,13 @@ function King:addModel(colliderLayer)
     return self.ID
 end
 
+function King:placeModel()
+    placeModel(self.ID, self.x, self.y, self.z)
+    if self.team == "Light" then
+        rotateModel(self.ID, math.pi, 0, 1, 0)
+    end
+end
+
 function King:getLegalMoves(pieces, board)
     local moves = {}
     local i = 1

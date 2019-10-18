@@ -25,6 +25,13 @@ function Knight:addModel(colliderLayer)
     return self.ID
 end
 
+function Knight:placeModel()
+    placeModel(self.ID, self.x, self.y, self.z)
+    if self.team == "Light" then
+        rotateModel(self.ID, math.pi, 0, 1, 0)
+    end
+end
+
 function Knight:getLegalMoves(pieces, board)
     local moves = {}
     local i = 1

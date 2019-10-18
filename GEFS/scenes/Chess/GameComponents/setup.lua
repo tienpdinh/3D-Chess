@@ -193,7 +193,7 @@ function getPieces()
 end
 
 function highlightPiece(piece, dt)
-    if piece.y < 0.7 then
+    if piece.y < 0.4 then
         translateModel(piece.ID, 0, 3*dt, 0)
         piece.y = piece.y + 3*dt
     end
@@ -207,7 +207,7 @@ function unhighlight(pieces, curID, dt)
         end
         if pieces[i].y < 0 then
             pieces[i].y = 0
-            placeModel(pieces[i].ID, pieces[i].x, pieces[i].y, pieces[i].z)
+            pieces[i]:placeModel()
         end
     end
 end
