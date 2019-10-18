@@ -16,9 +16,11 @@ function Pawn:new (o)
 end
 
 -- Attach the model to this pawn instance.
-function Pawn:addModel()
+function Pawn:addModel(colliderLayer)
     self.ID = addModel("Pawn" .. self.team, self.x, self.y, self.z)
+    addCollider(self.ID, colliderLayer, 0.5, 0, 0, 0)
     rotateModel(self.ID, math.random()*math.pi*2.0, 0, 1, 0)
+    return self.ID
 end
 
 function Pawn:getLegalMoves(pieces, board)

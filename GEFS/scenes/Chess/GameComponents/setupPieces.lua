@@ -7,6 +7,7 @@ King = require "scenes/Chess/GameComponents/Pieces/king"
 
 function getPieces()
     local pieces = {}
+    local colliderLayer = 0
     local index = 1
 
     -- Add light pawns.
@@ -16,7 +17,7 @@ function getPieces()
         lightPawn.y = 0
         lightPawn.z = 2
         lightPawn.team = "Light"
-        lightPawn:addModel()
+        lightPawn:addModel(colliderLayer)
         pieces[index] = lightPawn
         index = index + 1
     end
@@ -175,5 +176,5 @@ function getPieces()
     pieces[index] = darkKing
     index = index + 1
 
-    return pieces
+    return pieces, colliderLayer
 end

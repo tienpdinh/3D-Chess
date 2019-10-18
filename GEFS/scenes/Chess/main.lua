@@ -29,6 +29,12 @@ require "scenes/Chess/GameComponents/chess"
 
 -- Runs every frame.
 function frameUpdate(dt)
+
+    hitID, dist = getMouseClickWithLayer(colliderLayer)
+    if hitID then
+        print(hitID)
+    end
+
     frameDt = dt
 
     if (turn == "Light") then

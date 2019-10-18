@@ -84,6 +84,10 @@ material [ChessPieceLight]
 child [King]
 material [ChessPieceLight]
 
+[Highlight]
+scale 0.5
+objModel = highlight.obj
+
 
 
 # Tiles

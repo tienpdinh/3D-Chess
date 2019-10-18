@@ -4,7 +4,7 @@ board = Board:new()
 
 -- Setup the pieces.
 require "scenes/Chess/GameComponents/setupPieces"
-pieces = getPieces()
+pieces, colliderLayer = getPieces()
 
 -- Set the board indices to the pieces index.
 for i = 1,32 do
