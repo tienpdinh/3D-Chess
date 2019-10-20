@@ -102,7 +102,7 @@ function Rook:getLegalMoves(pieces, board)
         z = z + 1
     end
 
-    return moves
+    return moves, i - 1
 end
 
 -- function Rook:legalmoves ()

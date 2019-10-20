@@ -58,7 +58,7 @@ function Knight:getLegalMoves(pieces, board)
         end
     end
 
-    return moves
+    return moves, i - 1
 end
 
 -- function Knight:legalmoves ()

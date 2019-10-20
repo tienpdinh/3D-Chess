@@ -49,7 +49,6 @@ function frameUpdate(dt)
     unhighlight(pieces, hitID, dt)
     --===============--
     if newDest and pieceInMotion and not finished then
-        print("move")
         --print(pieceInMotion.z, zVel, dt)
         finished = movePiece(pieceInMotion, newDest, xVel, zVel, dt)
         --print(newDest[1], newDest[2], xOld, zOld, pieceInMotion.x, pieceInMotion.z, board.chessboard[xOld][zOld].pieceIndex)
