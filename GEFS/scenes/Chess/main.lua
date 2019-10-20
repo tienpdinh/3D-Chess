@@ -71,7 +71,7 @@ function frameUpdate(dt)
         -- Advance turn.
         if not piecePicked then
             -- Pick the piece to play.
-            hitID, dist = getMouseClickWithLayer(piecesColliderLayer)
+            local hitID, dist = getMouseClickWithLayer(piecesColliderLayer)
             if hitID and leftClicked then
                 -- Save the picked piece.
                 piecePicked = true
@@ -93,13 +93,14 @@ function frameUpdate(dt)
             end
         elseif not tilePicked then
             -- Pick the tile to play.
-            hitID, dist = getMouseClickWithLayer(boardColliderLayer)
+            local hitID, dist = getMouseClickWithLayer(boardColliderLayer)
             print "picking tile"
             if hitID and leftClicked then
                 -- Save the picked tile
                 print "PICKED tile"
                 tilePicked = true
                 tileToPlay = board.tileIDs[hitID]
+                print(hitID)
 
                 -- Unhighlight all playable tiles.
                 for i, pos in pairs(playableTiles) do
@@ -121,17 +122,14 @@ function frameUpdate(dt)
     -- unhighlight(pieces, hitID, dt)
     -- --===============--
     -- if newDest and pieceInMotion and not finished then
-    --     --print(pieceInMotion.z, zVel, dt)
     --     finished = movePiece(pieceInMotion, newDest, xVel, zVel, dt)
-    --     --print(newDest[1], newDest[2], xOld, zOld, pieceInMotion.x, pieceInMotion.z, board.chessboard[xOld][zOld].pieceIndex)
     -- end
-    -- print(finished)
     -- if newDest and finished then
     --     local pieceIndex = board.chessboard[xOld][zOld].pieceIndex
     --     board.chessboard[xOld][zOld].pieceIndex = -1
     --     board.chessboard[newDest[1]][newDest[2]].pieceIndex = pieceIndex
     -- end
-    --
+
     -- if finished then
     --     newDest = nil
     --     pieceInMotion = nil
@@ -186,7 +184,6 @@ function mouseHandler(mouse)
     -- Prepare for the move
     if selectedID and chosenTileID and mouse.left and not mousePressed then
         local moves, tot = pieces[piecesID[selectedID]]:getLegalMoves(pieces, board)
-        --print(pieces[piecesID[selectedID]].x, pieces[piecesID[selectedID]].z)
         for i = 1, tot do
             local tile = tileIDs[chosenTileID]
             if tile.x == moves[i][1] and tile.z == moves[i][2] then
