@@ -128,6 +128,11 @@ function frameUpdate(dt)
     --     local pieceIndex = board.chessboard[xOld][zOld].pieceIndex
     --     board.chessboard[xOld][zOld].pieceIndex = -1
     --     board.chessboard[newDest[1]][newDest[2]].pieceIndex = pieceIndex
+    --     if turn == "Light" then
+    --         turn = "Dark"
+    --     else
+    --         turn = "Light"
+    --     end
     -- end
 
     -- if finished then
