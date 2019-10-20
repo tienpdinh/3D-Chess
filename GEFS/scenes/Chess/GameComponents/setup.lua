@@ -217,38 +217,23 @@ end
 function movePiece(piece, dest, xVel, zVel, dt)
     local xFin = false
     local zFin = false
-    if piece.team == "Light" then
-        if piece.x + xVel*dt < dest[1] or piece.z + zVel*dt < dest[2] then
-            translateModel(piece.ID, xVel*dt, 0, zVel*dt)
-            piece.x = piece.x + xVel*dt
-            piece.z = piece.z + zVel*dt
-        end
-        if piece.x + xVel*dt >= dest[1] and not xFin then
-            piece.x = dest[1]
-            piece:placeModel()
-            xFin = true
-        end
-        if piece.z + zVel*dt >= dest[2] and not zFin then
-            piece.z = dest[2]
-            piece:placeModel()
-            zFin = true
-        end
-    elseif piece.team == "Dark" then
-        if piece.x + xVel*dt > dest[1] or piece.z + zVel*dt > dest[2] then
-            translateModel(piece.ID, xVel*dt, 0, zVel*dt)
-            piece.x = piece.x + xVel*dt
-            piece.z = piece.z + zVel*dt
-        end
-        if piece.x + xVel*dt <= dest[1] and not xFin then
-            piece.x = dest[1]
-            piece:placeModel()
-            xFin = true
-        end
-        if piece.z + zVel*dt <= dest[2] and not zFin then
-            piece.z = dest[2]
-            piece:placeModel()
-            zFin = true
-        end
+    if math.abs(piece.x - dest[1]) <= math.abs(xVel*dt) then
+        piece.x = dest[1]
+        piece:placeModel()
+        xFin = true
+    end
+    if math.abs(piece.z - dest[2]) <= math.abs(zVel*dt) then
+        piece.z = dest[2]
+        piece:placeModel()
+        zFin = true
+    end
+    if math.abs(piece.x - dest[1]) > math.abs(xVel*dt) and not xFin then
+        translateModel(piece.ID, xVel*dt, 0, 0)
+        piece.x = piece.x + xVel*dt
+    end
+    if math.abs(piece.z - dest[2]) > math.abs(zVel*dt) and not zFin then
+        translateModel(piece.ID, 0, 0, zVel*dt)
+        piece.z = piece.z + zVel*dt
     end
     return xFin and zFin
 end
