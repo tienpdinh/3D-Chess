@@ -211,3 +211,29 @@ function unhighlight(pieces, curID, dt)
         end
     end
 end
+
+-- Function to animate a piece movement, returns true if the animation 
+-- is finished, false otherwise
+function movePiece(piece, dest, xVel, zVel, dt)
+    local xFin = false
+    local zFin = false
+    if piece.x + xVel*dt < dest[1] then
+        translateModel(piece.ID, xVel*dt, 0, 0)
+        piece.z = piece.z + zVel*dt
+    end
+    if piece.z + zVel*dt < dest[2] then
+        translateModel(piece.ID, 0, 0, zVel*dt)
+        piece.z = piece.z + zVel*dt
+    end
+    if piece.x + xVel*dt >= dest[1] then
+        piece.x = dest[1]
+        piece:placeModel()
+        xFin = true
+    end
+    if piece.z + zVel*dt >= dest[2] then
+        piece.z = dest[2]
+        piece:placeModel()
+        zFin = true
+    end
+    return xFin and zFin
+end

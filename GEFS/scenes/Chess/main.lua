@@ -21,6 +21,18 @@ frameDt = 0
 -- Setup the chess game
 require "scenes/Chess/GameComponents/chess"
 
+-- Motion Variables
+selectedID = nil
+hitID = nil
+chosenTileID = nil
+newDest = nil
+pieceInMotion = nil
+finished = true
+xVel = 0
+zVel = 0
+xOld = 0
+zOld = 0
+--================--
 
 
 -- /////// --
@@ -29,12 +41,32 @@ require "scenes/Chess/GameComponents/chess"
 
 -- Runs every frame.
 function frameUpdate(dt)
-
-    hitID, dist = getMouseClickWithLayer(colliderLayer)
+    -- Highlight logic
+    hitID, dist = getMouseClickWithLayer(piecesColliderLayer)
     if hitID then
         highlightPiece(pieces[piecesID[hitID]], dt)
     end
     unhighlight(pieces, hitID, dt)
+    --===============--
+    if newDest and pieceInMotion and not finished then
+        print("move")
+        --print(pieceInMotion.z, zVel, dt)
+        finished = movePiece(pieceInMotion, newDest, xVel, zVel, dt)
+        --print(newDest[1], newDest[2], xOld, zOld, pieceInMotion.x, pieceInMotion.z, board.chessboard[xOld][zOld].pieceIndex)
+    end
+    print(finished)
+    if newDest then
+        local pieceIndex = board.chessboard[xOld][zOld].pieceIndex
+        board.chessboard[xOld][zOld].pieceIndex = -1
+        board.chessboard[newDest[1]][newDest[2]].pieceIndex = pieceIndex
+    end
+
+    if finished then
+        newDest = nil
+        pieceInMotion = nil
+        selectedID = nil
+        chosenTileID = nil
+    end
 
     frameDt = dt
 
@@ -67,7 +99,36 @@ end
 
 -- Called when the mouse moves.
 function mouseHandler(mouse)
-    -- Do nothing initially.
+    local mousePressed = nil
+    boardHitID, boardDist = getMouseClickWithLayer(boardColliderLayer)
+    if mouse.left and not selectedID and not mousePressed then
+        selectedID = hitID
+        chosenTileID = nil
+        finished = false
+    end
+    if mouse.left and not mousePressed then
+        chosenTileID = boardHitID
+    end
+    -- Prepare for the move
+    if selectedID and chosenTileID and mouse.left and not mousePressed then
+        local moves, tot = pieces[piecesID[selectedID]]:getLegalMoves(pieces, board)
+        --print(pieces[piecesID[selectedID]].x, pieces[piecesID[selectedID]].z)
+        for i = 1, tot do
+            local tile = tileIDs[chosenTileID]
+            if tile.x == moves[i][1] and tile.z == moves[i][2] then
+                local xTile = tile.x
+                local zTile = tile.z
+                newDest = {xTile, zTile}
+                pieceInMotion = pieces[piecesID[selectedID]]
+                xOld = pieceInMotion.x
+                zOld = pieceInMotion.z
+                xVel = newDest[1] - xOld
+                zVel = newDest[2] - zOld
+                break
+            end
+        end
+    end
+    mousePressed = mouse.left
 end
 
 function setCameraPos()

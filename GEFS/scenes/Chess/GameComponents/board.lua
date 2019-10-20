@@ -1,10 +1,11 @@
-local Board = { chessboard = {}}
+local Board = { chessboard = {}, tileIDs = {} }
 
 -- Initialize a new board with 8x8 size, filled with nils.
 function Board:new(o)
     o = o or {}
     setmetatable(o, self)
     self.__index = self
+    local colliderLayer = 1
     for x = 1, 8 do
         self.chessboard[x] = {}
         for z = 1, 8 do
@@ -18,16 +19,18 @@ function Board:new(o)
             else
                 self.chessboard[x][z].id = addModel("DarkTile", x, 0, z)
             end
+            self.tileIDs[self.chessboard[x][z].id] = self.chessboard[x][z]
+            addCollider(self.chessboard[x][z].id, colliderLayer, 0.75, 0, 0, 0)
             local r = math.floor(math.random()*4.0)/4.0  -- 0, 0.25, 0.5, or 0.75
             rotateModel(self.chessboard[x][z].id,r*math.pi*2, 0, 1, 0)
         end
     end
-    return o
+    return o, colliderLayer
 end
 
 -- Returns whether the board is occupied at (x, z)
 function Board:occupied(x, z)
-    return self.chessboard[x][z].pieceIndex > 0
+    return self.chessboard[math.floor(x)][math.floor(z)].pieceIndex > 0
 end
 
 -- Returns whether the board is occupied by a friendly piece at (x, z)
@@ -35,7 +38,7 @@ function Board:friendlyOccupied(x, z, pieces, myTeam)
     if not self:occupied(x, z) then
         return false;
     else
-        local i = self.chessboard[x][z].pieceIndex
+        local i = self.chessboard[math.floor(x)][math.floor(z)].pieceIndex
         return myTeam ==pieces[i].team
     end
 end
@@ -45,7 +48,7 @@ function Board:enemyOccupied(x, z, pieces, myTeam)
     if not self:occupied(x, z) then
         return false;
     else
-        local i = self.chessboard[x][z].pieceIndex
+        local i = self.chessboard[math.floor(x)][math.floor(z)].pieceIndex
         return myTeam ~=pieces[i].team
     end
 end

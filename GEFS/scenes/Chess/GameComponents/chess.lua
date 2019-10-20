@@ -1,10 +1,11 @@
 -- Setup the board.
 Board = require "scenes/Chess/GameComponents/board"
-board = Board:new()
+board, boardColliderLayer = Board:new()
+tileIDs = board.tileIDs
 
 -- Setup the pieces.
 require "scenes/Chess/GameComponents/setup"
-pieces, piecesID, colliderLayer = getPieces()
+pieces, piecesID, piecesColliderLayer = getPieces()
 
 -- Set the board indices to the pieces index.
 for i = 1,32 do

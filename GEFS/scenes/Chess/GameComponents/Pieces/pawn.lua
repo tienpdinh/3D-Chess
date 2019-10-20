@@ -85,7 +85,7 @@ function Pawn:getLegalMoves(pieces, board)
         return nil
     end
 
-    return moves
+    return moves, i - 1
 end
 
 -- function Pawn:legalmoves ()
