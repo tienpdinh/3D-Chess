@@ -49,11 +49,8 @@ function frameUpdate(dt)
     unhighlight(pieces, hitID, dt)
     --===============--
     if newDest and pieceInMotion and not finished then
-        --print(pieceInMotion.z, zVel, dt)
         finished = movePiece(pieceInMotion, newDest, xVel, zVel, dt)
-        --print(newDest[1], newDest[2], xOld, zOld, pieceInMotion.x, pieceInMotion.z, board.chessboard[xOld][zOld].pieceIndex)
     end
-    print(finished)
     if newDest and finished then
         local pieceIndex = board.chessboard[xOld][zOld].pieceIndex
         board.chessboard[xOld][zOld].pieceIndex = -1
@@ -111,7 +108,6 @@ function mouseHandler(mouse)
     -- Prepare for the move
     if selectedID and chosenTileID and mouse.left and not mousePressed then
         local moves, tot = pieces[piecesID[selectedID]]:getLegalMoves(pieces, board)
-        --print(pieces[piecesID[selectedID]].x, pieces[piecesID[selectedID]].z)
         for i = 1, tot do
             local tile = tileIDs[chosenTileID]
             if tile.x == moves[i][1] and tile.z == moves[i][2] then
