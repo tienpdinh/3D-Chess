@@ -219,15 +219,15 @@ function movePiece(piece, dest, xVel, zVel, dt)
     local zFin = false
     if piece.x + xVel*dt < dest[1] or piece.z + zVel*dt < dest[2] then
         translateModel(piece.ID, xVel*dt, 0, zVel*dt)
-        piece.z = piece.z + zVel*dt
+        piece.x = piece.x + xVel*dt
         piece.z = piece.z + zVel*dt
     end
-    if piece.x + xVel*dt >= dest[1] then
+    if piece.x + xVel*dt >= dest[1] and not xFin then
         piece.x = dest[1]
         piece:placeModel()
         xFin = true
     end
-    if piece.z + zVel*dt >= dest[2] then
+    if piece.z + zVel*dt >= dest[2] and not zFin then
         piece.z = dest[2]
         piece:placeModel()
         zFin = true
