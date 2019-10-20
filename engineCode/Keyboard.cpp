@@ -2,10 +2,11 @@
 #include "LuaSupport.h"
 #include <external/loguru.hpp>
 
-struct KeyState{
+struct KeyState
+{
 	bool up, down, right, left;
 	bool shift, tab, space;
-  bool q,w,e,r,a,s,d,f,z,x,c,v;
+  	bool q,w,e,r,a,s,d,f,z,x,c,v;
 };
 
 struct KeyState keys;
@@ -36,21 +37,23 @@ void updateKeyboardState(){
   keys.v = keyboardState[SDL_SCANCODE_V];
 }
 
-void keyboardUpdateLua(lua_State* L){
-  //Call special keyHandler function in lua
-		//---------------
-		lua_getglobal(L, "keyHandler");
-    if(!lua_isfunction(L,-1)){
-      lua_pop(L, 1);
-      return;
+void keyboardUpdateLua(lua_State* L)
+{
+	// Call special keyHandler function in lua.
+	lua_getglobal(L, "keyHandler");
+    if(!lua_isfunction(L,-1))
+	{
+    	lua_pop(L, 1);
+      	return;
     }
-		lua_newtable(L);
-		lua_pushboolean(L, keys.up); lua_setfield(L, -2, "up");
-		lua_pushboolean(L, keys.down); lua_setfield(L, -2, "down");
-		lua_pushboolean(L, keys.right); lua_setfield(L, -2, "right");
-		lua_pushboolean(L, keys.left); lua_setfield(L, -2, "left");
-		lua_pushboolean(L, keys.shift); lua_setfield(L, -2, "shift");
-		lua_pushboolean(L, keys.tab); lua_setfield(L, -2, "tab");
+
+	lua_newtable(L);
+	lua_pushboolean(L, keys.up); lua_setfield(L, -2, "up");
+	lua_pushboolean(L, keys.down); lua_setfield(L, -2, "down");
+	lua_pushboolean(L, keys.right); lua_setfield(L, -2, "right");
+	lua_pushboolean(L, keys.left); lua_setfield(L, -2, "left");
+	lua_pushboolean(L, keys.shift); lua_setfield(L, -2, "shift");
+	lua_pushboolean(L, keys.tab); lua_setfield(L, -2, "tab");
     lua_pushboolean(L, keys.space); lua_setfield(L, -2, "space");
     lua_pushboolean(L, keys.q); lua_setfield(L, -2, "q");
     lua_pushboolean(L, keys.w); lua_setfield(L, -2, "w");
@@ -60,16 +63,17 @@ void keyboardUpdateLua(lua_State* L){
     lua_pushboolean(L, keys.s); lua_setfield(L, -2, "s");
     lua_pushboolean(L, keys.d); lua_setfield(L, -2, "d");
     lua_pushboolean(L, keys.f); lua_setfield(L, -2, "f");
-		lua_pushboolean(L, keys.z); lua_setfield(L, -2, "z");
+	lua_pushboolean(L, keys.z); lua_setfield(L, -2, "z");
     lua_pushboolean(L, keys.x); lua_setfield(L, -2, "x");
     lua_pushboolean(L, keys.c); lua_setfield(L, -2, "c");
     lua_pushboolean(L, keys.v); lua_setfield(L, -2, "v");
 
-		int luaErr = lua_pcall(L, 1, 0, 0);
-		CHECK_F(luaErr==0, "Error after call to lua function 'keyHandler': %s \n", lua_tostring(L, -1));
+	int luaErr = lua_pcall(L, 1, 0, 0);
+	CHECK_F(luaErr==0, "Error after call to lua function 'keyHandler': %s \n", lua_tostring(L, -1));
 }
 
-struct MouseState{
+struct MouseState
+{
 	float x, y; //0-1
   int px, py; //position in pixel
 	bool left, middle, right;

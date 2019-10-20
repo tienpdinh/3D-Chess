@@ -16,8 +16,10 @@ function Board:new(o)
 
             if (x % 2 ~= z % 2) then
                 self.chessboard[x][z].id = addModel("LightTile", x, 0, z)
+                self.chessboard[x][z].color = "Light"
             else
                 self.chessboard[x][z].id = addModel("DarkTile", x, 0, z)
+                self.chessboard[x][z].color = "Dark"
             end
             self.tileIDs[self.chessboard[x][z].id] = self.chessboard[x][z]
             addCollider(self.chessboard[x][z].id, colliderLayer, 0.75, 0, 0, 0)

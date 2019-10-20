@@ -50,3 +50,7 @@ roughnessMap = Marble02_rgh.jpg
 color = 1 1 1
 ior = 2.5
 metallic = 0
+
+[Highlight]
+color = 0.25 0.25 0.25
+emissive = 0 0 1

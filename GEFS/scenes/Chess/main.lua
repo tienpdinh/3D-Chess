@@ -9,11 +9,10 @@ CameraTheta = math.pi/2.0
 cameraT = 0  -- 0 = dark turn, 1 = light turn
 cameraTSpeed = 1
 
--- keyPressed Flags
+-- Interaction flags
 spacePressed = false
+leftClicked = false
 
--- Manage turns.
-turn = "Light"
 
 -- General.
 frameDt = 0
@@ -35,40 +34,116 @@ zOld = 0
 --================--
 
 
+
+-- Turn stuff.
+turn = "Light"
+turnInProgress = false
+playablePieces = nil
+pieceToPlay = nil
+piecePicked = false
+playableTiles = nil
+tileToPlay = nil
+tilePicked = false
+
+
 -- /////// --
 -- METHODS --
 -- /////// --
 
 -- Runs every frame.
 function frameUpdate(dt)
-    -- Highlight logic
-    hitID, dist = getMouseClickWithLayer(piecesColliderLayer)
-    if hitID then
-        highlightPiece(pieces[piecesID[hitID]], dt)
-    end
-    unhighlight(pieces, hitID, dt)
-    --===============--
-    if newDest and pieceInMotion and not finished then
-        --print(pieceInMotion.z, zVel, dt)
-        finished = movePiece(pieceInMotion, newDest, xVel, zVel, dt)
-        --print(newDest[1], newDest[2], xOld, zOld, pieceInMotion.x, pieceInMotion.z, board.chessboard[xOld][zOld].pieceIndex)
-    end
-    print(finished)
-    if newDest and finished then
-        local pieceIndex = board.chessboard[xOld][zOld].pieceIndex
-        board.chessboard[xOld][zOld].pieceIndex = -1
-        board.chessboard[newDest[1]][newDest[2]].pieceIndex = pieceIndex
+    if not turnInProgress then
+        turnInProgress = true
+        -- Setup turn.
+
+        -- Get the pieces that can move this turn.
+        playablePieces = board:canMove(pieces, turn)
+        -- Highlight them all.
+        for i, index in pairs(playablePieces) do
+            setModelMaterial(pieces[index].ID, "Highlight")
+        end
+        -- Set the flags for the turn.
+        pieceToPlay = nil
+        piecePicked = false
+        tileToPlay = nil
+        tilePicked = false
+    else
+        -- Advance turn.
+        if not piecePicked then
+            -- Pick the piece to play.
+            hitID, dist = getMouseClickWithLayer(piecesColliderLayer)
+            if hitID and leftClicked then
+                -- Save the picked piece.
+                piecePicked = true
+                pieceToPlay = pieces[piecesID[hitID]]
+
+                -- Unhighlight all the playable pieces.
+                for i, index in pairs(playablePieces) do
+                    setModelMaterial(pieces[index].ID, "ChessPiece"..turn)
+                end
+
+                -- Get all the playable tiles.
+                playableTiles = pieceToPlay:getLegalMoves(pieces, board)
+
+                -- Highlight them all.
+                for i, pos in pairs(playableTiles) do
+                    setModelMaterial(board.chessboard[pos[1]][pos[2]].id, "Highlight")
+                end
+                -- leftClicked = false
+            end
+        elseif not tilePicked then
+            -- Pick the tile to play.
+            hitID, dist = getMouseClickWithLayer(boardColliderLayer)
+            print "picking tile"
+            if hitID and leftClicked then
+                -- Save the picked tile
+                print "PICKED tile"
+                tilePicked = true
+                tileToPlay = board.tileIDs[hitID]
+
+                -- Unhighlight all playable tiles.
+                for i, pos in pairs(playableTiles) do
+                    local tile = board.chessboard[pos[1]][pos[2]]
+                    setModelMaterial(tile.id, "TileMarble"..tile.color)
+                end
+            end
+        else
+            -- Animate piece moving to tile.
+            -- print "animating tile"
+        end
     end
 
-    if finished then
-        newDest = nil
-        pieceInMotion = nil
-        selectedID = nil
-        chosenTileID = nil
-    end
+    -- -- Highlight logic
+    -- hitID, dist = getMouseClickWithLayer(piecesColliderLayer)
+    -- if hitID then
+    --     highlightPiece(pieces[piecesID[hitID]], dt)
+    -- end
+    -- unhighlight(pieces, hitID, dt)
+    -- --===============--
+    -- if newDest and pieceInMotion and not finished then
+    --     --print(pieceInMotion.z, zVel, dt)
+    --     finished = movePiece(pieceInMotion, newDest, xVel, zVel, dt)
+    --     --print(newDest[1], newDest[2], xOld, zOld, pieceInMotion.x, pieceInMotion.z, board.chessboard[xOld][zOld].pieceIndex)
+    -- end
+    -- print(finished)
+    -- if newDest and finished then
+    --     local pieceIndex = board.chessboard[xOld][zOld].pieceIndex
+    --     board.chessboard[xOld][zOld].pieceIndex = -1
+    --     board.chessboard[newDest[1]][newDest[2]].pieceIndex = pieceIndex
+    -- end
+    --
+    -- if finished then
+    --     newDest = nil
+    --     pieceInMotion = nil
+    --     selectedID = nil
+    --     chosenTileID = nil
+    -- end
 
+    -- Update the frame DT.
     frameDt = dt
 
+    -- Update the camera position.
+    -- TODO: move this into turn logic.
     if (turn == "Light") then
         cameraT = cameraT + dt*cameraTSpeed
         cameraT = math.min(1, cameraT)
@@ -76,9 +151,9 @@ function frameUpdate(dt)
         cameraT = cameraT - dt*cameraTSpeed
         cameraT = math.max(0, cameraT)
     end
-
     setCameraPos()
 end
+
 
 -- Called when a key event occurs.
 function keyHandler(keys)
@@ -128,6 +203,7 @@ function mouseHandler(mouse)
         end
     end
     mousePressed = mouse.left
+    leftClicked = mouse.left
 end
 
 function setCameraPos()
