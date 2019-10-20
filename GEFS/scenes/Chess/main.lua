@@ -54,7 +54,7 @@ function frameUpdate(dt)
         --print(newDest[1], newDest[2], xOld, zOld, pieceInMotion.x, pieceInMotion.z, board.chessboard[xOld][zOld].pieceIndex)
     end
     print(finished)
-    if newDest then
+    if newDest and finished then
         local pieceIndex = board.chessboard[xOld][zOld].pieceIndex
         board.chessboard[xOld][zOld].pieceIndex = -1
         board.chessboard[newDest[1]][newDest[2]].pieceIndex = pieceIndex
