@@ -53,8 +53,14 @@ metallic = 0
 
 [HighlightedTileMaterial]
 color = 0 0 0
-emissive = 0.203 0.658 0.921
+emissive = 0.62 0.70 0.78
+# emissive = 0.203 0.658 0.921
 
 [CursorMaterial]
 color = 0 0 0
-emissive = 1 0 0
+# emissive = 1 0 0
+emissive = 0.96 0.5 0.39
+
+[GameOverMaterial]
+color = 0 0 0
+# emissive = 0 0 0

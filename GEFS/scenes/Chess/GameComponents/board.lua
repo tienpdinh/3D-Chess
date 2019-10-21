@@ -41,6 +41,9 @@ function Board:friendlyOccupied(x, z, pieces, myTeam)
         return false
     else
         local i = self.chessboard[math.floor(x)][math.floor(z)].pieceIndex
+        if pieces[i] == nil then
+            return false
+        end
         return myTeam ==pieces[i].team
     end
 end
@@ -51,6 +54,9 @@ function Board:enemyOccupied(x, z, pieces, myTeam)
         return false
     else
         local i = self.chessboard[math.floor(x)][math.floor(z)].pieceIndex
+        if pieces[i] == nil then
+            return false
+        end
         return myTeam ~= pieces[i].team
     end
 end
@@ -67,6 +73,10 @@ function Board:canMove(pieces, myTeam)
         end
     end
     return moveablePieces
+end
+
+function Board:gameOver(pieces)
+    return pieces[31] == nil or pieces[32] == nil
 end
 
 return Board

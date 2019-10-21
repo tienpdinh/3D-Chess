@@ -12,6 +12,11 @@ material [HighlightedTileMaterial]
 objModel = Cursor.obj
 material [CursorMaterial]
 
+[GameOver]
+objModel = GameOver.obj
+scale 2
+material [GameOverMaterial]
+
 # The base pieces.
 
 [Pawn]

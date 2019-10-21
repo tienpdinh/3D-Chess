@@ -22,6 +22,7 @@ turn = "Light"
 
  -- What part of the turn we are on.
 turnState = 0
+-- -1 = Game over.
 -- 0 = Start turn.
 -- 1 = Creating piece highlights.
 -- 2 = Picking playable piece.
@@ -30,9 +31,8 @@ turnState = 0
 -- 5 = Picking playable tile.
 -- 6 = Destroying tile highlights.
 -- 7 = Moving playable piece to playable tile.
--- 8 = Handle collisions / destroy pieces.
--- 9 = Check for endgame.
--- 10 = End turn.
+-- 8 = Check for endgame.
+-- 9 = End turn.
 
 -- Which pieces can be played for the given turn.
 -- (List of indices into the pieces array).
@@ -64,11 +64,16 @@ cursorZ = 1
 cursorTargetX = 1
 cursorTargetZ = 1
 
+-- The game over mesh.
+gameOverID = -1
+
 -- Runs every frame.
 function frameUpdate(dt)
     -- Run the correct method depending on which part
     -- of the turn we are in.
-    if turnState == 0 then
+    if turnState == -1 then
+        GameOver(dt)
+    elseif turnState == 0 then
         StartTurn()
     elseif turnState == 1 then
         CreatePieceHighlights(dt)
@@ -85,10 +90,8 @@ function frameUpdate(dt)
     elseif turnState == 7 then
         MovePieceToTile(dt)
     elseif turnState == 8 then
-        ResolveCollisions()
-    elseif turnState == 9 then
         CheckForEndgame()
-    elseif turnState == 10 then
+    elseif turnState == 9 then
         EndTurn()
     else
         print "ERROR invalid turn state."
@@ -99,6 +102,33 @@ function frameUpdate(dt)
 
     -- Update the camera position and rotation based on the turn.
     updateCamera(dt, turn)
+end
+
+function GameOver(dt)
+    -- Move all the pieces off the board.
+    for _, piece in pairs(pieces) do
+        local dirX = piece.x - 4.5
+        local dirZ = piece.z - 4.5
+
+        -- Normalize.
+        local mag = math.sqrt(dirX*dirX + dirZ*dirZ)
+        dirX = dirX / mag
+        dirZ = dirZ / mag
+
+        -- Set magnitude to 10.
+        dirX = dirX * 10
+        dirZ = dirZ * 10
+
+        -- Move piece away from center.
+        setModelTranslate(piece.ID, piece.x + dirX*timer, 0, piece.z + dirZ*timer)
+    end
+
+    -- Move the game over text down.
+    setModelTranslate(gameOverID, 4.5, lerp(10, 0.1, timer), 4.5)
+
+    -- Increment the timer.
+    timer = timer + dt/moveDuration
+    timer = math.min(timer, 1.0)
 end
 
 function StartTurn()
@@ -276,22 +306,33 @@ function MovePieceToTile(dt)
     -- Move the model.
     setModelTranslate(pieceToPlay.ID, startX + dirX, jump, startZ + dirZ)
 
+    -- Check if an enemy piece will be captured by moving to this new tile position.
+    local pieceWasCaptured = board:enemyOccupied(endX, endZ, pieces, turn)
+
+    -- Move the enemy piece off the board.
+    if pieceWasCaptured then
+        local capturedID = pieces[board.chessboard[endX][endZ].pieceIndex].ID
+        setModelTranslate(capturedID, endX, timer*10, endZ)
+    end
+
     -- Increment the timer.
     timer = timer + dt/moveDuration
 
     -- End of turn.
     if timer >= 1.0 then
+        -- Finalize the played piece position.
         pieceToPlay.x = endX;
         pieceToPlay.z = endZ;
         setModelTranslate(pieceToPlay.ID, endX, 0, endZ)
 
-        -- TODO: make this more robust and move into own ResolveCollisions state.
-        if board:enemyOccupied(endX, endZ, pieces, turn) then
+        -- Delete the captured piece from the engine and the board.
+        if pieceWasCaptured then
             deleteModel(pieces[board.chessboard[endX][endZ].pieceIndex].ID)
             pieces[board.chessboard[endX][endZ].pieceIndex] = nil
             board.chessboard[endX][endZ].pieceIndex = -1
         end
 
+        -- Update the chess board.
         board.chessboard[startX][startZ].pieceIndex = -1
         board.chessboard[endX][endZ].pieceIndex = piecesID[pieceToPlay.ID]
 
@@ -299,14 +340,23 @@ function MovePieceToTile(dt)
     end
 end
 
-function ResolveCollisions()
-    -- TODO: implement this.
-    turnState = turnState + 1
-end
-
 function CheckForEndgame()
-    -- TODO: implement this.
-    turnState = turnState + 1
+    if board:gameOver(pieces) then
+        -- Reset the timer.
+        timer = 0.0
+
+        -- Instantiate the game over mesh.
+        gameOverID = addModel("GameOver", 4.5, 10, 4.5)
+        if turn == "Light" then
+            rotateModel(gameOverID, math.pi, 0, 1, 0)
+        end
+        rotateModel(gameOverID, -math.pi/2.0, 1, 0, 0)
+
+        -- Set the turn state to game over.
+        turnState = -1
+    else
+        turnState = turnState + 1
+    end
 end
 
 function EndTurn()
