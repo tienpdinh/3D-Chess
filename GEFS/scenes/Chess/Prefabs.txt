@@ -5,7 +5,7 @@ modelDir = ./models/
 # The control elements.
 
 [HighlightedTile]
-objModel = highlight.obj
+objModel = highlightRound.obj
 material [HighlightedTileMaterial]
 
 [Cursor]

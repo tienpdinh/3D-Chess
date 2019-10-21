@@ -1,6 +1,6 @@
 -- Defaults for camera movement.
 -- SET THESE to change the camera behavior.
-local CameraSpeed = 1
+local CameraDuration = 0.75
 local CameraDistanceFromCenter = 6
 local CameraHeight = 6
 local CameraAngle = -50
@@ -30,10 +30,10 @@ CameraUpZ = 0
 -- Updates the camera to face the board based on who's turn it is.
 function updateCamera(dt, turn)
     if turn == "Light" then
-        CameraTimer = CameraTimer + dt*CameraSpeed
+        CameraTimer = CameraTimer + dt/CameraDuration
         CameraTimer = math.min(1, CameraTimer)
     elseif turn == "Dark" then
-        CameraTimer = CameraTimer - dt*CameraSpeed
+        CameraTimer = CameraTimer - dt/CameraDuration
         CameraTimer = math.max(0, CameraTimer)
     else
         print "ERROR in updateCamera(). Illegal turn!"
