@@ -313,7 +313,7 @@ function EndTurn()
     -- Swap turns.
     if turn == "Light" then
         turn = "Dark"
-    elseif turn == "Dark"
+    elseif turn == "Dark" then
         turn = "Light"
     else
         print "ERROR in EndTurn(). Invalid current turn."
