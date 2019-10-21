@@ -11,6 +11,7 @@ highlightDuration = 0.25
 -- How long it takes (s) for a piece to move.
 moveDuration = 1.0
 
+-- How quickly the cursor follows the mouse.
 cursorFollowSpeed = 7.5
 
 -- Whether the left mouse button is clicked or not.
@@ -20,18 +21,18 @@ leftClicked = false
 turn = "Light"
 
  -- What part of the turn we are on.
- -- 0 = Start turn.
- -- 1 = Creating piece highlights.
- -- 2 = Picking playable piece.
- -- 3 = Destroying piece highlights.
- -- 4 = Creating tile highlights.
- -- 5 = Picking playable tile.
- -- 6 = Destroying tile highlights.
- -- 7 = Moving playable piece to playable tile.
- -- 8 = Handle collisions / destroy pieces.
- -- 9 = Check for endgame.
- -- 10 = End turn.
 turnState = 0
+-- 0 = Start turn.
+-- 1 = Creating piece highlights.
+-- 2 = Picking playable piece.
+-- 3 = Destroying piece highlights.
+-- 4 = Creating tile highlights.
+-- 5 = Picking playable tile.
+-- 6 = Destroying tile highlights.
+-- 7 = Moving playable piece to playable tile.
+-- 8 = Handle collisions / destroy pieces.
+-- 9 = Check for endgame.
+-- 10 = End turn.
 
 -- Which pieces can be played for the given turn.
 -- (List of indices into the pieces array).
@@ -57,7 +58,7 @@ tileHighlights = {}
 timer = 0.0
 
 -- The cursor mesh.
-cursorID = addModel("Cursor", 1, 0 , 1)
+cursorID = addModel("Cursor", 1, 0, 1)
 cursorX = 1
 cursorZ = 1
 cursorTargetX = 1
@@ -65,6 +66,8 @@ cursorTargetZ = 1
 
 -- Runs every frame.
 function frameUpdate(dt)
+    -- Run the correct method depending on which part
+    -- of the turn we are in.
     if turnState == 0 then
         StartTurn()
     elseif turnState == 1 then
@@ -91,14 +94,12 @@ function frameUpdate(dt)
         print "ERROR invalid turn state."
     end
 
-
     -- Update the cursor.
     updateCursor(dt)
 
     -- Update the camera position and rotation based on the turn.
     updateCamera(dt, turn)
 end
-
 
 function StartTurn()
     -- Reset the turn variables.
@@ -284,6 +285,13 @@ function MovePieceToTile(dt)
         pieceToPlay.z = endZ;
         setModelTranslate(pieceToPlay.ID, endX, 0, endZ)
 
+        -- TODO: make this more robust and move into own ResolveCollisions state.
+        if board:enemyOccupied(endX, endZ, pieces, turn) then
+            deleteModel(pieces[board.chessboard[endX][endZ].pieceIndex].ID)
+            pieces[board.chessboard[endX][endZ].pieceIndex] = nil
+            board.chessboard[endX][endZ].pieceIndex = -1
+        end
+
         board.chessboard[startX][startZ].pieceIndex = -1
         board.chessboard[endX][endZ].pieceIndex = piecesID[pieceToPlay.ID]
 
@@ -292,25 +300,28 @@ function MovePieceToTile(dt)
 end
 
 function ResolveCollisions()
+    -- TODO: implement this.
     turnState = turnState + 1
 end
 
 function CheckForEndgame()
+    -- TODO: implement this.
     turnState = turnState + 1
 end
 
 function EndTurn()
-    -- Swap turns and reset turn state.
+    -- Swap turns.
     if turn == "Light" then
         turn = "Dark"
-    else
+    elseif turn == "Dark"
         turn = "Light"
+    else
+        print "ERROR in EndTurn(). Invalid current turn."
     end
 
-    -- Reset the turn.
+    -- Reset turn state.
     turnState = 0
 end
-
 
 -- Called when a key event occurs.
 function keyHandler(keys)
