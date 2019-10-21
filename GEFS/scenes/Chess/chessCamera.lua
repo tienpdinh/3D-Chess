@@ -9,3 +9,5 @@ CameraDirZ = 1
 CameraUpX = 0
 CameraUpY = 1
 CameraUpZ = 0
+
+CameraTheta = math.pi/2.0

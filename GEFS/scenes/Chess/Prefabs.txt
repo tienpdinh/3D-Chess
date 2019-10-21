@@ -2,6 +2,16 @@ modelDir = ./models/
 
 
 
+# The control elements.
+
+[HighlightedTile]
+objModel = highlight.obj
+material [HighlightedTileMaterial]
+
+[Cursor]
+objModel = Cursor.obj
+material [CursorMaterial]
+
 # The base pieces.
 
 [Pawn]

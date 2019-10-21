@@ -30,15 +30,23 @@ int deleteModel(lua_State * L); //Stop drawing model (will auto continue if you 
 int hideModel(lua_State * L); //Stop drawing model
 int unhideModel(lua_State * L); //Continue drawing model
 
+
+
+
+int translateModel(lua_State * L);
+int rotateModel(lua_State * L);
 int scaleModel(lua_State * L);
+
+int setModelTranslate(lua_State * L);
+int setModelScale(lua_State * L);
+
 int setModelMaterial(lua_State * L);
 int setModelColor(lua_State * L);
 
 int placeModel(lua_State * L);
 int placeModelAtAngle(lua_State * L);
+
 int resetModelTansform(lua_State * L);
-int translateModel(lua_State * L);
-int rotateModel(lua_State * L);
 int resetTransformation(lua_State * L);
 
 
