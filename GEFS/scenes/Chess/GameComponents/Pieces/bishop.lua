@@ -117,19 +117,4 @@ function Bishop:getLegalMoves(pieces, board)
     return moves, i - 1
 end
 
--- function Bishop:legalmoves ()
---   -- Return an array of the legal moves based on the current location
---   -- TODO: Is this inefficient? Replace with a islegalmove instead maybe?
---   return {}
--- end
---
--- function Bishop:islegalmove (move)
---   -- TODO: Implement this, graph search?
---   return false
--- end
---
--- function Bishop:capture (opponent)
---   -- TODO: Implement this
--- end
-
 return Bishop

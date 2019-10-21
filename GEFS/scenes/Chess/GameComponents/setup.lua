@@ -192,48 +192,48 @@ function getPieces()
     return pieces, piecesID, colliderLayer
 end
 
-function highlightPiece(piece, dt)
-    if piece.y < 0.4 then
-        translateModel(piece.ID, 0, 3*dt, 0)
-        piece.y = piece.y + 3*dt
-    end
-end
+-- function highlightPiece(piece, dt)
+--     if piece.y < 0.4 then
+--         translateModel(piece.ID, 0, 3*dt, 0)
+--         piece.y = piece.y + 3*dt
+--     end
+-- end
 
-function unhighlight(pieces, curID, dt)
-    for i = 1, 32 do
-        if (not curID or pieces[i].ID ~= curID) and pieces[i].y > 0 then
-            translateModel(pieces[i].ID, 0, -3*dt, 0)
-            pieces[i].y = pieces[i].y - 3*dt
-        end
-        if pieces[i].y < 0 then
-            pieces[i].y = 0
-            pieces[i]:placeModel()
-        end
-    end
-end
+-- function unhighlight(pieces, curID, dt)
+--     for i = 1, 32 do
+--         if (not curID or pieces[i].ID ~= curID) and pieces[i].y > 0 then
+--             translateModel(pieces[i].ID, 0, -3*dt, 0)
+--             pieces[i].y = pieces[i].y - 3*dt
+--         end
+--         if pieces[i].y < 0 then
+--             pieces[i].y = 0
+--             pieces[i]:placeModel()
+--         end
+--     end
+-- end
 
 -- Function to animate a piece movement, returns true if the animation 
 -- is finished, false otherwise
-function movePiece(piece, dest, xVel, zVel, dt)
-    local xFin = false
-    local zFin = false
-    if math.abs(piece.x - dest[1]) <= math.abs(xVel*dt) then
-        piece.x = dest[1]
-        piece:placeModel()
-        xFin = true
-    end
-    if math.abs(piece.z - dest[2]) <= math.abs(zVel*dt) then
-        piece.z = dest[2]
-        piece:placeModel()
-        zFin = true
-    end
-    if math.abs(piece.x - dest[1]) > math.abs(xVel*dt) and not xFin then
-        translateModel(piece.ID, xVel*dt, 0, 0)
-        piece.x = piece.x + xVel*dt
-    end
-    if math.abs(piece.z - dest[2]) > math.abs(zVel*dt) and not zFin then
-        translateModel(piece.ID, 0, 0, zVel*dt)
-        piece.z = piece.z + zVel*dt
-    end
-    return xFin and zFin
-end
+-- function movePiece(piece, dest, xVel, zVel, dt)
+--     local xFin = false
+--     local zFin = false
+--     if math.abs(piece.x - dest[1]) <= math.abs(xVel*dt) then
+--         piece.x = dest[1]
+--         piece:placeModel()
+--         xFin = true
+--     end
+--     if math.abs(piece.z - dest[2]) <= math.abs(zVel*dt) then
+--         piece.z = dest[2]
+--         piece:placeModel()
+--         zFin = true
+--     end
+--     if math.abs(piece.x - dest[1]) > math.abs(xVel*dt) and not xFin then
+--         translateModel(piece.ID, xVel*dt, 0, 0)
+--         piece.x = piece.x + xVel*dt
+--     end
+--     if math.abs(piece.z - dest[2]) > math.abs(zVel*dt) and not zFin then
+--         translateModel(piece.ID, 0, 0, zVel*dt)
+--         piece.z = piece.z + zVel*dt
+--     end
+--     return xFin and zFin
+-- end

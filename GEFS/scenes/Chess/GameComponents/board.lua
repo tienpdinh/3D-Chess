@@ -38,7 +38,7 @@ end
 -- Returns whether the board is occupied by a friendly piece at (x, z)
 function Board:friendlyOccupied(x, z, pieces, myTeam)
     if not self:occupied(x, z) then
-        return false;
+        return false
     else
         local i = self.chessboard[math.floor(x)][math.floor(z)].pieceIndex
         return myTeam ==pieces[i].team
@@ -48,10 +48,10 @@ end
 -- Returns whether the board is occupied by an enemy piece at (x, z)
 function Board:enemyOccupied(x, z, pieces, myTeam)
     if not self:occupied(x, z) then
-        return false;
+        return false
     else
         local i = self.chessboard[math.floor(x)][math.floor(z)].pieceIndex
-        return myTeam ~=pieces[i].team
+        return myTeam ~= pieces[i].team
     end
 end
 

@@ -36,8 +36,8 @@ function Pawn:getLegalMoves(pieces, board)
 
     if self.team == "Light" then
         -- Pawns can move forward +2 if they haven't moved yet and
-        -- the space is not friendly-occupied.
-        if self.z == 2 and not board:friendlyOccupied(self.x, self.z+2, pieces, self.team) then
+        -- the space is not friendly-occupied and the +1 space isn't enemy occupied.
+        if self.z == 2 and not board:friendlyOccupied(self.x, self.z+2, pieces, self.team) and not board:enemyOccupied(self.x, self.z+1, self.team) then
             moves[i] = {self.x, self.z+2}
             i = i + 1
         end
@@ -87,20 +87,5 @@ function Pawn:getLegalMoves(pieces, board)
 
     return moves, i - 1
 end
-
--- function Pawn:legalmoves ()
---   -- Return an array of the legal moves based on the current location
---   -- TODO: Is this inefficient? Replace with a islegalmove instead maybe?
---   return {}
--- end
---
--- function Pawn:islegalmove (move)
---   -- TODO: Implement this, graph search?
---   return false
--- end
---
--- function Pawn:capture (opponent)
---   -- TODO: Implement this
--- end
 
 return Pawn

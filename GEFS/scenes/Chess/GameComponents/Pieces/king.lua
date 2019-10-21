@@ -61,19 +61,4 @@ function King:getLegalMoves(pieces, board)
     return moves, i - 1
 end
 
--- function King:legalmoves ()
---   -- Return an array of the legal moves based on the current location
---   -- TODO: Is this inefficient? Replace with a islegalmove instead maybe?
---   return {}
--- end
---
--- function King:islegalmove (move)
---   -- TODO: Implement this, graph search?
---   return false
--- end
---
--- function King:capture (opponent)
---   -- TODO: Implement this
--- end
-
 return King

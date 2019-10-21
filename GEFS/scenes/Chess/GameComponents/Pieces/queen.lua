@@ -181,19 +181,4 @@ function Queen:getLegalMoves(pieces, board)
     return moves, i - 1
 end
 
--- function Queen:legalmoves ()
---   -- Return an array of the legal moves based on the current location
---   -- TODO: Is this inefficient? Replace with a islegalmove instead maybe?
---   return {}
--- end
---
--- function Queen:islegalmove (move)
---   -- TODO: Implement this, graph search?
---   return false
--- end
---
--- function Queen:capture (opponent)
---   -- TODO: Implement this
--- end
-
 return Queen

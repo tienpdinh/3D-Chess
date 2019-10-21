@@ -52,8 +52,8 @@ ior = 2.5
 metallic = 0
 
 [HighlightedTileMaterial]
-color = 0.25 0.25 0.25
-emissive = 0 0 1
+color = 0 0 0
+emissive = 0.203 0.658 0.921
 
 [CursorMaterial]
 color = 0 0 0
