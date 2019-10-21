@@ -57,7 +57,7 @@ bool viewFrustumCull = true;
 bool drawColliders = false;
 bool saveOutput = false;
 
-int targetFrameRate = 30;
+int targetFrameRate = 60;
 float secondsPerFrame = 1.0f / (float)targetFrameRate;
 
 bool fullscreen = false;
@@ -579,7 +579,7 @@ void configEngine(string configFile, string configName)
 			drawColliders = val;
       		LOG_F(1,"Drawing colliders: %s", drawColliders ? "TRUE" : "FALSE");
     	}
-		else if (commandStr == "`")
+		else if (commandStr == "targetFrameRate")
 		{
 			float val;
 			sscanf(rawline,"targetFrameRate = %f", &val);
