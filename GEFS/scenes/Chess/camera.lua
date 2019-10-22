@@ -5,6 +5,8 @@ local CameraDistanceFromCenter = 6
 local CameraHeight = 6
 local CameraAngle = -50
 
+require "scenes/Chess/utils"
+
 -- Helper variables.
 -- DO NOT set these.
 local CameraTimer = 1.0
@@ -39,15 +41,17 @@ function updateCamera(dt, turn)
         print "ERROR in updateCamera(). Illegal turn!"
     end
 
+    local t = easeInOutCubic(CameraTimer)
+
     -- NOTE: board is centered at (4.5, 0, 4.5)
     -- Set the camera position in a circle around the board center.
-    CameraPosX = 4.5 + math.sin(CameraTimer * math.pi) * CameraDistanceFromCenter
+    CameraPosX = 4.5 + math.sin(t * math.pi) * CameraDistanceFromCenter
     CameraPosY = CameraHeight
-    CameraPosZ = 4.5 + math.cos(CameraTimer * math.pi) * CameraDistanceFromCenter
+    CameraPosZ = 4.5 + math.cos(t * math.pi) * CameraDistanceFromCenter
 
     -- Rotate the camera to face inwards towards the board.
     local alpha = math.rad(CameraAngle)
-    local beta = -math.pi * (1.0-CameraTimer)
+    local beta = -math.pi * (1.0-t)
     CameraDirX = math.cos(alpha) * math.sin(beta)
     CameraDirY = math.sin(alpha)
     CameraDirZ = math.cos(alpha) * math.cos(beta)

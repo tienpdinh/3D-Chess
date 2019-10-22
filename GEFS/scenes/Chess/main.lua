@@ -296,13 +296,17 @@ function MovePieceToTile(dt)
     local endX = tileToPlay.x
     local endZ = tileToPlay.z
 
+    -- TODO: squash and stretch models here.
     -- Get direction from start to end.
-    local dirX =  (endX - startX) * timer
-    local dirZ =  (endZ - startZ) * timer
+    local dirX =  (endX - startX) * timer  -- easeInOutCubic(timer)
+    local dirZ =  (endZ - startZ) * timer  -- easeInOutCubic(timer)
 
     -- Make the piece "jump" during its move.
+    -- local linY = 1 - math.abs(1-2*timer)
+    -- local jump = linY  -- easeInOutCubic(linY)
     local jump = 1.0 - (2*timer-1)*(2*timer-1)
 
+    -- TODO: squash and stretch models here.
     -- Move the model.
     setModelTranslate(pieceToPlay.ID, startX + dirX, jump, startZ + dirZ)
 
