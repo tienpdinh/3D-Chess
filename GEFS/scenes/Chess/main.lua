@@ -4,6 +4,7 @@
 require "scenes/Chess/utils"
 require "scenes/Chess/camera"  -- Sets up the camera.
 require "scenes/Chess/GameComponents/chess"  -- Sets up the chess game.
+require "scenes/Chess/GameComponents/digitalclock"
 
 -- How long it takes (s) for a highlights to dis/appear.
 highlightDuration = 0.25
@@ -66,7 +67,7 @@ cursorTargetZ = 1
 
 -- The game over mesh.
 gameOverID = -1
-
+clockStart = false
 -- Runs every frame.
 function frameUpdate(dt)
     -- Run the correct method depending on which part
@@ -95,6 +96,11 @@ function frameUpdate(dt)
         EndTurn()
     else
         print "ERROR invalid turn state."
+    end
+
+    if clockStart then
+        -- clock() will return true if one of the team hits 0 in their clock, false otherwise
+        endgame = clock(dt, turn)
     end
 
     -- Update the cursor.
@@ -376,6 +382,7 @@ end
 -- Called when a key event occurs.
 function keyHandler(keys)
     -- Do nothing.
+    if keys.space then clockStart=true end
 end
 
 -- Called when the mouse moves.
