@@ -118,3 +118,93 @@ rotate 180 1 0 0
 scale 0.5
 objModel = Tile.obj
 material [TileMarbleLight]
+
+
+# Digital Clock (Competitive Gameplay)
+[OneLight]
+objModel = one.obj
+material [TileMarbleLight]
+
+[TwoLight]
+objModel = two.obj
+material [TileMarbleLight]
+
+[ThreeLight]
+objModel = three.obj
+material [TileMarbleLight]
+
+[FourLight]
+objModel = four.obj
+material [TileMarbleLight]
+
+[FiveLight]
+objModel = five.obj
+material [TileMarbleLight]
+
+[SixLight]
+objModel = six.obj
+material [TileMarbleLight]
+
+[SevenLight]
+objModel = seven.obj
+material [TileMarbleLight]
+
+[EightLight]
+objModel = eight.obj
+material [TileMarbleLight]
+
+[NineLight]
+objModel = nine.obj
+material [TileMarbleLight]
+
+[ZeroLight]
+objModel = zero.obj
+material [TileMarbleLight]
+
+[ColonLight]
+objModel = colon.obj
+material [TileMarbleLight]
+
+[OneDark]
+objModel = one.obj
+material [TileMarbleDark]
+
+[TwoDark]
+objModel = two.obj
+material [TileMarbleDark]
+
+[ThreeDark]
+objModel = three.obj
+material [TileMarbleDark]
+
+[FourDark]
+objModel = four.obj
+material [TileMarbleDark]
+
+[FiveDark]
+objModel = five.obj
+material [TileMarbleDark]
+
+[SixDark]
+objModel = six.obj
+material [TileMarbleDark]
+
+[SevenDark]
+objModel = seven.obj
+material [TileMarbleDark]
+
+[EightDark]
+objModel = eight.obj
+material [TileMarbleDark]
+
+[NineDark]
+objModel = nine.obj
+material [TileMarbleDark]
+
+[ZeroDark]
+objModel = zero.obj
+material [TileMarbleDark]
+
+[ColonDark]
+objModel = colon.obj
+material [TileMarbleDark]
