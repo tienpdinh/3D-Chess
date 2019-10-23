@@ -121,90 +121,91 @@ material [TileMarbleLight]
 
 
 # Digital Clock (Competitive Gameplay)
+
 [OneLight]
 objModel = one.obj
-material [TileMarbleLight]
+material [ClockLight]
 
 [TwoLight]
 objModel = two.obj
-material [TileMarbleLight]
+material [ClockLight]
 
 [ThreeLight]
 objModel = three.obj
-material [TileMarbleLight]
+material [ClockLight]
 
 [FourLight]
 objModel = four.obj
-material [TileMarbleLight]
+material [ClockLight]
 
 [FiveLight]
 objModel = five.obj
-material [TileMarbleLight]
+material [ClockLight]
 
 [SixLight]
 objModel = six.obj
-material [TileMarbleLight]
+material [ClockLight]
 
 [SevenLight]
 objModel = seven.obj
-material [TileMarbleLight]
+material [ClockLight]
 
 [EightLight]
 objModel = eight.obj
-material [TileMarbleLight]
+material [ClockLight]
 
 [NineLight]
 objModel = nine.obj
-material [TileMarbleLight]
+material [ClockLight]
 
 [ZeroLight]
 objModel = zero.obj
-material [TileMarbleLight]
+material [ClockLight]
 
 [ColonLight]
 objModel = colon.obj
-material [TileMarbleLight]
+material [ClockLight]
 
 [OneDark]
 objModel = one.obj
-material [TileMarbleDark]
+material [ClockDark]
 
 [TwoDark]
 objModel = two.obj
-material [TileMarbleDark]
+material [ClockDark]
 
 [ThreeDark]
 objModel = three.obj
-material [TileMarbleDark]
+material [ClockDark]
 
 [FourDark]
 objModel = four.obj
-material [TileMarbleDark]
+material [ClockDark]
 
 [FiveDark]
 objModel = five.obj
-material [TileMarbleDark]
+material [ClockDark]
 
 [SixDark]
 objModel = six.obj
-material [TileMarbleDark]
+material [ClockDark]
 
 [SevenDark]
 objModel = seven.obj
-material [TileMarbleDark]
+material [ClockDark]
 
 [EightDark]
 objModel = eight.obj
-material [TileMarbleDark]
+material [ClockDark]
 
 [NineDark]
 objModel = nine.obj
-material [TileMarbleDark]
+material [ClockDark]
 
 [ZeroDark]
 objModel = zero.obj
-material [TileMarbleDark]
+material [ClockDark]
 
 [ColonDark]
 objModel = colon.obj
-material [TileMarbleDark]
+material [ClockDark]

@@ -64,3 +64,11 @@ emissive = 0.96 0.5 0.39
 [GameOverMaterial]
 color = 0 0 0
 # emissive = 0 0 0
+
+[ClockLight]
+color = 0 0 0
+emissive = 0.89 0.88 0.85
+
+[ClockDark]
+color = 0 0 0
+emissive = 0.09 0.1 0.117
