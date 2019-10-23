@@ -1,9 +1,10 @@
 -- Chess in GEFS
 -- Tien Dinh, Dan Shervheim
 
-require "scenes/Chess/utils"
 require "scenes/Chess/camera"  -- Sets up the camera.
 require "scenes/Chess/GameComponents/chess"  -- Sets up the chess game.
+utils = require "scenes/Chess/utils"
+easing = require "scenes/Chess/easing"
 
 -- How long it takes (s) for a highlights to dis/appear.
 highlightDuration = 0.25
@@ -124,7 +125,7 @@ function GameOver(dt)
     end
 
     -- Move the game over text down.
-    setModelTranslate(gameOverID, 4.5, lerp(10, 0.1, timer), 4.5)
+    setModelTranslate(gameOverID, 4.5, utils.lerp(10, 0.1, timer), 4.5)
 
     -- Increment the timer.
     timer = timer + dt/moveDuration
@@ -155,8 +156,9 @@ end
 
 function CreatePieceHighlights(dt)
     -- Inflate the piece highlights to their proper scales.
+    local t = timer  -- easing.easeOutCirc(timer)
     for _, id in pairs(pieceHighlights) do
-        setModelScale(id, timer, timer, timer)
+        setModelScale(id, t, t, t)
     end
 
     -- Increment the timer.
@@ -208,8 +210,9 @@ end
 
 function DestroyPieceHighlights(dt)
     -- Deflate the piece highlights to 0.
+    local t = timer -- easing.easeInOutCirc(utils.remap(timer,0,1,0.5,1))
     for _, id in pairs(pieceHighlights) do
-        setModelScale(id, timer, timer, timer)
+        setModelScale(id, t, t, t)
     end
 
     -- Decrement the timer.
@@ -229,8 +232,9 @@ end
 
 function CreateTileHighlights(dt)
     -- Inflate the tile highlights to their proper scales.
+    local t = timer -- easing.easeOutCirc(timer)
     for _, id in pairs(tileHighlights) do
-        setModelScale(id, timer, timer, timer)
+        setModelScale(id, t, t, t)
     end
 
     -- Increment the timer.
@@ -271,8 +275,9 @@ end
 
 function DestroyTileHighlights(dt)
     -- Deflate the tile highlights to 0.
+    local t = timer -- easing.easeInCirc(timer)
     for _, id in pairs(tileHighlights) do
-        setModelScale(id, timer, timer, timer)
+        setModelScale(id, t, t, t)
     end
 
     -- Decrement the timer.
@@ -296,19 +301,19 @@ function MovePieceToTile(dt)
     local endX = tileToPlay.x
     local endZ = tileToPlay.z
 
+    local t = easing.easeInOutCubic(timer)
+
     -- TODO: squash and stretch models here.
     -- Get direction from start to end.
-    local dirX =  (endX - startX) * timer  -- easeInOutCubic(timer)
-    local dirZ =  (endZ - startZ) * timer  -- easeInOutCubic(timer)
+    local dirX =  (endX - startX) * t
+    local dirZ =  (endZ - startZ) * t
 
     -- Make the piece "jump" during its move.
-    -- local linY = 1 - math.abs(1-2*timer)
-    -- local jump = linY  -- easeInOutCubic(linY)
-    local jump = 1.0 - (2*timer-1)*(2*timer-1)
+    local height = 1.0 - (2*timer-1)*(2*timer-1)
 
     -- TODO: squash and stretch models here.
     -- Move the model.
-    setModelTranslate(pieceToPlay.ID, startX + dirX, jump, startZ + dirZ)
+    setModelTranslate(pieceToPlay.ID, startX + dirX, height, startZ + dirZ)
 
     -- Check if an enemy piece will be captured by moving to this new tile position.
     local pieceWasCaptured = board:enemyOccupied(endX, endZ, pieces, turn)
@@ -325,8 +330,9 @@ function MovePieceToTile(dt)
     -- End of turn.
     if timer >= 1.0 then
         -- Finalize the played piece position.
-        pieceToPlay.x = endX;
-        pieceToPlay.z = endZ;
+        pieceToPlay.x = endX
+        pieceToPlay.y = 0
+        pieceToPlay.z = endZ
         setModelTranslate(pieceToPlay.ID, endX, 0, endZ)
 
         -- Delete the captured piece from the engine and the board.
@@ -396,8 +402,8 @@ function updateCursor(dt)
         cursorTargetZ = board.tileIDs[hitID].z
     end
 
-    cursorX = lerp(cursorX, cursorTargetX, math.min(dt*cursorFollowSpeed, 1))
-    cursorZ = lerp(cursorZ, cursorTargetZ, math.min(dt*cursorFollowSpeed, 1))
+    cursorX = utils.lerp(cursorX, cursorTargetX, math.min(dt*cursorFollowSpeed, 1))
+    cursorZ = utils.lerp(cursorZ, cursorTargetZ, math.min(dt*cursorFollowSpeed, 1))
 
     resetModelTansform(cursorID)
     translateModel(cursorID, cursorX, 0, cursorZ)

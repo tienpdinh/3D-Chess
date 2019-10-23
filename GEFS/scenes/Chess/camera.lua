@@ -5,7 +5,7 @@ local CameraDistanceFromCenter = 6
 local CameraHeight = 6
 local CameraAngle = -50
 
-require "scenes/Chess/utils"
+local easing = require "scenes/Chess/easing"
 
 -- Helper variables.
 -- DO NOT set these.
@@ -41,7 +41,15 @@ function updateCamera(dt, turn)
         print "ERROR in updateCamera(). Illegal turn!"
     end
 
-    local t = easeInOutCubic(CameraTimer)
+    local t = 0
+    if turn == "Light" then
+        t = easing.easeOutExpo(CameraTimer)
+    elseif turn == "Dark" then
+        t = easing.easeInExpo(CameraTimer)
+    else
+        print("ERROR in camera. Invalid turn.")
+    end
+    -- local t = easing.easeInOutCubic(CameraTimer)
 
     -- NOTE: board is centered at (4.5, 0, 4.5)
     -- Set the camera position in a circle around the board center.
