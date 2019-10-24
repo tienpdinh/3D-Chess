@@ -15,8 +15,8 @@ end
 
 -- Load and play the background music (loop infinitely)
 -- https://soundimage.org/fantasy-2/
-local bgmusic = loadAudio("scenes/Chess/GameComponents/background.wav")
+local bgmusic = loadAudio("scenes/Chess/sounds/background.wav")
 --playSong(bgmusic)
 
 -- Load selection sound
-selectionSound = loadAudio("scenes/Chess/GameComponents/selection.wav")
+selectionSound = loadAudio("scenes/Chess/sounds/selection.wav")
