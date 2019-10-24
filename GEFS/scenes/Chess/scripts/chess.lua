@@ -21,3 +21,7 @@ local bgmusic = loadAudio("scenes/Chess/sounds/background.wav")
 -- Load selection sound
 -- https://www.fesliyanstudios.com/royalty-free-sound-effects-download/video-game-menu-153
 selectionSound = loadAudio("scenes/Chess/sounds/selection.wav")
+
+-- http://soundbible.com/783-Click.html
+clickSound1 = loadAudio("scenes/Chess/sounds/click.wav")
+clicksound2 = loadAudio("scenes/Chess/sounds/tick.wav")

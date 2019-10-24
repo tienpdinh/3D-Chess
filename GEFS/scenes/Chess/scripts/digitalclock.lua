@@ -42,10 +42,11 @@ local darkCurrentTimer = {
   dt = 0
 }
 
-function clock (dt, turn)
+function clock (dt, turn, tickSound)
   if turn == "Light" then
     lightCurrentTimer.dt = lightCurrentTimer.dt + dt
     if math.floor(lightCurrentTimer.dt) == 1 then -- One second has passed
+        playSoundEffect(tickSound)
       lightCurrentTimer.dt = 0
       if lightCurrentTimer.sec == 0 and lightCurrentTimer.min == 0 then
         return true
@@ -63,6 +64,7 @@ function clock (dt, turn)
   elseif turn == "Dark" then
     darkCurrentTimer.dt = darkCurrentTimer.dt + dt
     if math.floor(darkCurrentTimer.dt) == 1 then -- One second has passed
+        playSoundEffect(tickSound)
       darkCurrentTimer.dt = 0
       if darkCurrentTimer.sec == 0 and darkCurrentTimer.min == 0 then
         return true

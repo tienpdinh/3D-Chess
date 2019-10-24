@@ -17,6 +17,9 @@ moveDuration = 0.75
 
 -- How quickly the cursor follows the mouse.
 cursorFollowSpeed = 7.5
+cursorScaleSpeed = 15
+cursorDefaultScale = 0.75
+cursorScale = 0.75
 
 -- Whether the left mouse button is clicked or not.
 leftClicked = false
@@ -114,9 +117,11 @@ function frameUpdate(dt)
 
     if clockIsRunning then
         -- clock() will return true if one of the team hits 0 in their clock, false otherwise
-        clockHasRunOut = clock(dt, turn)
-        if clockHasRunOut and turnState > -1 then
-            CheckForEndgame()
+        if turnState >= 2 or turnState <= 5 then
+            clockHasRunOut = clock(dt, turn, clicksound2)
+            if clockHasRunOut and turnState > -1 then
+                CheckForEndgame()
+            end
         end
     end
 
@@ -219,6 +224,9 @@ function GetPieceToPlay()
             -- Save the selected piece.
             pieceToPlay = pieces[piecesID[hitID]]
 
+            -- Clear playable pieces.
+            playablePieces = {}
+
             -- Get the list of tiles the piece can move to.
             playableTiles = pieceToPlay:getLegalMoves(pieces, board)
 
@@ -253,6 +261,8 @@ function DestroyPieceHighlights(dt)
         for _, id in pairs(pieceHighlights) do
             deleteModel(id)
         end
+
+        pieceHighlights = {}
 
         timer = 0.0
         turnState = turnState + 1
@@ -296,6 +306,9 @@ function GetTileToPlay()
             -- Save the selected piece.
             tileToPlay = board.tileIDs[hitID]
 
+            -- Clear playable tiles.
+            playableTiles = {}
+
             -- Move to the next state.
             turnState = turnState + 1
         end
@@ -318,6 +331,8 @@ function DestroyTileHighlights(dt)
         for _, id in pairs(tileHighlights) do
             deleteModel(id)
         end
+
+        tileHighlights = {}
 
         timer = 0.0
         turnState = turnState + 1
@@ -538,9 +553,34 @@ function updateCursor(dt)
         cursorTargetZ = board.tileIDs[hitID].z
     end
 
+    isSelecting = false
+
+    if playablePieces ~= nil then
+        for _, index in pairs(playablePieces) do
+            if pieces[index].x == cursorTargetX and pieces[index].z == cursorTargetZ then
+                isSelecting = true
+            end
+        end
+    end
+
+    if playableTiles ~= nil then
+        for _, tile in pairs(playableTiles) do
+            if tile[1] == cursorTargetX and tile[2] == cursorTargetZ then
+                isSelecting = true
+            end
+        end
+    end
+
+    if isSelecting then
+        cursorScale = utils.lerp(cursorScale, cursorDefaultScale, math.min(dt*cursorScaleSpeed, 1))
+    else
+        cursorScale = utils.lerp(cursorScale, 1, math.min(dt*cursorScaleSpeed, 1))
+    end
+
     cursorX = utils.lerp(cursorX, cursorTargetX, math.min(dt*cursorFollowSpeed, 1))
     cursorZ = utils.lerp(cursorZ, cursorTargetZ, math.min(dt*cursorFollowSpeed, 1))
 
     resetModelTansform(cursorID)
+    scaleModel(cursorID, cursorScale, 1, cursorScale)
     translateModel(cursorID, cursorX, 0, cursorZ)
 end

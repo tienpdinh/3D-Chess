@@ -67,6 +67,8 @@ int targetScreenHeight = 700;
 bool useBloom = false;
 bool useShadowMap = true;
 
+bool hideCursor = true;
+
 // Function headers.
 void Win2PPM(int width, int height);
 void configEngine(string configFile, string configName);
@@ -113,6 +115,16 @@ int main(int argc, char *argv[]){
 
 	// Initialize Graphics (for OpenGL) and Audio (for sound) and Game Controller.
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC);
+
+	// TODO: this doesn't work on OSX. Why???
+	/*
+	if (hideCursor)
+	{
+		printf("CURSOR = %d\n", SDL_ShowCursor(SDL_QUERY));
+		SDL_ShowCursor(SDL_DISABLE);
+		printf("CURSOR = %d\n", SDL_ShowCursor(SDL_QUERY));
+	}
+	*/
 
 	audioManager.init();
 
