@@ -344,7 +344,7 @@ function MovePieceToTile(dt)
     local bounceStrength = 0  -- 0.25
     local bounceDirStrength = 0  -- 0.5
 
-    bounceDirStrength = bounceDirStrength * delayedInOut  -- Fade in/out.
+    bounceDirStrength = bounceDirStrength * delayedInOut  -- Fade in/out over move duration.
     local sx = 1 + (bounceStrength*math.sin(3*math.pi*timer)) + (bounceDirStrength*math.abs(dirX / dirMag))
     local sy = 1 - (bounceStrength*math.sin(3*math.pi*timer))
     local sz = 1 + (bounceStrength*math.sin(3*math.pi*timer)) + (bounceDirStrength*math.abs(dirZ / dirMag))
