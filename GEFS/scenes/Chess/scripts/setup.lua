@@ -1,9 +1,9 @@
-Rook = require "scenes/Chess/GameComponents/Pieces/rook"
-Pawn = require "scenes/Chess/GameComponents/Pieces/pawn"
-Knight = require "scenes/Chess/GameComponents/Pieces/knight"
-Bishop = require "scenes/Chess/GameComponents/Pieces/bishop"
-Queen = require "scenes/Chess/GameComponents/Pieces/queen"
-King = require "scenes/Chess/GameComponents/Pieces/king"
+Rook = require "scenes/Chess/scripts/pieces/rook"
+Pawn = require "scenes/Chess/scripts/pieces/pawn"
+Knight = require "scenes/Chess/scripts/pieces/knight"
+Bishop = require "scenes/Chess/scripts/pieces/bishop"
+Queen = require "scenes/Chess/scripts/pieces/queen"
+King = require "scenes/Chess/scripts/pieces/king"
 
 function getPieces()
     local pieces = {}
@@ -215,7 +215,7 @@ soundPlayedOn = nil
 --     end
 -- end
 
--- Function to animate a piece movement, returns true if the animation 
+-- Function to animate a piece movement, returns true if the animation
 -- is finished, false otherwise
 -- function movePiece(piece, dest, xVel, zVel, dt)
 --     local xFin = false

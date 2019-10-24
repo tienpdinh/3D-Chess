@@ -1,11 +1,11 @@
 -- Chess in GEFS
 -- Tien Dinh, Dan Shervheim
 
-require "scenes/Chess/camera"  -- Sets up the camera.
-require "scenes/Chess/GameComponents/chess"  -- Sets up the chess game.
-utils = require "scenes/Chess/utils"
-easing = require "scenes/Chess/easing"
-require "scenes/Chess/GameComponents/digitalclock"
+require "scenes/Chess/scripts/camera"  -- Sets up the camera.
+require "scenes/Chess/scripts/chess"  -- Sets up the chess game.
+utils = require "scenes/Chess/scripts/utils"
+easing = require "scenes/Chess/scripts/easing"
+require "scenes/Chess/scripts/digitalclock"
 
 -- How long it takes (s) for a highlights to dis/appear.
 highlightDuration = 0.25
@@ -68,7 +68,12 @@ cursorTargetZ = 1
 
 -- The game over mesh.
 gameOverID = -1
-clockStart = false
+gameOverMeshDirection = 0
+
+-- The clock.
+clockIsRunning = false
+clockHasRunOut = false
+
 -- Runs every frame.
 function frameUpdate(dt)
     -- Run the correct method depending on which part
@@ -99,9 +104,12 @@ function frameUpdate(dt)
         print "ERROR invalid turn state."
     end
 
-    if clockStart then
+    if clockIsRunning then
         -- clock() will return true if one of the team hits 0 in their clock, false otherwise
-        endgame = clock(dt, turn)
+        clockHasRunOut = clock(dt, turn)
+        if clockHasRunOut and turnState > -1 then
+            CheckForEndgame()
+        end
     end
 
     -- Update the cursor.
@@ -112,26 +120,23 @@ function frameUpdate(dt)
 end
 
 function GameOver(dt)
-    -- Move all the pieces off the board.
+    -- Scale down all pieces and highlights.
+    local s = 1-timer
     for _, piece in pairs(pieces) do
-        local dirX = piece.x - 4.5
-        local dirZ = piece.z - 4.5
-
-        -- Normalize.
-        local mag = math.sqrt(dirX*dirX + dirZ*dirZ)
-        dirX = dirX / mag
-        dirZ = dirZ / mag
-
-        -- Set magnitude to 10.
-        dirX = dirX * 10
-        dirZ = dirZ * 10
-
-        -- Move piece away from center.
-        setModelTranslate(piece.ID, piece.x + dirX*timer, 0, piece.z + dirZ*timer)
+        scaleModel(piece.ID, s, s, s)
+    end
+    for _, highlight in pairs(pieceHighlights) do
+        scaleModel(highlight, s, s, s)
+    end
+    for _, highlight in pairs(tileHighlights) do
+        scaleModel(highlight, s, s, s)
     end
 
     -- Move the game over text down.
-    setModelTranslate(gameOverID, 4.5, utils.lerp(10, 0.1, timer), 4.5)
+    resetModelTansform(gameOverID)
+    rotateModel(gameOverID, gameOverMeshDirection, 0, 1, 0)
+    rotateModel(gameOverID, -math.pi/2.0, 1, 0, 0)
+    translateModel(gameOverID, 4.5, utils.lerp(10, 0.1, timer), 4.5)
 
     -- Increment the timer.
     timer = timer + dt/moveDuration
@@ -162,9 +167,9 @@ end
 
 function CreatePieceHighlights(dt)
     -- Inflate the piece highlights to their proper scales.
-    local t = timer  -- easing.easeOutCirc(timer)
     for _, id in pairs(pieceHighlights) do
-        setModelScale(id, t, t, t)
+    local s = timer
+        setModelScale(id, s, s, s)
     end
 
     -- Increment the timer.
@@ -226,9 +231,9 @@ end
 
 function DestroyPieceHighlights(dt)
     -- Deflate the piece highlights to 0.
-    local t = timer -- easing.easeInOutCirc(utils.remap(timer,0,1,0.5,1))
     for _, id in pairs(pieceHighlights) do
-        setModelScale(id, t, t, t)
+        local s = timer
+        setModelScale(id, s, s, s)
     end
 
     -- Decrement the timer.
@@ -248,9 +253,9 @@ end
 
 function CreateTileHighlights(dt)
     -- Inflate the tile highlights to their proper scales.
-    local t = timer -- easing.easeOutCirc(timer)
     for _, id in pairs(tileHighlights) do
-        setModelScale(id, t, t, t)
+        local s = timer
+        setModelScale(id, s, s, s)
     end
 
     -- Increment the timer.
@@ -291,9 +296,9 @@ end
 
 function DestroyTileHighlights(dt)
     -- Deflate the tile highlights to 0.
-    local t = timer -- easing.easeInCirc(timer)
     for _, id in pairs(tileHighlights) do
-        setModelScale(id, t, t, t)
+        local s = timer
+        setModelScale(id, s, s, s)
     end
 
     -- Decrement the timer.
@@ -312,8 +317,10 @@ function DestroyTileHighlights(dt)
 end
 
 function MovePieceToTile(dt)
-    -- Player makes the first move, start the clock
-    if not clockStart then clockStart = true end
+    -- Start the clock after the first move.
+    if not clockIsRunning then
+        clockIsRunning = true
+    end
 
     -- Reset the models transform.
     resetModelTansform(pieceToPlay.ID)
@@ -334,10 +341,10 @@ function MovePieceToTile(dt)
 
     -- Stretch the model in the movement direction and make it wobble up and down
     -- for a squash-and-stretch effect.
-    local bounceStrength = 0.25
-    local bounceDirStrength = 0.5
+    local bounceStrength = 0  -- 0.25
+    local bounceDirStrength = 0  -- 0.5
 
-    bounceDirStrength = bounceDirStrength * delayedInOut  -- Fade in/out.
+    bounceDirStrength = bounceDirStrength * delayedInOut  -- Fade in/out over move duration.
     local sx = 1 + (bounceStrength*math.sin(3*math.pi*timer)) + (bounceDirStrength*math.abs(dirX / dirMag))
     local sy = 1 - (bounceStrength*math.sin(3*math.pi*timer))
     local sz = 1 + (bounceStrength*math.sin(3*math.pi*timer)) + (bounceDirStrength*math.abs(dirZ / dirMag))
@@ -411,16 +418,15 @@ function MovePieceToTile(dt)
 end
 
 function CheckForEndgame()
-    if board:gameOver(pieces) then
+    if board:gameOver(pieces) or clockHasRunOut then
         -- Reset the timer.
         timer = 0.0
 
         -- Instantiate the game over mesh.
-        gameOverID = addModel("GameOver", 4.5, 10, 4.5)
+        gameOverID = addModel("GameOver")
         if turn == "Light" then
-            rotateModel(gameOverID, math.pi, 0, 1, 0)
+            gameOverMeshDirection = math.pi
         end
-        rotateModel(gameOverID, -math.pi/2.0, 1, 0, 0)
 
         -- Set the turn state to game over.
         turnState = -1
