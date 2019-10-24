@@ -5,7 +5,8 @@ local Pawn = {
   team = "Light",
   visible = true,
   ID = 0,
-  angle = 0
+  angle = 0,
+  type = "Pawn"
 }
 
 -- Create a new instance of pieces which will be inherited by specific pieces.
