@@ -16,7 +16,8 @@ end
 -- Load and play the background music (loop infinitely)
 -- https://soundimage.org/fantasy-2/
 local bgmusic = loadAudio("scenes/Chess/sounds/background.wav")
--- playSong(bgmusic)
+playSong(bgmusic)
 
 -- Load selection sound
+-- https://www.fesliyanstudios.com/royalty-free-sound-effects-download/video-game-menu-153
 selectionSound = loadAudio("scenes/Chess/sounds/selection.wav")
