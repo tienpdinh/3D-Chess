@@ -183,11 +183,13 @@ function GetPieceToPlay()
     local hitID, _ = getMouseClickWithLayer(piecesColliderLayer)
 
     -- Play a sound as the player hover over a piece
+    if hitID == nil or hitID ~= soundPlayedOn then
+        if hitID then soundPlayedOn = hitID end
+        selectionPlaying = false
+    end
     if hitID and not selectionPlaying then
         selectionPlaying = true
         playSoundEffect(selectionSound)
-    elseif hitID == nil then
-        selectionPlaying = false
     end
 
     -- If the mouse is over a piece and left clicking...
@@ -310,6 +312,9 @@ function DestroyTileHighlights(dt)
 end
 
 function MovePieceToTile(dt)
+    -- Player makes the first move, start the clock
+    if not clockStart then clockStart = true end
+
     -- Reset the models transform.
     resetModelTansform(pieceToPlay.ID)
 
@@ -329,8 +334,8 @@ function MovePieceToTile(dt)
 
     -- Stretch the model in the movement direction and make it wobble up and down
     -- for a squash-and-stretch effect.
-    local bounceStrength = 0  -- 0.25
-    local bounceDirStrength = 0  -- 0.5
+    local bounceStrength = 0.25
+    local bounceDirStrength = 0.5
 
     bounceDirStrength = bounceDirStrength * delayedInOut  -- Fade in/out.
     local sx = 1 + (bounceStrength*math.sin(3*math.pi*timer)) + (bounceDirStrength*math.abs(dirX / dirMag))
@@ -441,7 +446,6 @@ end
 -- Called when a key event occurs.
 function keyHandler(keys)
     -- Do nothing.
-    if keys.space then clockStart=true end
 end
 
 -- Called when the mouse moves.
