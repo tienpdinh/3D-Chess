@@ -192,6 +192,9 @@ function getPieces()
     return pieces, piecesID, colliderLayer
 end
 
+-- Helper variables
+soundPlayedOn = nil
+
 -- function highlightPiece(piece, dt)
 --     if piece.y < 0.4 then
 --         translateModel(piece.ID, 0, 3*dt, 0)
