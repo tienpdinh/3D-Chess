@@ -5,7 +5,8 @@ local Knight = {
   team = "Light",
   visible = true,
   ID = 0,
-  angle = 0
+  angle = 0,
+  type = "Knight"
 }
 
 -- Create a new instance of pieces which will be inherited by specific pieces

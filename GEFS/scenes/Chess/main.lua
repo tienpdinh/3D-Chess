@@ -6,6 +6,8 @@ require "scenes/Chess/scripts/chess"  -- Sets up the chess game.
 require "scenes/Chess/scripts/digitalclock"  -- Sets up the player clocks.
 utils = require "scenes/Chess/scripts/utils"
 easing = require "scenes/Chess/scripts/easing"
+Queen = require "scenes/Chess/scripts/pieces/queen"
+
 
 -- How long it takes (s) for a highlights to dis/appear.
 highlightDuration = 0.25
@@ -33,8 +35,9 @@ turnState = 0
 -- 5 = Picking playable tile.
 -- 6 = Destroying tile highlights.
 -- 7 = Moving playable piece to playable tile.
--- 8 = Check for endgame.
--- 9 = End turn.
+-- 8 = Check for pawn evolution.
+-- 9 = Check for endgame.
+-- 10 = End turn.
 
 -- Which pieces can be played for the given turn.
 -- (List of indices into the pieces array).
@@ -74,6 +77,9 @@ gameOverMeshDirection = 0
 clockIsRunning = false
 clockHasRunOut = false
 
+-- Pawn promotion
+pawnPromotion = nil
+
 -- Runs every frame.
 function frameUpdate(dt)
     -- Run the correct method depending on which part
@@ -97,8 +103,10 @@ function frameUpdate(dt)
     elseif turnState == 7 then
         MovePieceToTile(dt)
     elseif turnState == 8 then
-        CheckForEndgame()
+        CheckForPawnEvolution(dt)
     elseif turnState == 9 then
+        CheckForEndgame()
+    elseif turnState == 10 then
         EndTurn()
     else
         print "ERROR invalid turn state."
@@ -413,6 +421,68 @@ function MovePieceToTile(dt)
         board.chessboard[startX][startZ].pieceIndex = -1
         board.chessboard[endX][endZ].pieceIndex = piecesID[pieceToPlay.ID]
 
+        -- Reset the timer.
+        timer = 0.0
+
+        turnState = turnState + 1
+    end
+end
+
+function CheckForPawnEvolution(dt)
+    local pawnHasCrossed = false
+    if pieceToPlay.type == "Pawn" then
+        if pieceToPlay.team == "Light" and pieceToPlay.z == 8 then
+            pawnHasCrossed = true
+        elseif pieceToPlay.team == "Dark" and pieceToPlay.z == 1 then
+            pawnHasCrossed = true
+        end
+    end
+
+    if pawnHasCrossed then
+        if pawnPromotion == nil then
+            local queen = Queen:new()
+            queen.x = pieceToPlay.x
+            queen.y = 0
+            queen.z = pieceToPlay.z
+            queen.team = pieceToPlay.team
+            queen:addModel(piecesColliderLayer)
+            scaleModel(queen.ID, 0, 0, 0)
+            pawnPromotion = queen
+        end
+
+        -- Move the pawn up.
+        resetModelTansform(pieceToPlay.ID)
+        rotateModel(pieceToPlay.ID, pieceToPlay.angle, 0, 1, 0)
+        translateModel(pieceToPlay.ID, pieceToPlay.x, timer*10, pieceToPlay.z)
+
+        -- Scale in the queen.
+        resetModelTansform(pawnPromotion.ID)
+        scaleModel(pawnPromotion.ID, timer, timer, timer)
+        rotateModel(pawnPromotion.ID, pawnPromotion.angle, 0, 1, 0)
+        translateModel(pawnPromotion.ID, pawnPromotion.x, pawnPromotion.y, pawnPromotion.z)
+
+        timer = timer + dt/moveDuration
+
+        if timer >= 1.0 then
+            -- Destroy the pawn.
+            local pieceIndex = piecesID[pieceToPlay.ID]
+            pieces[pieceIndex] = nil
+            deleteModel(pieceToPlay.ID)
+            board.chessboard[pieceToPlay.x][pieceToPlay.z].pieceIndex = -1
+            piecesID[pieceToPlay.ID] = nil
+
+            -- Replace the pawn with the pawn promotion.
+            pieces[pieceIndex] = pawnPromotion
+            board.chessboard[pawnPromotion.x][pawnPromotion.z].pieceIndex = pieceIndex
+            piecesID[pawnPromotion.ID] = pieceIndex
+
+            -- Set the pawn promotion to nil for next time.
+            pieceToPlay = pawnPromotion
+            pawnPromotion = nil
+
+            turnState = turnState + 1
+        end
+    else
         turnState = turnState + 1
     end
 end
