@@ -488,7 +488,7 @@ function CheckForPawnEvolution(dt)
 end
 
 function CheckForEndgame()
-    if board:gameOver(pieces) or clockHasRunOut or Checkmate(turn) == 1 then
+    if board:gameOver(pieces) or clockHasRunOut or Checkmate(turn) == 2 then
         -- Reset the timer.
         timer = 0.0
 
@@ -557,7 +557,7 @@ function Checkmate(turn)
                 end
             end
         end
-        if safeMove then return returnVal
+        if safeMove then return returnVal end
     end
     returnVal = 2
     return returnVal
