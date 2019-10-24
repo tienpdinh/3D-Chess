@@ -3,9 +3,9 @@
 
 require "scenes/Chess/scripts/camera"  -- Sets up the camera.
 require "scenes/Chess/scripts/chess"  -- Sets up the chess game.
+require "scenes/Chess/scripts/digitalclock"  -- Sets up the player clocks.
 utils = require "scenes/Chess/scripts/utils"
 easing = require "scenes/Chess/scripts/easing"
-require "scenes/Chess/scripts/digitalclock"
 
 -- How long it takes (s) for a highlights to dis/appear.
 highlightDuration = 0.25
