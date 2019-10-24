@@ -36,6 +36,7 @@ int unhideModel(lua_State * L); //Continue drawing model
 int translateModel(lua_State * L);
 int rotateModel(lua_State * L);
 int scaleModel(lua_State * L);
+int unscaleModel(lua_State * L);
 
 int setModelTranslate(lua_State * L);
 int setModelScale(lua_State * L);

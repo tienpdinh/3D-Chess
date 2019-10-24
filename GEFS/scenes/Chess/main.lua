@@ -11,7 +11,7 @@ require "scenes/Chess/GameComponents/digitalclock"
 highlightDuration = 0.25
 
 -- How long it takes (s) for a piece to move.
-moveDuration = 1.0
+moveDuration = 0.75
 
 -- How quickly the cursor follows the mouse.
 cursorFollowSpeed = 7.5
@@ -151,8 +151,8 @@ function StartTurn()
     local h = 1
     for _, index in pairs(playablePieces) do
         pieceHighlights[h] = addModel("HighlightedTile")
-        translateModel(pieceHighlights[h], pieces[index].x, 0, pieces[index].z)
         scaleModel(pieceHighlights[h], 0, 0, 0)
+        translateModel(pieceHighlights[h], pieces[index].x, 0, pieces[index].z)
         h = h + 1
     end
 
@@ -302,32 +302,60 @@ function DestroyTileHighlights(dt)
 end
 
 function MovePieceToTile(dt)
+    -- Reset the models transform.
+    resetModelTansform(pieceToPlay.ID)
+
+    -- Calculate the movement vector from the start and end points.
     local startX = pieceToPlay.x
     local startZ = pieceToPlay.z
     local endX = tileToPlay.x
     local endZ = tileToPlay.z
+    local dirX = endX - startX
+    local dirZ = endZ - startZ
+    local dirMag = math.sqrt(dirX^2 + dirZ^2)
 
-    local t = easing.easeInOutCubic(timer)
+    -- Certain movements are "delayed". Define the delay here (in %/100)
+    local movementDelay = 0.15
+    local delayed = utils.delay(timer, movementDelay)
+    local delayedInOut = utils.triangle(utils.delay(timer, movementDelay))
 
-    -- TODO: squash and stretch models here.
-    -- Get direction from start to end.
-    local dirX =  (endX - startX) * t
-    local dirZ =  (endZ - startZ) * t
+    -- Stretch the model in the movement direction and make it wobble up and down
+    -- for a squash-and-stretch effect.
+    local bounceStrength = 0  -- 0.25
+    local bounceDirStrength = 0  -- 0.5
 
-    -- Make the piece "jump" during its move.
-    local height = 1.0 - (2*timer-1)*(2*timer-1)
+    bounceDirStrength = bounceDirStrength * delayedInOut  -- Fade in/out.
+    local sx = 1 + (bounceStrength*math.sin(3*math.pi*timer)) + (bounceDirStrength*math.abs(dirX / dirMag))
+    local sy = 1 - (bounceStrength*math.sin(3*math.pi*timer))
+    local sz = 1 + (bounceStrength*math.sin(3*math.pi*timer)) + (bounceDirStrength*math.abs(dirZ / dirMag))
+    scaleModel(pieceToPlay.ID, sx, sy, sz)
 
-    -- TODO: squash and stretch models here.
-    -- Move the model.
-    setModelTranslate(pieceToPlay.ID, startX + dirX, height, startZ + dirZ)
+    -- Calculate the rotation angles for the move.
+    local startAngle = pieceToPlay.angle
+    local endAngle = utils.atan2(-dirX, -dirZ)
+
+    -- Rotate the model back and forth perpendicular to the movement direction, and
+    -- to face the movement direction.
+    local angle = math.rad(12.5) * math.sin(math.pi * 2.0 * timer)
+    rotateModel(pieceToPlay.ID, angle, dirZ/dirMag, 0, -dirX/dirMag)
+    angle = utils.lerpAngle(startAngle, endAngle, easing.easeOutExpo(timer))
+    rotateModel(pieceToPlay.ID, angle, 0, 1, 0)
+
+    -- Translate the model across the board, and up and down.
+    local x = startX + delayed*dirX
+    local y = 1 - (1-delayedInOut)^1.5
+    local z = startZ + delayed*dirZ
+    translateModel(pieceToPlay.ID, x, y, z)
 
     -- Check if an enemy piece will be captured by moving to this new tile position.
     local pieceWasCaptured = board:enemyOccupied(endX, endZ, pieces, turn)
 
     -- Move the enemy piece off the board.
     if pieceWasCaptured then
-        local capturedID = pieces[board.chessboard[endX][endZ].pieceIndex].ID
-        setModelTranslate(capturedID, endX, timer*10, endZ)
+        local capturedPiece = pieces[board.chessboard[endX][endZ].pieceIndex]
+        resetModelTansform(capturedPiece.ID)
+        rotateModel(capturedPiece.ID, capturedPiece.angle, 0, 1, 0)
+        translateModel(capturedPiece.ID, endX, timer*10, endZ)
     end
 
     -- Increment the timer.
@@ -335,20 +363,33 @@ function MovePieceToTile(dt)
 
     -- End of turn.
     if timer >= 1.0 then
-        -- Finalize the played piece position.
+        -- Finalize the played piece transform.
         pieceToPlay.x = endX
         pieceToPlay.y = 0
         pieceToPlay.z = endZ
-        setModelTranslate(pieceToPlay.ID, endX, 0, endZ)
+        pieceToPlay.angle = endAngle
+
+        -- Reset the piece's transform to its correct position, scale, rotation.
+        resetModelTansform(pieceToPlay.ID)
+        scaleModel(pieceToPlay.ID, 1, 1, 1)
+        rotateModel(pieceToPlay.ID, pieceToPlay.angle, 0, 1, 0)
+        translateModel(pieceToPlay.ID, pieceToPlay.x, pieceToPlay.y, pieceToPlay.z)
 
         -- Delete the captured piece from the engine and the board.
         if pieceWasCaptured then
-            deleteModel(pieces[board.chessboard[endX][endZ].pieceIndex].ID)
-            pieces[board.chessboard[endX][endZ].pieceIndex] = nil
+            local capturedPieceIndex = board.chessboard[endX][endZ].pieceIndex
+
+            -- Remove the piece from the board.
             board.chessboard[endX][endZ].pieceIndex = -1
+
+            -- Delete the model itself from the engine.
+            deleteModel(pieces[capturedPieceIndex].ID)
+
+            -- Delete the model from the pieces array.
+            pieces[capturedPieceIndex] = nil
         end
 
-        -- Update the chess board.
+        -- Update the chess board by swapping the pieceIndices of the tiles.
         board.chessboard[startX][startZ].pieceIndex = -1
         board.chessboard[endX][endZ].pieceIndex = piecesID[pieceToPlay.ID]
 

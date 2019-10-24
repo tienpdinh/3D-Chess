@@ -24,6 +24,7 @@ void luaSetup(lua_State * L){
 	lua_register(L, "setModelColor", setModelColor);
 	lua_register(L, "rotateModel", rotateModel);
 	lua_register(L, "scaleModel", scaleModel);
+	lua_register(L, "unscaleModel", unscaleModel);
 	lua_register(L, "setModelScale", setModelScale);
 	lua_register(L, "setModelTranslate", setModelTranslate);
 	lua_register(L, "translateModel", translateModel);
@@ -426,6 +427,18 @@ int scaleModel(lua_State * L){
 	return 0;
 }
 
+int unscaleModel(lua_State * L){
+	int modelID = -1;
+	int argc = lua_gettop(L);
+	modelID = lua_tonumber(L, 1);
+	LOG_F(1,"Unscaling model %s",models[modelID].name.c_str());
+	float x = glm::length(models[modelID].transform[0]);
+	float y = glm::length(models[modelID].transform[1]);
+	float z = glm::length(models[modelID].transform[2]);
+	models[modelID].transform = glm::scale(models[modelID].transform, glm::vec3(1.0/x,1.0/y,1.0/z));
+	return 0;
+}
+
 int setModelScale(lua_State * L)
 {
 	int modelID = -1;
@@ -443,6 +456,8 @@ int setModelScale(lua_State * L)
 
 	return 0;
 }
+
+
 
 int setModelTranslate(lua_State * L)
 {

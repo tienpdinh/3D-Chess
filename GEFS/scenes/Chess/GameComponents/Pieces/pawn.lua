@@ -20,7 +20,10 @@ end
 function Pawn:addModel(colliderLayer)
     self.ID = addModel("Pawn" .. self.team, self.x, self.y, self.z)
     addCollider(self.ID, colliderLayer, 0.5, 0, 0, 0)
-    self.angle = math.random()*math.pi*2.0
+    -- self.angle = math.random()*math.pi*2.0
+    if self.team == "Light" then
+        self.angle = math.pi
+    end
     rotateModel(self.ID, self.angle, 0, 1, 0)
     return self.ID
 end
@@ -61,7 +64,7 @@ function Pawn:getLegalMoves(pieces, board)
             i = i + 1
         end
     elseif self.team == "Dark" then
-        if self.z == 7 and not board:friendlyOccupied(self.x, self.z-2, pieces, self.team) then
+        if self.z == 7 and not board:friendlyOccupied(self.x, self.z-2, pieces, self.team) and not board:occupied(self.x, self.z-1) then
             moves[i] = {self.x, self.z-2}
             i = i + 1
         end

@@ -4,7 +4,8 @@ local Bishop = {
   z = 0,
   team = "Light",
   visible = true,
-  ID = 0
+  ID = 0,
+  angle = 0
 }
 
 -- Create a new instance of pieces which will be inherited by specific pieces.
@@ -20,8 +21,9 @@ function Bishop:addModel(colliderLayer)
     self.ID = addModel("Bishop" .. self.team, self.x, self.y, self.z)
     addCollider(self.ID, colliderLayer, 0.5, 0, 0, 0)
     if self.team == "Light" then
-        rotateModel(self.ID, math.pi, 0, 1, 0)
+        self.angle = math.pi
     end
+    rotateModel(self.ID, self.angle, 0, 1, 0)
     return self.ID
 end
 
