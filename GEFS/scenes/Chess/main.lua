@@ -180,6 +180,14 @@ function GetPieceToPlay()
     -- Get the piece currently under the mouse.
     local hitID, _ = getMouseClickWithLayer(piecesColliderLayer)
 
+    -- Play a sound as the player hover over a piece
+    if hitID and not selectionPlaying then
+        selectionPlaying = true
+        playSoundEffect(selectionSound)
+    elseif hitID == nil then
+        selectionPlaying = false
+    end
+
     -- If the mouse is over a piece and left clicking...
     if (hitID and leftClicked) then
         -- Check if the piece is a valid piece to play.
