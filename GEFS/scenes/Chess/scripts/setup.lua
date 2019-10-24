@@ -174,6 +174,7 @@ function getPieces()
     lightKing.z = 1
     lightKing.team = "Light"
     local ID = lightKing:addModel(colliderLayer)
+    local lightKingIndex = index
     piecesID[ID] = index
     pieces[index] = lightKing
     index = index + 1
@@ -185,11 +186,12 @@ function getPieces()
     darkKing.z = 8
     darkKing.team = "Dark"
     local ID = darkKing:addModel(colliderLayer)
+    local darkKingIndex = index
     piecesID[ID] = index
     pieces[index] = darkKing
     index = index + 1
 
-    return pieces, piecesID, colliderLayer
+    return pieces, piecesID, colliderLayer, lightKingIndex, darkKingIndex
 end
 
 -- Helper variables
