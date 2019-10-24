@@ -12,3 +12,11 @@ for i = 1,32 do
     local z = pieces[i].z
     board.chessboard[x][z].pieceIndex = i
 end
+
+-- Load and play the background music (loop infinitely)
+-- https://soundimage.org/fantasy-2/
+local bgmusic = loadAudio("scenes/Chess/GameComponents/background.wav")
+--playSong(bgmusic)
+
+-- Load selection sound
+selectionSound = loadAudio("scenes/Chess/GameComponents/selection.wav")
