@@ -5,7 +5,7 @@ local CameraDistanceFromCenter = 6
 local CameraHeight = 6
 local CameraAngle = -50
 
-local easing = require "scenes/Chess/easing"
+local easing = require "scenes/Chess/scripts/easing"
 
 -- Helper variables.
 -- DO NOT set these.
