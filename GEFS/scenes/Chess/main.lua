@@ -85,6 +85,19 @@ pawnPromotion = nil
 
 -- Runs every frame.
 function frameUpdate(dt)
+    -- Check for endgame if the player is out of time.
+    if turnState >= 0 and clockRunOut(turn) then
+        turnState = 9
+    end
+
+    -- Update the game clock if the state is correct.
+    if clockIsRunning then
+        -- clock() will return true if one of the team hits 0 in their clock, false otherwise
+        if turnState >= 2 and turnState <= 5 then
+            clock(dt, turn, clicksound2)
+        end
+    end
+
     -- Run the correct method depending on which part
     -- of the turn we are in.
     if turnState == -1 then
@@ -115,16 +128,6 @@ function frameUpdate(dt)
         print "ERROR invalid turn state."
     end
 
-    if clockIsRunning then
-        -- clock() will return true if one of the team hits 0 in their clock, false otherwise
-        if turnState >= 2 and turnState <= 5 then
-            clockHasRunOut = clock(dt, turn, clicksound2)
-            if clockHasRunOut and turnState > -1 then
-                CheckForEndgame()
-            end
-        end
-    end
-
     -- Update the cursor.
     updateCursor(dt)
 
@@ -147,12 +150,31 @@ function GameOver(dt)
 
     -- Move the game over text down.
     resetModelTansform(gameOverID)
-    -- rotateModel(gameOverID, -math.rad(90), 1, 0, 0)
+    rotateModel(gameOverID, 0.5*(gameOverYaw-0.5*math.pi), 1, 0, 0)  -- Rotate to face player.
     rotateModel(gameOverID, gameOverYaw, 0, 1, 0)
-    translateModel(gameOverID, 4.5, utils.lerp(10, 0, easing.easeOutBounce(timer)), 4.5)
+    translateModel(gameOverID, 4.5, utils.lerp(10, 0.1, easing.easeOutBounce(timer)), 4.5)
 
     -- Increment the timer.
     timer = timer + dt
+
+    -- Delete the highlights if they are completely shrunk.
+    if timer >= 1.0 then
+        if #pieceHighlights > 0 then
+            for _, ID in pairs(pieceHighlights) do
+                deleteModel(ID)
+            end
+            pieceHighlights = {}
+            playablePieces = {}
+        end
+        if #tileHighlights > 0 then
+            for _, ID in pairs(tileHighlights) do
+                deleteModel(ID)
+            end
+            tileHighlights = {}
+            playableTiles = {}
+        end
+    end
+
     timer = math.min(timer, 1.0)
 end
 
@@ -503,43 +525,31 @@ function CheckForPawnEvolution(dt)
 end
 
 function CheckForEndgame()
-    local endgameCause = 'NoEndgame'
+    local gameOverModel = nil
     local gameOver = false
 
     if board:gameOver(pieces) then
         gameOver = true
-        endgameCause = 'KingCaptured'
+        gameOverModel = "YouWon"
     end
 
-    if clockHasRunOut then
-        endgameCause = 'OutOfTime'
+    if clockRunOut(turn) then
+        gameOver = true
+        gameOverModel = "TimesUp"
     end
 
     -- if Checkmate(turn) == 2 then
-    --     endgameCause = 'Checkmate'
+    --     gameOver = true
+    --     gameOverModel = 'Checkmate'
     -- end
 
     if gameOver then
-        if endgameCause == 'KingCaptured' then
-            gameOverID = addModel("YouWon")
-            if turn == "Light" then
-                gameOverYaw = math.pi
-            end
-        elseif endgameCause == 'OutOfTime' then
-            gameOverID = addModel("TimesUp")
-            if turn == "Light" then
-                gameOverYaw = math.pi
-            end
-        elseif endgameCause == 'Checkmate' then
-            gameOverID = addModel("Checkmate")
-            if turn == "Light" then
-                gameOverYaw = math.pi
-            end
-        else
-            print("ERROR in CheckForEndgame(). Illegal endgame value " .. endgameCause)
-        end
-
+        gameOverID = addModel(gameOverModel, 4.5, 10, 4.5)
         scaleModel(gameOverID, 0, 0, 0)
+        if turn == "Light" then
+            gameOverYaw = math.pi
+            rotateModel(gameOverID, gameOverYaw, 0, 1, 0)
+        end
         setModelMaterial(gameOverID, "Clock" .. turn)
 
         -- Reset the timer.

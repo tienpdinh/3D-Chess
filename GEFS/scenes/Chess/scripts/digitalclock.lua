@@ -42,6 +42,16 @@ local darkCurrentTimer = {
   dt = 0
 }
 
+function clockRunOut(turn)
+    if turn == "Light" then
+        return (lightCurrentTimer.sec <= 0 and lightCurrentTimer.min <= 0)
+    elseif turn == "Dark" then
+        return (darkCurrentTimer.sec <= 0 and darkCurrentTimer.min <= 0)
+    else
+        return false
+    end
+end
+
 function clock (dt, turn, tickSound)
   if turn == "Light" then
     lightCurrentTimer.dt = lightCurrentTimer.dt + dt
