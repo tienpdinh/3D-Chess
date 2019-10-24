@@ -503,7 +503,7 @@ function CheckForPawnEvolution(dt)
 end
 
 function CheckForEndgame()
-    if board:gameOver(pieces) or clockHasRunOut then
+    if board:gameOver(pieces) or clockHasRunOut or Checkmate(turn) == 2 then
         -- Reset the timer.
         timer = 0.0
 
@@ -532,6 +532,50 @@ function EndTurn()
 
     -- Reset turn state.
     turnState = 0
+end
+
+function Checkmate(turn)
+    -- Check if the King of the other team is no longer able to move
+    -- returns 1 if check, 2 if checkmate, 0 otherwise
+    local returnVal = 0
+    local targetKingMoves
+    local targetKing = {}
+    if turn == "Light" then
+        targetKingMoves = pieces[darkKingIndex]:getLegalMoves(pieces, board)
+        targetKing[1] = pieces[darkKingIndex].x
+        targetKing[2] = pieces[darkKingIndex].z
+    else
+        targetKingMoves = pieces[lightKingIndex]:getLegalMoves(pieces, board)
+        targetKing[1] = pieces[lightKingIndex].x
+        targetKing[2] = pieces[lightKingIndex].z
+    end
+    -- Check if the king is in danger
+    for _, piece in pairs(pieces) do
+        if piece.team == turn then
+            local moves = piece:getLegalMoves(pieces, board)
+            if utils.contains(moves, targetKing) then
+                returnVal = 1
+                break
+            end
+        end
+    end
+    if returnVal == 0 then return returnVal end
+    -- Check is detected, now we check for checkmate
+    for _, move in pairs(targetKingMoves) do
+        local safeMove = true
+        for _, piece in pairs(pieces) do
+            if piece.team == turn then
+                local moves = piece:getLegalMoves(pieces, board)
+                if utils.contains(moves, move) then
+                    safeMove = false
+                    break
+                end
+            end
+        end
+        if safeMove then return returnVal end
+    end
+    returnVal = 2
+    return returnVal
 end
 
 -- Called when a key event occurs.
