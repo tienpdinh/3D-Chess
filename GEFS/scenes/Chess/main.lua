@@ -74,7 +74,7 @@ cursorTargetZ = 1
 
 -- The game over mesh.
 gameOverID = -1
-gameOverMeshDirection = 0
+gameOverYaw = 0
 
 -- The clock.
 clockIsRunning = false
@@ -117,7 +117,7 @@ function frameUpdate(dt)
 
     if clockIsRunning then
         -- clock() will return true if one of the team hits 0 in their clock, false otherwise
-        if turnState >= 2 or turnState <= 5 then
+        if turnState >= 2 and turnState <= 5 then
             clockHasRunOut = clock(dt, turn, clicksound2)
             if clockHasRunOut and turnState > -1 then
                 CheckForEndgame()
@@ -135,9 +135,9 @@ end
 function GameOver(dt)
     -- Scale down all pieces and highlights.
     local s = 1-timer
-    for _, piece in pairs(pieces) do
-        scaleModel(piece.ID, s, s, s)
-    end
+    -- for _, piece in pairs(pieces) do
+    --     scaleModel(piece.ID, s, s, s)
+    -- end
     for _, highlight in pairs(pieceHighlights) do
         scaleModel(highlight, s, s, s)
     end
@@ -147,12 +147,12 @@ function GameOver(dt)
 
     -- Move the game over text down.
     resetModelTansform(gameOverID)
-    rotateModel(gameOverID, gameOverMeshDirection, 0, 1, 0)
-    rotateModel(gameOverID, -math.pi/2.0, 1, 0, 0)
-    translateModel(gameOverID, 4.5, utils.lerp(10, 0.1, timer), 4.5)
+    -- rotateModel(gameOverID, -math.rad(90), 1, 0, 0)
+    rotateModel(gameOverID, gameOverYaw, 0, 1, 0)
+    translateModel(gameOverID, 4.5, utils.lerp(10, 0, easing.easeOutBounce(timer)), 4.5)
 
     -- Increment the timer.
-    timer = timer + dt/moveDuration
+    timer = timer + dt
     timer = math.min(timer, 1.0)
 end
 
@@ -503,15 +503,47 @@ function CheckForPawnEvolution(dt)
 end
 
 function CheckForEndgame()
-    if board:gameOver(pieces) or clockHasRunOut or Checkmate(turn) == 2 then
+    local endgameCause = 'NoEndgame'
+    local gameOver = false
+
+    if board:gameOver(pieces) then
+        gameOver = true
+        endgameCause = 'KingCaptured'
+    end
+
+    if clockHasRunOut then
+        endgameCause = 'OutOfTime'
+    end
+
+    -- if Checkmate(turn) == 2 then
+    --     endgameCause = 'Checkmate'
+    -- end
+
+    if gameOver then
+        if endgameCause == 'KingCaptured' then
+            gameOverID = addModel("YouWon")
+            if turn == "Light" then
+                gameOverYaw = math.pi
+            end
+        elseif endgameCause == 'OutOfTime' then
+            gameOverID = addModel("TimesUp")
+            if turn == "Light" then
+                gameOverYaw = math.pi
+            end
+        elseif endgameCause == 'Checkmate' then
+            gameOverID = addModel("Checkmate")
+            if turn == "Light" then
+                gameOverYaw = math.pi
+            end
+        else
+            print("ERROR in CheckForEndgame(). Illegal endgame value " .. endgameCause)
+        end
+
+        scaleModel(gameOverID, 0, 0, 0)
+        setModelMaterial(gameOverID, "Clock" .. turn)
+
         -- Reset the timer.
         timer = 0.0
-
-        -- Instantiate the game over mesh.
-        gameOverID = addModel("GameOver")
-        if turn == "Light" then
-            gameOverMeshDirection = math.pi
-        end
 
         -- Set the turn state to game over.
         turnState = -1

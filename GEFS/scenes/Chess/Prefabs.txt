@@ -17,6 +17,21 @@ objModel = GameOver.obj
 scale 2
 material [GameOverMaterial]
 
+[YouWon]
+objModel = YouWon.obj
+scale 2
+material [GameOverMaterial]
+
+[Checkmate]
+objModel = Checkmate.obj
+scale 2
+material [GameOverMaterial]
+
+[TimesUp]
+objModel = TimesUp.obj
+scale 2
+material [GameOverMaterial]
+
 # The base pieces.
 
 [Pawn]
