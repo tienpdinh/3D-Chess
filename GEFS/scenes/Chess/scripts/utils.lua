@@ -69,7 +69,7 @@ function utils.atan2(y, x)
     end
 end
 
-function utils.contains(table, element)
+function utils.containsMove(table, element)
     for _, elem in pairs(table) do
         if elem[1] == element[1] and elem[2] == element[2] then
             return true
