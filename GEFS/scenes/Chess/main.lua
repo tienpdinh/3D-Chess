@@ -180,6 +180,7 @@ end
 
 function StartTurn()
     -- Reset the turn variables.
+    landingNotPlayed = true
     timer = 0.0
     pieceToPlay = nil
     tileToPlay = nil
@@ -425,6 +426,10 @@ function MovePieceToTile(dt)
 
     -- Increment the timer.
     timer = timer + dt/moveDuration
+    if timer >= 0.79 and landingNotPlayed then
+        playSoundEffect(landingSound)
+        landingNotPlayed = false
+    end
 
     -- End of turn.
     if timer >= 1.0 then
