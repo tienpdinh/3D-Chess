@@ -204,7 +204,7 @@ end
 function CreatePieceHighlights(dt)
     -- Inflate the piece highlights to their proper scales.
     for _, id in pairs(pieceHighlights) do
-    local s = timer
+    local s = easing.easeOutExpo(timer)
         setModelScale(id, s, s, s)
     end
 
@@ -271,7 +271,7 @@ end
 function DestroyPieceHighlights(dt)
     -- Deflate the piece highlights to 0.
     for _, id in pairs(pieceHighlights) do
-        local s = timer
+        local s = easing.easeOutExpo(timer)
         setModelScale(id, s, s, s)
     end
 
@@ -295,7 +295,7 @@ end
 function CreateTileHighlights(dt)
     -- Inflate the tile highlights to their proper scales.
     for _, id in pairs(tileHighlights) do
-        local s = timer
+        local s = easing.easeOutExpo(timer)
         setModelScale(id, s, s, s)
     end
 
@@ -341,7 +341,7 @@ end
 function DestroyTileHighlights(dt)
     -- Deflate the tile highlights to 0.
     for _, id in pairs(tileHighlights) do
-        local s = timer
+        local s = easing.easeOutExpo(timer)
         setModelScale(id, s, s, s)
     end
 
