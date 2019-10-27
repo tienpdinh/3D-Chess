@@ -539,24 +539,26 @@ function CheckForEndgame()
         gameOverModel = "YouWon"
     end
 
-    if clockRunOut(turn) then
+    if not gameOver and clockRunOut(turn) then
         gameOver = true
         gameOverModel = "TimesUp"
     end
 
-    local otherKing
-    if turn == "Light" then
-        otherKing = pieces[darkKingIndex]
-    else
-        otherKing = pieces[lightKingIndex]
-    end
+    if not gameOver then
+        local otherKing
+        if turn == "Light" then
+            otherKing = pieces[darkKingIndex]
+        else
+            otherKing = pieces[lightKingIndex]
+        end
 
-    local safe, attackers = isSafe(otherKing)
-    if not safe and checkmate(otherKing) and attackersSafe(attackers) then
-        gameOver = true
-        gameOverModel = "YouWon"
+        local safe, attackers = isSafe(otherKing)
+        if not safe and checkmate(otherKing) and attackersSafe(attackers) then
+            gameOver = true
+            gameOverModel = "YouWon"
+        end
     end
-
+    
     if gameOver then
         gameOverID = addModel(gameOverModel, 4.5, 10, 4.5)
         scaleModel(gameOverID, 0, 0, 0)
