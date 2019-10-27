@@ -4,6 +4,7 @@
 require "scenes/Chess/scripts/camera"  -- Sets up the camera.
 require "scenes/Chess/scripts/chess"  -- Sets up the chess game.
 require "scenes/Chess/scripts/digitalclock"  -- Sets up the player clocks.
+require "scenes/Chess/scripts/checkmate" -- To check for checkmate
 utils = require "scenes/Chess/scripts/utils"
 easing = require "scenes/Chess/scripts/easing"
 Queen = require "scenes/Chess/scripts/pieces/queen"
@@ -541,6 +542,18 @@ function CheckForEndgame()
     if clockRunOut(turn) then
         gameOver = true
         gameOverModel = "TimesUp"
+    end
+
+    local otherKing
+    if turn == "Light" then
+        otherKing = pieces[darkKingIndex]
+    else
+        otherKing = pieces[lightKingIndex]
+    end
+
+    if not isSafe(otherKing) and checkmate(otherKing) then
+        gameOver = true
+        gameOverModel = "YouWon"
     end
 
     if gameOver then
