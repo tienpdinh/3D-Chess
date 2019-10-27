@@ -9,7 +9,7 @@ function isSafe(king)
   local kingCoord = {king.x, king.z}
   for _, piece in pairs(pieces) do
     if piece.team ~= king.team then
-      local moves = piece:getLegalMoves(pieces, board)
+      local moves = piece:getLegalMovesRaw(pieces, board)
       if utils.containsMove(moves, kingCoord) then
         safe = false
         attackers[count] = piece
@@ -54,7 +54,7 @@ function checkmate(king)
   local result = true
   for _, piece in pairs(pieces) do
     if piece.team == king.team then
-      local pieceMoves = piece:getLegalMoves(pieces, board)
+      local pieceMoves = piece:getLegalMovesRaw(pieces, board)
       local possibleMovesPiece = {}
       local count2 = 1
       for _, move in pairs(pieceMoves) do

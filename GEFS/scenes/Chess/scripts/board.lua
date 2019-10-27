@@ -76,7 +76,7 @@ function Board:canMove(pieces, myTeam)
 end
 
 function Board:gameOver(pieces)
-    return pieces[31] == nil or pieces[32] == nil
+    return pieces[1] == nil or pieces[2] == nil
 end
 
 return Board

@@ -497,6 +497,11 @@ function CheckForPawnEvolution(dt)
             queen.y = 0
             queen.z = pieceToPlay.z
             queen.team = pieceToPlay.team
+            if team == "Light" then
+                queen.theKing = lightKingIndex
+            else
+                queen.theKing = darkKingIndex
+            end
             queen:addModel(piecesColliderLayer)
             scaleModel(queen.ID, 0, 0, 0)
             pawnPromotion = queen

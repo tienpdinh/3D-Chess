@@ -11,162 +11,6 @@ function getPieces()
     local colliderLayer = 0
     local index = 1
 
-    -- Add light pawns.
-    for i = 1, 8 do
-        local lightPawn = Pawn:new()
-        lightPawn.x = i
-        lightPawn.y = 0
-        lightPawn.z = 2
-        lightPawn.team = "Light"
-        local ID = lightPawn:addModel(colliderLayer)
-        pieces[index] = lightPawn
-        piecesID[ID] = index
-        index = index + 1
-    end
-
-    -- Add dark pawns.
-    for i = 1, 8 do
-        local darkPawn = Pawn:new()
-        darkPawn.x = i
-        darkPawn.y = 0
-        darkPawn.z = 7
-        darkPawn.team = "Dark"
-        local ID = darkPawn:addModel(colliderLayer)
-        pieces[index] = darkPawn
-        piecesID[ID] = index
-        index = index + 1
-    end
-
-    -- Add light rooks.
-    for i = 1, 2 do
-        local xPos = 1
-        if i == 2 then
-            xPos = 8
-        end
-
-        local lightRook = Rook:new()
-        lightRook.x = xPos
-        lightRook.y = 0
-        lightRook.z = 1
-        lightRook.team = "Light"
-        local ID = lightRook:addModel(colliderLayer)
-        pieces[index] = lightRook
-        piecesID[ID] = index
-        index = index + 1
-    end
-
-    -- Add dark rooks.
-    for i = 1, 2 do
-        local xPos = 1
-        if i == 2 then
-            xPos = 8
-        end
-
-        local darkRook = Rook:new()
-        darkRook.x = xPos
-        darkRook.y = 0
-        darkRook.z = 8
-        darkRook.team = "Dark"
-        local ID = darkRook:addModel(colliderLayer)
-        piecesID[ID] = index
-        pieces[index] = darkRook
-        index = index + 1
-    end
-
-    -- Add light knights.
-    for i = 1, 2 do
-        local xPos = 2
-        if i == 2 then
-            xPos = 7
-        end
-
-        local lightKnight = Knight:new()
-        lightKnight.x = xPos
-        lightKnight.y = 0
-        lightKnight.z = 1
-        lightKnight.team = "Light"
-        local ID = lightKnight:addModel(colliderLayer)
-        piecesID[ID] = index
-        pieces[index] = lightKnight
-        index = index + 1
-    end
-
-    -- Add dark knights.
-    for i = 1, 2 do
-        local xPos = 2
-        if i == 2 then
-            xPos = 7
-        end
-
-        local darkKnight = Knight:new()
-        darkKnight.x = xPos
-        darkKnight.y = 0
-        darkKnight.z = 8
-        darkKnight.team = "Dark"
-        local ID = darkKnight:addModel(colliderLayer)
-        piecesID[ID] = index
-        pieces[index] = darkKnight
-        index = index + 1
-    end
-
-    -- Add light bishops.
-    for i = 1, 2 do
-        local xPos = 3
-        if i == 2 then
-            xPos = 6
-        end
-
-        local lightBishop = Bishop:new()
-        lightBishop.x = xPos
-        lightBishop.y = 0
-        lightBishop.z = 1
-        lightBishop.team = "Light"
-        local ID = lightBishop:addModel(colliderLayer)
-        piecesID[ID] = index
-        pieces[index] = lightBishop
-        index = index + 1
-    end
-
-    -- Add dark bishops.
-    for i = 1, 2 do
-        local xPos = 3
-        if i == 2 then
-            xPos = 6
-        end
-
-        local darkBishop = Bishop:new()
-        darkBishop.x = xPos
-        darkBishop.y = 0
-        darkBishop.z = 8
-        darkBishop.team = "Dark"
-        local ID = darkBishop:addModel(colliderLayer)
-        piecesID[ID] = index
-        pieces[index] = darkBishop
-        index = index + 1
-    end
-
-    -- Add light queen.
-    local lightQueen = Queen:new()
-    lightQueen.x = 5
-    lightQueen.y = 0
-    lightQueen.z = 1
-    lightQueen.team = "Light"
-    local ID = lightQueen:addModel(colliderLayer)
-    piecesID[ID] = index
-    pieces[index] = lightQueen
-    index = index + 1
-
-    -- Add dark queen.
-    local darkQueen = Queen:new()
-    darkQueen.x = 5
-    darkQueen.y = 0
-    darkQueen.z = 8
-    darkQueen.team = "Dark"
-    local ID = darkQueen:addModel(colliderLayer)
-    piecesID[ID] = index
-    pieces[index] = darkQueen
-    index = index + 1
-
     -- Add light king.
     local lightKing = King:new()
     lightKing.x = 4
@@ -189,6 +33,172 @@ function getPieces()
     local darkKingIndex = index
     piecesID[ID] = index
     pieces[index] = darkKing
+    index = index + 1
+
+    -- Add light pawns.
+    for i = 1, 8 do
+        local lightPawn = Pawn:new()
+        lightPawn.x = i
+        lightPawn.y = 0
+        lightPawn.z = 2
+        lightPawn.team = "Light"
+        lightPawn.theKing = lightKingIndex
+        local ID = lightPawn:addModel(colliderLayer)
+        pieces[index] = lightPawn
+        piecesID[ID] = index
+        index = index + 1
+    end
+
+    -- Add dark pawns.
+    for i = 1, 8 do
+        local darkPawn = Pawn:new()
+        darkPawn.x = i
+        darkPawn.y = 0
+        darkPawn.z = 7
+        darkPawn.team = "Dark"
+        darkPawn.theKing = darkKingIndex
+        local ID = darkPawn:addModel(colliderLayer)
+        pieces[index] = darkPawn
+        piecesID[ID] = index
+        index = index + 1
+    end
+
+    -- Add light rooks.
+    for i = 1, 2 do
+        local xPos = 1
+        if i == 2 then
+            xPos = 8
+        end
+
+        local lightRook = Rook:new()
+        lightRook.x = xPos
+        lightRook.y = 0
+        lightRook.z = 1
+        lightRook.team = "Light"
+        lightRook.theKing = lightKingIndex
+        local ID = lightRook:addModel(colliderLayer)
+        pieces[index] = lightRook
+        piecesID[ID] = index
+        index = index + 1
+    end
+
+    -- Add dark rooks.
+    for i = 1, 2 do
+        local xPos = 1
+        if i == 2 then
+            xPos = 8
+        end
+
+        local darkRook = Rook:new()
+        darkRook.x = xPos
+        darkRook.y = 0
+        darkRook.z = 8
+        darkRook.team = "Dark"
+        darkRook.theKing = darkKingIndex
+        local ID = darkRook:addModel(colliderLayer)
+        piecesID[ID] = index
+        pieces[index] = darkRook
+        index = index + 1
+    end
+
+    -- Add light knights.
+    for i = 1, 2 do
+        local xPos = 2
+        if i == 2 then
+            xPos = 7
+        end
+
+        local lightKnight = Knight:new()
+        lightKnight.x = xPos
+        lightKnight.y = 0
+        lightKnight.z = 1
+        lightKnight.team = "Light"
+        lightKnight.theKing = lightKingIndex
+        local ID = lightKnight:addModel(colliderLayer)
+        piecesID[ID] = index
+        pieces[index] = lightKnight
+        index = index + 1
+    end
+
+    -- Add dark knights.
+    for i = 1, 2 do
+        local xPos = 2
+        if i == 2 then
+            xPos = 7
+        end
+
+        local darkKnight = Knight:new()
+        darkKnight.x = xPos
+        darkKnight.y = 0
+        darkKnight.z = 8
+        darkKnight.team = "Dark"
+        darkKnight.theKing = darkKingIndex
+        local ID = darkKnight:addModel(colliderLayer)
+        piecesID[ID] = index
+        pieces[index] = darkKnight
+        index = index + 1
+    end
+
+    -- Add light bishops.
+    for i = 1, 2 do
+        local xPos = 3
+        if i == 2 then
+            xPos = 6
+        end
+
+        local lightBishop = Bishop:new()
+        lightBishop.x = xPos
+        lightBishop.y = 0
+        lightBishop.z = 1
+        lightBishop.team = "Light"
+        lightBishop.theKing = lightKingIndex
+        local ID = lightBishop:addModel(colliderLayer)
+        piecesID[ID] = index
+        pieces[index] = lightBishop
+        index = index + 1
+    end
+
+    -- Add dark bishops.
+    for i = 1, 2 do
+        local xPos = 3
+        if i == 2 then
+            xPos = 6
+        end
+
+        local darkBishop = Bishop:new()
+        darkBishop.x = xPos
+        darkBishop.y = 0
+        darkBishop.z = 8
+        darkBishop.team = "Dark"
+        darkBishop.theKing = darkKingIndex
+        local ID = darkBishop:addModel(colliderLayer)
+        piecesID[ID] = index
+        pieces[index] = darkBishop
+        index = index + 1
+    end
+
+    -- Add light queen.
+    local lightQueen = Queen:new()
+    lightQueen.x = 5
+    lightQueen.y = 0
+    lightQueen.z = 1
+    lightQueen.team = "Light"
+    lightQueen.theKing = lightKingIndex
+    local ID = lightQueen:addModel(colliderLayer)
+    piecesID[ID] = index
+    pieces[index] = lightQueen
+    index = index + 1
+
+    -- Add dark queen.
+    local darkQueen = Queen:new()
+    darkQueen.x = 5
+    darkQueen.y = 0
+    darkQueen.z = 8
+    darkQueen.team = "Dark"
+    darkQueen.theKing = darkKingIndex
+    local ID = darkQueen:addModel(colliderLayer)
+    piecesID[ID] = index
+    pieces[index] = darkQueen
     index = index + 1
 
     return pieces, piecesID, colliderLayer, lightKingIndex, darkKingIndex

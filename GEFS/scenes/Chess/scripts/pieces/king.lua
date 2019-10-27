@@ -36,7 +36,7 @@ function King:placeModel()
     end
 end
 
-function King:isSafe(x, z, pieces, board)
+function King:safeMove(pieces, board, x, z)
     local safe = true
     local oldX = self.x
     local oldZ = self.z
@@ -51,13 +51,7 @@ function King:isSafe(x, z, pieces, board)
     pieces[newIndex] = nil
     -- simulation finished, check if current location is safe
     for _, piece in pairs(pieces) do
-        if piece.team ~= self.team and piece.type ~= "King" then
-            local moves = piece:getLegalMoves(pieces, board)
-            if utils.containsMove(moves, {x, z}) then
-                safe = false
-                break
-            end
-        elseif piece.team ~= self.team then
+        if piece.team ~= self.team then
             local moves = piece:getLegalMovesRaw(pieces, board)
             if utils.containsMove(moves, {x, z}) then
                 safe = false
@@ -94,7 +88,7 @@ function King:getLegalMoves(pieces, board)
         local x = self.x + offsets[j][1]
         local z = self.z + offsets[j][2]
 
-        if (x >= 1 and x <= 8 and z >= 1 and z <= 8 and not board:friendlyOccupied(x, z, pieces, self.team) and self:isSafe(x, z, pieces, board)) then
+        if (x >= 1 and x <= 8 and z >= 1 and z <= 8 and not board:friendlyOccupied(x, z, pieces, self.team) and self:safeMove(pieces, board, x, z)) then
             moves[i] = {x, z}
             i = i + 1
         end
