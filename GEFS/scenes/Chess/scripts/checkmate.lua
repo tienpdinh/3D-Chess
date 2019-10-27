@@ -1,15 +1,29 @@
 require "scenes/Chess/scripts/chess"
 local utils = require "scenes/Chess/scripts/utils"
 
--- Check if a king is safe, could be use for Check!
+-- Check if a piece is safe, could be use for Check!
 function isSafe(king)
+  local attackers = {}
+  local safe = true
+  local count = 1
   local kingCoord = {king.x, king.z}
   for _, piece in pairs(pieces) do
     if piece.team ~= king.team then
       local moves = piece:getLegalMoves(pieces, board)
       if utils.containsMove(moves, kingCoord) then
-        return false
+        safe = false
+        attackers[count] = piece
+        count = count + 1
       end
+    end
+  end
+  return safe, attackers
+end
+
+function attackersSafe(attackers)
+  for _, attacker in pairs(attackers) do
+    if not isSafe(attacker) then
+      return false
     end
   end
   return true

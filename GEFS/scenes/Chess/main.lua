@@ -551,7 +551,8 @@ function CheckForEndgame()
         otherKing = pieces[lightKingIndex]
     end
 
-    if not isSafe(otherKing) and checkmate(otherKing) then
+    local safe, attackers = isSafe(otherKing)
+    if not safe and checkmate(otherKing) and attackersSafe(attackers) then
         gameOver = true
         gameOverModel = "YouWon"
     end
