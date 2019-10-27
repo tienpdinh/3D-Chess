@@ -552,10 +552,13 @@ function CheckForEndgame()
             otherKing = pieces[lightKingIndex]
         end
 
-        local safe, attackers = isSafe(otherKing)
-        if not safe and checkmate(otherKing) and attackersSafe(attackers) then
-            gameOver = true
-            gameOverModel = "YouWon"
+        local safe, attackers = isSafe(otherKing) -- There can only one attacker at a time to the king
+        if not safe then
+            local atkSafe, atkAttackers = isSafe(attackers[1])
+            if not safe and checkmate(otherKing) and atkSafe then
+                gameOver = true
+                gameOverModel = "YouWon"
+            end
         end
     end
     

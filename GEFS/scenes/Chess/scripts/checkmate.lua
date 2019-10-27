@@ -20,36 +20,31 @@ function isSafe(king)
   return safe, attackers
 end
 
-function attackersSafe(attackers)
-  for _, attacker in pairs(attackers) do
-    if not isSafe(attacker) then
-      return false
-    end
-  end
-  return true
-end
-
 function simulate(piece, newX, newZ)
   local oldX = piece.x
   local oldZ = piece.z
   local oldIndex = board.chessboard[oldX][oldZ].pieceIndex
+  local newIndex = board.chessboard[newX][newZ].pieceIndex
+  local newPiece = pieces[newIndex]
   -- simulation starts here
   piece.x = newX
   piece.z = newZ
   board.chessboard[newX][newZ].pieceIndex = oldIndex
   board.chessboard[oldX][oldZ].pieceIndex = -1
-  return oldX, oldZ
+  pieces[newIndex] = nil
+  return oldX, oldZ, newIndex, newPiece
 end
 
-function restore(piece, oldX, oldZ)
+function restore(piece, oldX, oldZ, newIndex, newPiece)
   local newX = piece.x
   local newZ = piece.z
-  local newIndex = board.chessboard[newX][newZ].pieceIndex
+  local oldIndex = board.chessboard[newX][newZ].pieceIndex
   -- Restoration starts here
   piece.x = oldX
   piece.z = oldZ
-  board.chessboard[oldX][oldZ].pieceIndex = newIndex
-  board.chessboard[newX][newZ].pieceIndex = -1
+  board.chessboard[oldX][oldZ].pieceIndex = oldIndex
+  board.chessboard[newX][newZ].pieceIndex = newIndex
+  pieces[newIndex] = newPiece
 end
 
 function checkmate(king)
@@ -59,15 +54,19 @@ function checkmate(king)
       local pieceMoves = piece:getLegalMoves(pieces, board)
       for _, move in pairs(pieceMoves) do
         if utils.containsMove(kingMoves, move) then
-          local oldX, oldZ = simulate(piece, move[1], move[2])
+          local oldX, oldZ, newIndex, newPiece = simulate(piece, move[1], move[2])
           if isSafe(king) then
-            restore(piece, oldX, oldZ)
+            restore(piece, oldX, oldZ, newIndex, newPiece)
             return false
           end
-          restore(piece, oldX, oldZ)
+          restore(piece, oldX, oldZ, newIndex, newPiece)
         end
       end
     end
   end
   return true
+end
+
+-- While in check, player has to escape check with these moves only
+function escapeMoves()
 end
