@@ -57,6 +57,12 @@ function King:isSafe(x, z, pieces, board)
                 safe = false
                 break
             end
+        elseif piece.team ~= self.team then
+            local moves = piece:getLegalMovesRaw(pieces, board)
+            if utils.containsMove(moves, {x, z}) then
+                safe = false
+                break
+            end
         end
     end
     -- Restoration
@@ -89,6 +95,35 @@ function King:getLegalMoves(pieces, board)
         local z = self.z + offsets[j][2]
 
         if (x >= 1 and x <= 8 and z >= 1 and z <= 8 and not board:friendlyOccupied(x, z, pieces, self.team) and self:isSafe(x, z, pieces, board)) then
+            moves[i] = {x, z}
+            i = i + 1
+        end
+    end
+
+    return moves, i - 1
+end
+
+function King:getLegalMovesRaw(pieces, board)
+    local moves = {}
+    local i = 1
+
+    -- Kings can move in a +1 square around its current position.
+    local offsets = {
+        {-1,-1},
+        {-1, 0},
+        {-1, 1},
+        {0, -1},
+        {0, 1},
+        {1, -1},
+        {1, 0},
+        {1, 1}
+    }
+
+    for j=1,8 do
+        local x = self.x + offsets[j][1]
+        local z = self.z + offsets[j][2]
+
+        if (x >= 1 and x <= 8 and z >= 1 and z <= 8 and not board:friendlyOccupied(x, z, pieces, self.team)) then
             moves[i] = {x, z}
             i = i + 1
         end

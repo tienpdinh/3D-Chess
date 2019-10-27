@@ -187,7 +187,11 @@ function StartTurn()
     tileToPlay = nil
 
     -- Get the list of pieces that we can play this turn.
-    playablePieces = board:canMove(pieces, turn)
+    if not check then
+        playablePieces = board:canMove(pieces, turn)
+    else
+        playablePieces = inCheckEscapePieces
+    end
 
     -- Load the highlighted pieces and scale them to 0.
     local h = 1
@@ -252,7 +256,12 @@ function GetPieceToPlay()
             playablePieces = {}
 
             -- Get the list of tiles the piece can move to.
-            playableTiles = pieceToPlay:getLegalMoves(pieces, board)
+            if not check then
+                playableTiles = pieceToPlay:getLegalMoves(pieces, board)
+            else
+                playableTiles = inCheckEscapeMoves[pieceToPlay.ID]
+                check = false
+            end
 
             -- Load the highlighted tiles and scale them to 0.
             local h = 1
@@ -552,10 +561,12 @@ function CheckForEndgame()
             otherKing = pieces[lightKingIndex]
         end
 
-        local safe, attackers = isSafe(otherKing) -- There can only one attacker at a time to the king
+        local safe, attackers = isSafe(otherKing) -- There can only be one attacker at a time to the king
         if not safe then
-            local atkSafe, atkAttackers = isSafe(attackers[1])
-            if not safe and checkmate(otherKing) and atkSafe then
+            check = true
+            --local atkSafe, atkAttackers = isSafe(attackers[1]) -- But there can be multiple attackers to the attacker at once
+            lost, inCheckEscapePieces, inCheckEscapeMoves = checkmate(otherKing)
+            if #attackers > 1 or lost then
                 gameOver = true
                 gameOverModel = "YouWon"
             end

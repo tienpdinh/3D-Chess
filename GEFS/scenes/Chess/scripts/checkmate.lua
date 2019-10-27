@@ -48,25 +48,30 @@ function restore(piece, oldX, oldZ, newIndex, newPiece)
 end
 
 function checkmate(king)
-  local kingMoves = king:getLegalMoves(pieces, board)
+  local count1 = 1
+  local possiblePieces = {}
+  local possibleMoves = {}
+  local result = true
   for _, piece in pairs(pieces) do
     if piece.team == king.team then
       local pieceMoves = piece:getLegalMoves(pieces, board)
+      local possibleMovesPiece = {}
+      local count2 = 1
       for _, move in pairs(pieceMoves) do
-        if utils.containsMove(kingMoves, move) then
-          local oldX, oldZ, newIndex, newPiece = simulate(piece, move[1], move[2])
-          if isSafe(king) then
-            restore(piece, oldX, oldZ, newIndex, newPiece)
-            return false
-          end
-          restore(piece, oldX, oldZ, newIndex, newPiece)
+        local oldX, oldZ, newIndex, newPiece = simulate(piece, move[1], move[2])
+        if isSafe(king) then
+          possibleMovesPiece[count2] = move
+          count2 = count2 + 1
+          result = false
         end
+        restore(piece, oldX, oldZ, newIndex, newPiece)
+      end
+      if #possibleMovesPiece > 0 then
+        possiblePieces[count1] = board.chessboard[piece.x][piece.z].pieceIndex
+        possibleMoves[piece.ID] = possibleMovesPiece
+        count1 = count1 + 1
       end
     end
   end
-  return true
-end
-
--- While in check, player has to escape check with these moves only
-function escapeMoves()
+  return result, possiblePieces, possibleMoves
 end
