@@ -41,7 +41,7 @@ function Pawn:getLegalMoves(pieces, board)
     if self.team == "Light" then
         -- Pawns can move forward +2 if they haven't moved yet and
         -- the space is not friendly-occupied and the +1 space isn't occupied.
-        if self.z == 2 and not board:friendlyOccupied(self.x, self.z+2, pieces, self.team) and not board:occupied(self.x, self.z+1) then
+        if self.z == 2 and not board:occupied(self.x, self.z+2) and not board:occupied(self.x, self.z+1) then
             moves[i] = {self.x, self.z+2}
             i = i + 1
         end
